@@ -1,0 +1,40 @@
+<!-- extend from base layout -->
+{% extends "base.html" %}
+
+{% block content %}
+ <h3> Paketten op {{ cap }} </h3>
+<p>
+    <tr>
+        {% for test in tests %}
+            <td><li><a href="{{ url_for('show_testinfo', test=test) }}">{{test}}</a></li></td>
+        {% endfor %}
+    </tr>
+</p>
+<h3>Bestaande LOT-nummers voor {{cap}}</h3>
+
+<p>
+    <tr>
+        {% for lotnr in lotnrs %}
+            <td><li>{{lotnr}}</li></td>
+        {% endfor %}
+    </tr>
+</p>
+
+<form action="" method="post" name="newlot">
+{{ form.hidden_tag() }}
+      <p>
+          Nieuw LOT-nummer:<br>
+          {{ form.lotnummer(size=30) }}<br>
+          {% for error in form.lotnummer.errors %}
+              <span style="color: red;">[{{ error }}]</span>
+          {% endfor %}<br>
+          <input type="submit" value="Voeg toe">
+      </p>
+
+</form>
+
+
+
+
+
+{% endblock %}

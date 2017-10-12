@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block content %}
+<head>
+    <style>
+        th, td {
+            padding-left: 2px;
+            padding-right: 5px;
+        }
+    </style>
+</head>
+
+<h1> AMC NGS-diagnostiek</h1>
+<p>
+
+<li>De in het AMC gehanteerde definities voor gen- en corepanels staan
+<a href="http://amcpipeline.readthedocs.io/nl/latest/pakketten.html">hier</a> uitgelegd.</li>
+
+<li>Een overzicht van alle diagnostische NGS-gentesten die het AMC aanbiedt is
+<a href="{{ url_for('show_all_tests') }}">hier</a> te vinden.</li>
+<br>
+Onderstaande tabel beschrijft de benodigde files voor het correct runnen van de AMC-pipeline, waarvoor ze nodig zijn en wanneer ze verplicht zijn.
+<br>
+<br>
+<table>
+    <tr>
+      <th>Targetfile</th>
+      <th>Gebruikt voor </th>
+      <th>Verplicht/optioneel</th>
+    </tr>
+    <tr>
+      <td>Capture targets</td>
+      <td>CNV-analyse, picard metrics en informatieve coverage</td>
+      <td>Verplicht per capture</td>
+    </tr>
+    <tr>
+      <td>Pakket targets</td>
+      <td>Bepalen te sangeren fragmenten indien geen type A panel</td>
+      <td>Verplicht per pakket</td>
+    </tr>
+    <tr>
+      <td>Panel targets</td>
+      <td>Bepalen te sangeren fragmenten</td>
+      <td>Optioneel</td>
+    </tr>
+    <tr>
+      <td>Genregio pakket</td>
+      <td>Callen varianten </td>
+      <td>Verplicht per pakket</td>
+    </tr>
+    <tr>
+      <td>Gennamen pakket</td>
+      <td>Filteren CNV's</td>
+      <td>Verplicht per pakket met CNV-analyse</td>
+    </tr>
+<table>
+</p>
+<hr>
+<br>
+<p>
+<h3> Wijzigen bestaande test en toevoegen nieuwe test </h3>
+<br>
+Voor CNV-detectie geldt dat <b>elke wijziging aan een target file betekent dat alle samples opnieuw door GATK geanalyseerd moeten worden</b><br>
+<br>
+Aangezien heranalyse computertijd kost moeten de voor CNV-analyse gebruikte targetfiles hetzelfde blijven. Om dit mogelijk te maken wordt een file per capture ontworpen welke op het moment van bestellen definitief wordt gemaakt. Dit target zal gebruikt worden voor CNV-analyse zodat de data van de volledige capture gebruikt kan worden voor normalisatie.<br>
+<br>
+Naast een targetfile per capture is er een targetfile per pakket en als dit pakket typeC genen bevat is er ook een targetfile met de te beoordelen gebieden typeA genen van het pakket.<br>
+<br>
+Een nieuw OID houdt in dat de capture targets gewijzigd of gebalanceerd zijn en zal resulteren in een verhoging van de capture versie. Dit kan leiden tot een verhoging van de versie(s) van een of meerdere pakketten op deze capture, maar als er bijvoorbeeld een pakket aan de capture is toegevoegd of de capture alleen gebalanceerd is kunnen de pakketversies gelijk bijven.<br>
+<br>
+Een nieuw lot houdt in dat alle targets ongewijzigd blijven en dus alle versienummers gelijk blijven. Indien er voor het betreffende pakket CNV-analyse plaatsvindt zal de connaiseur bepalen of het nieuwe lot een voldoende vergelijkbaar coverageprofiel heeft om aan het bestaande archief toegevoegd te worden.<br>
+</p>
+{% endblock %}

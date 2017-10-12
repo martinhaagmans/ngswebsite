@@ -1,0 +1,61 @@
+<!-- extend from base layout -->
+{% extends "base.html" %}
+
+{% block content %}
+  <h1> {{ c.aandoening }} </h1>
+<br><br>
+  <table style="width:25%">
+    <tr>
+      <th> </th>
+<th> </th>
+      <th>Grootte</th>
+    </tr>
+    <tr>
+      <td>Pakket: </td>
+      <td>{{c.pakket}}</td>
+      <td>{{g.pakketsize}} bp</td>
+    </tr>
+    <tr>
+      <td>Type A panel: </td>
+       <td>{{c.panel}}</td>
+      <td>{{g.panelsize}} bp</td>
+    </tr>
+    </tr>
+  </table>
+<br>
+<p>
+  <li> {{ c.OID }} </li>
+  <li> LOT: {{ c.lot }} </li>
+  <li> CNV diagnostiek: {{ c.printcnv }} </li>
+  <li> Mozaiek diagnostiek: {{ c.mozaiekdetectie }} </li>
+</p>
+<br>
+
+<p>
+  <h2> Capture historie </h2>
+        {% for cap in caps %}
+            <td><li><a href="{{ url_for('show_tests_for_cap', cap=cap) }}">{{cap}}</a></li></td>
+        {% endfor %}
+</p>
+<br>
+<p>
+  <h2> Genen </h2>
+        {% for gen in g.genen %}
+            {{ gen }}
+        {% endfor %}
+
+</p>
+<p> {% if g.agenen %}
+  <h2> A-genen </h2>
+        {% for gen in g.agenen %}
+            {{ gen }}
+         {% endfor %}
+    {% endif %}
+
+</p>
+
+
+
+
+
+{% endblock %}

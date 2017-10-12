@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link href="/static/css/bootstrap.css" rel="stylesheet" media="screen">
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+  <script src="/static/js/bootstrap.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  {% if title %}
+  <title>{{ title }}</title>
+  {% else %}
+  <title>AMC NGS</title>
+  {% endif %}
+</head>
+<body>
+    <div>
+        <a href="/index">Home</a>
+        <a href="{{ url_for('add_test') }}">Nieuw</a>
+        <a href="{{ url_for('show_all_tests') }}">Aanbod</a>
+        <a href="{{ url_for('upload_labexcel') }}">Samplesheet</a>
+    </div>
+    <hr>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul>
+        {% for message in messages %}
+            <li>{{ message }} </li>
+        {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+</body>
+</html>
