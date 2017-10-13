@@ -17,12 +17,12 @@ class NewTestForm(FlaskForm):
     cnvdetectie = BooleanField('cnvdetectie', default=True)
     printcnv = BooleanField('printcnv', default=False)
     mozaiekdetectie = BooleanField('mozaiekdetectie', default=False)
-    # capturetarget = FileField()
-    # capturegenen = FileField()
-    # pakkettarget = FileField()
-    # pakketgenen = FileField()
-    # paneltarget = FileField()
-    # panelgenen = FileField()
+    capturetarget = FileField()
+    capturegenen = FileField()
+    pakkettarget = FileField()
+    pakketgenen = FileField()
+    paneltarget = FileField()
+    panelgenen = FileField()
 
 class NewLotForm(FlaskForm):
     lotnummer = StringField('lotnummer', validators=[DataRequired()])

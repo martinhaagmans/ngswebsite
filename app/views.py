@@ -10,10 +10,21 @@ from collections import OrderedDict
 import sys
 sys.path.append('/home/manager/Documents/ngsscriptlibrary')
 
-from ngsscriptlibrary import TargetDatabase, TargetFiles
+from ngsscriptlibrary import TargetDatabase, TargetFiles, TargetAnnotation
 
 TARGETS = '/home/manager/Documents/ngstargets/'
 DB = '/home/manager/Documents/ngstargets/varia/capinfo.sqlite'
+
+def boolean_to_number(x):
+    if x == 'False':
+        x = 0
+    elif not x:
+        x = 0
+    elif x == 'True':
+        x = 1
+    elif x:
+        x = 1
+    return x
 
 @app.route('/')
 @app.route('/index')
@@ -76,21 +87,29 @@ def add_test():
         sql_info = '''INSERT INTO capdb
         (genesiscode, aandoening, capture, pakket, panel, OID, lot, actief,
         verdund, cnvdetectie, printcnv, mozaiekdetectie)
-        VALUES ({}, {}, {} {}, {}, {}, {}, {}, {}, {}, {}, {})
+        VALUES ('{}', '{}', '{}', '{}', '{}', '{}', {}, {}, {}, {}, {}, {})
         '''.format(form.genesis.data, form.aandoening.data, form.capture.data,
         form.pakket.data, form.panel.data, form.oid.data, form.lotnummer.data,
-        form.actief.data, form.verdund.data, form.cnvdetectie.data,
-        form.printcnv.data, form.mozaiekdetectie.data)
-        # T.change(sql)
+        boolean_to_number(form.actief.data),
+        boolean_to_number(form.verdund.data),
+        boolean_to_number(form.cnvdetectie.data),
+        boolean_to_number(form.printcnv.data),
+        boolean_to_number(form.mozaiekdetectie.data))
+        print(sql_info, form.genesis.data)
+        T = TargetDatabase(DB)
+        T.change(sql_info)
         # f = form.capturetarget.data
         capturetarget = secure_filename(form.capturetarget.data.filename)
         form.capturetarget.data.save(os.path.join(app.config['UPLOAD_FOLDER'],
                                                   capturetarget))
+
         capturegenen = secure_filename(form.capturegenen.data.filename)
         form.capturegenen.data.save(os.path.join(app.config['UPLOAD_FOLDER'],
                                                  capturegenen))
-        T = TargetFiles()                                                 
-        capturegenen =  T.genelist(os.path.join(app.config['UPLOAD_FOLDER'],
+        TF = TargetFiles(str(form.genesis.data), TARGETS,
+                         bedfile=os.path.join(app.config['UPLOAD_FOLDER'],
+                                                  capturetarget))
+        capturegenen =  TF.genelist(os.path.join(app.config['UPLOAD_FOLDER'],
                                                  capturegenen))
 
         flash(capturegenen)
