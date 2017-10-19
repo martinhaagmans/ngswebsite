@@ -1,0 +1,21 @@
+[Header]
+IEMFileVersion,4
+Investigator Name,Robert
+Experiment Name,DL070
+Date,19/10/2017
+Workflow,GenerateFASTQ
+Application,FASTQ Only
+Assay,NEXTflex
+Description,
+Chemistry,Amplicon
+
+[Reads]
+151
+151
+
+[Settings]
+ReverseComplement,0
+Adapter,AGATCGGAAGAGCACACGTCTGAACTCCAGTCA
+AdapterRead2,AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT
+
+[Data]

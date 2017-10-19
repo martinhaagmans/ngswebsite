@@ -10,7 +10,7 @@ from collections import OrderedDict
 import sys
 sys.path.append('/home/manager/Documents/ngsscriptlibrary')
 
-from ngsscriptlibrary import TargetDatabase, TargetFiles, TargetAnnotation
+from ngsscriptlibrary import TargetDatabase, TargetFiles, TargetAnnotation, SampleSheet
 
 TARGETS = '/home/manager/Documents/ngstargets/'
 DB = '/home/manager/Documents/ngstargets/varia/capinfo.sqlite'
@@ -95,7 +95,7 @@ def add_test():
         boolean_to_number(form.cnvdetectie.data),
         boolean_to_number(form.printcnv.data),
         boolean_to_number(form.mozaiekdetectie.data))
-        print(sql_info, form.genesis.data)
+        # print(sql_info, form.genesis.data)
         T = TargetDatabase(DB)
         T.change(sql_info)
         # f = form.capturetarget.data
@@ -147,19 +147,29 @@ def upload_labexcel():
         if 'file' not in request.files:
             flash('No file part')
             return redirect(request.url)
-        file = request.files['file']
-        # if user does not select file, browser also
-        # submit a empty part without filename
-        if file.filename == '':
+        nullijst_todo = request.files['file']
+        print(nullijst_todo)
+
+        if nullijst_todo.filename == '':
             flash('No selected file')
             return redirect(request.url)
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
+        if nullijst_todo:
+            filename = secure_filename(nullijst_todo.filename)
             uploads = os.path.join(app.root_path, app.config['UPLOAD_FOLDER'])
-            file.save(os.path.join(uploads, filename))
-            write_files(os.path.join(uploads, filename))
+            nullijst_todo.save(os.path.join(uploads, filename))
+            S = SampleSheet(os.path.join(uploads, filename), 'DL070',
+                            os.path.join(uploads, 'SampleSheet.csv'))
+
+            S.write_files()
             return redirect(url_for('uploaded_file',
-                                     filename='SampleSheet.csv'))
+                                 filename='SampleSheet.csv'))
+
+            # except KeyError as e:
+            #     flash('Barcode bestaat niet.', e)
+            #     return render_template('uploadlabexcel.html')
+            # else:
+            #     return redirect(url_for('uploaded_file',
+            #                          filename='SampleSheet.csv'))
     return render_template('uploadlabexcel.html')
 
 
