@@ -148,7 +148,6 @@ def upload_labexcel():
             flash('No file part')
             return redirect(request.url)
         nullijst_todo = request.files['file']
-        print(nullijst_todo)
 
         if nullijst_todo.filename == '':
             flash('No selected file')
