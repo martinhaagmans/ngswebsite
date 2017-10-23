@@ -7,4 +7,6 @@ app.secret_key = 'super secret key'
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-app.run(debug=True)
+if __name__ == '__main__':
+
+    app.run(debug=True)

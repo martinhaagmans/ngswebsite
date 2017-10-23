@@ -1,6 +1,6 @@
 import os
 import json
-from flask import render_template, flash, redirect, url_for, request, send_from_directory
+from flask import render_template, flash, redirect, url_for, request, send_from_directory, after_this_request
 from werkzeug.utils import secure_filename
 
 from app import app
@@ -141,38 +141,34 @@ def show_tests_for_cap(cap):
 
 @app.route('/createsamplesheet', methods=['GET', 'POST'])
 def upload_labexcel():
-    downloads = ['barcode_pipetteerschema.txt', 'samplesheet.csv']
     if request.method == 'POST':
-        # check if the post request has the file part
-        if 'file' not in request.files:
-            flash('No file part')
-            return redirect(request.url)
-        nullijst_todo = request.files['file']
+        print(request.form['serie'])
+        print(request.form)
+        if request.form['samples'] == '':
+            flash('Geen input opgegeven')
+            return render_template('uploadlabexcel.html')
+        if request.form['serie'] == '':
+            flash('Geen serienummer opgegeven')
+            return render_template('uploadlabexcel.html')
 
-        if nullijst_todo.filename == '':
-            flash('No selected file')
-            return redirect(request.url)
+        nullijst_todo = request.form['samples']
         if nullijst_todo:
-            filename = secure_filename(nullijst_todo.filename)
             uploads = os.path.join(app.root_path, app.config['UPLOAD_FOLDER'])
-            nullijst_todo.save(os.path.join(uploads, filename))
-            S = SampleSheet(os.path.join(uploads, filename), 'DL070',
+            with open(os.path.join(uploads, 'samplesheet.tmp'), 'w') as f:
+                for line in nullijst_todo.split('\n'):
+                    if line:
+                        dnr, bc, test = line.split()
+                        f.write('{}\t{}\t{}\n'.format(dnr, test, bc))
+
+            S = SampleSheet(os.path.join(uploads, 'samplesheet.tmp'), request.form['serie'],
                             os.path.join(uploads, 'SampleSheet.csv'))
-
             S.write_files()
-            return redirect(url_for('uploaded_file',
-                                 filename='SampleSheet.csv'))
+            return redirect(url_for('uploaded_file', filename='SampleSheet.csv'))
 
-            # except KeyError as e:
-            #     flash('Barcode bestaat niet.', e)
-            #     return render_template('uploadlabexcel.html')
-            # else:
-            #     return redirect(url_for('uploaded_file',
-            #                          filename='SampleSheet.csv'))
     return render_template('uploadlabexcel.html')
 
 
-@app.route('/created/<filename>')
+@app.route('/createsamplesheet/<path:filename>')
 def uploaded_file(filename):
     uploads = os.path.join(app.root_path, app.config['UPLOAD_FOLDER'])
     return send_from_directory(directory=uploads, filename=filename)

@@ -23,7 +23,7 @@
       {% if messages %}
         <ul>
         {% for message in messages %}
-            <li>{{ message }} </li>
+            <li><span style="color: red;">[{{ message }}]</span></li>
         {% endfor %}
         </ul>
       {% endif %}

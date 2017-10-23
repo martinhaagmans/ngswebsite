@@ -1,9 +1,24 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h3>Upload sample pakket barcode koppeling</h3>
+<h3>Samplesheet voor MiSeq</h3>
+<br>
 <form method=post enctype=multipart/form-data>
-  <p><input type=file name=file>
-     <input type=submit value='Maak samplesheet'>
+    <p>
+       <h4>Input:</h4>
+       <textarea rows=12 cols=24 name=samples></textarea>
+    </p>
+    <br>
+    <p>
+        <h4>Serienummer:</h4>
+
+        <input type=number name=serie>
+        <br>
+    </p>
+
+<br><br>
+
+  <p><input type=submit value='Maak samplesheet' style="font-size:21pt;color:white;
+  background-color:green;border:2px solid #336600;padding:3px;"></p>
 </form>
 {% endblock content %}
