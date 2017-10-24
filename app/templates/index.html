@@ -34,7 +34,7 @@ Onderstaande tabel beschrijft de benodigde files voor het correct runnen van de 
     </tr>
     <tr>
       <td>Pakket targets</td>
-      <td>Bepalen te sangeren fragmenten indien geen type A panel</td>
+      <td>Bepalen te sangeren fragmenten indien geen A-kwaliteit panel</td>
       <td>Verplicht per pakket</td>
     </tr>
     <tr>
@@ -59,14 +59,23 @@ Onderstaande tabel beschrijft de benodigde files voor het correct runnen van de 
 <p>
 <h3> Wijzigen bestaande test en toevoegen nieuwe test </h3>
 <br>
-Voor CNV-detectie geldt dat <b>elke wijziging aan een target file betekent dat alle samples opnieuw door GATK geanalyseerd moeten worden</b><br>
+Voor CNV-detectie geldt dat elke wijziging aan een target file betekent dat alle samples opnieuw door GATK geanalyseerd moeten worden.
+Aangezien heranalyse computertijd kost moeten de voor CNV-analyse gebruikte targetfiles hetzelfde blijven. Om dit mogelijk te maken wordt per ontworpen capture een targetfile gemaakt die op het moment van bestellen definitief wordt gemaakt. Dit target zal gebruikt worden voor CNV-analyse zodat de data van de volledige capture gebruikt kan worden voor normalisatie.
 <br>
-Aangezien heranalyse computertijd kost moeten de voor CNV-analyse gebruikte targetfiles hetzelfde blijven. Om dit mogelijk te maken wordt een file per capture ontworpen welke op het moment van bestellen definitief wordt gemaakt. Dit target zal gebruikt worden voor CNV-analyse zodat de data van de volledige capture gebruikt kan worden voor normalisatie.<br>
 <br>
-Naast een targetfile per capture is er een targetfile per pakket en als dit pakket typeC genen bevat is er ook een targetfile met de te beoordelen gebieden typeA genen van het pakket.<br>
+Naast een targetfile per capture is er een targetfile per pakket. Als dit pakket C-kwaliteit targets bevat is er ook een targetfile met de te beoordelen A-kwaliteit gebieden van het pakket.
+Deze verzameling A-kwaliteit gebieden is het panel.
 <br>
-Een nieuw OID houdt in dat de capture targets gewijzigd of gebalanceerd zijn en zal resulteren in een verhoging van de capture versie. Dit kan leiden tot een verhoging van de versie(s) van een of meerdere pakketten op deze capture, maar als er bijvoorbeeld een pakket aan de capture is toegevoegd of de capture alleen gebalanceerd is kunnen de pakketversies gelijk bijven.<br>
 <br>
-Een nieuw lot houdt in dat alle targets ongewijzigd blijven en dus alle versienummers gelijk blijven. Indien er voor het betreffende pakket CNV-analyse plaatsvindt zal de connaiseur bepalen of het nieuwe lot een voldoende vergelijkbaar coverageprofiel heeft om aan het bestaande archief toegevoegd te worden.<br>
+Er kan om klinische of technische redenen worden besloten om bepaalde targets niet meer (diagnostisch) aan te bieden.
+Indien ervoor gekozen is bepaalde genen of gebieden helemaal niet meer aan te bieden dienen deze uit de pakkettargets gehaald te worden en wordt de pakketversie aangepast.
+Indien ervoor gekozen is bepaalde genen of gebieden voortaan als C-kwaliteit aan te bieden dienen deze uit de paneltargets gehaald te worden en wordt de panelversie aangepast.
+<br>
+<br>
+Een nieuw OID houdt in dat de capture targets gewijzigd of gebalanceerd zijn en zal resulteren in een verhoging van de capture versie. Dit kan leiden tot een verhoging van de versie(s) van een of meerdere pakketten op deze capture, maar als er bijvoorbeeld een pakket aan de capture is toegevoegd of de capture alleen gebalanceerd is kunnen de pakketversies gelijk bijven.
+<br>
+<br>
+Een nieuw lot houdt in dat de capture targets ongewijzigd blijven en dus het versienummers gelijk blijft. Indien er op de betreffende capture een of meerdere pakketten staat/staan waarvoor CNV-analyse plaatsvindt zal de connaiseur bepalen of het nieuwe lot een voldoende vergelijkbaar coverageprofiel heeft om aan het bestaande archief toegevoegd te worden.
+<br>
 </p>
 {% endblock %}

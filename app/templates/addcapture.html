@@ -2,35 +2,27 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <h1>Nieuwe capture bij bestaande test</h1>
+  <h1>Nieuwe capture</h1>
   <form action="" method="post" name="newcap">
       {{ form.hidden_tag() }}
-      <p>
-          Genesis code:<br>
-
-
-            <select name="genesiscodes" method="GET" action="/">
-              <option value="{{genesiscodes[0]}}" selected>{{genesiscodes[0]}}</option>
-              {% for genesiscode in genesiscodes[1:] %}
-                <option value="{{genesiscode}}">{{genesiscode}}</option>
-              {% endfor %}
-            </select>
-
-
-      </p>
       <p>
           Capture:<br>
           {{ form.capture(size=80) }}<br>
           {% for error in form.capture.errors %}
               <span style="color: red;">[{{ error }}]</span>
           {% endfor %}<br>
-      </p>
-      <p>
-          Panel:<br>
-          {{ form.panel(size=80) }}<br>
-          {% for error in form.panel.errors %}
-              <span style="color: red;">[{{ error }}]</span>
-          {% endfor %}<br>
+
+            Targetfile:<br>
+            {{ form.capturetarget }}<br>
+            {% for error in form.capturetarget.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}<br>
+
+            File met gennamen:<br>
+            {{ form.capturegenen}}<br>
+            {% for error in form.capturegenen.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}<br>
       </p>
       <p>
           OID:<br>
@@ -39,6 +31,7 @@
               <span style="color: red;">[{{ error }}]</span>
           {% endfor %}<br>
       </p>
+
       <p>
           LOT:<br>
           {{ form.lotnummer(size=80) }}<br>
@@ -46,11 +39,6 @@
               <span style="color: red;">[{{ error }}]</span>
           {% endfor %}<br>
       </p>
-      <p>{{ form.actief }} Actief</p>
-      <p>{{ form.verdund }} Verdund hybridiseren</p>
-      <p>{{ form.cnvdetectie }} CNV detectie (screening)</p>
-      <p>{{ form.printcnv }} CNV detectie gevalideerd</p>
-      <p>{{ form.mozaiekdetectie }} Mozaiek detectie</p>
 
       <p><input type="submit" value="Voeg toe"></p>
   </form>

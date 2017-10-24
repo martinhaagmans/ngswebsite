@@ -2,7 +2,7 @@
 {% extends "base.html" %}
 
 {% block content %}
- <h3> Paketten op {{ cap }} </h3>
+ <h3> Diagnostische tests op {{ cap }} </h3>
 <p>
     <tr>
         {% for test in tests %}
@@ -20,15 +20,13 @@
     </tr>
 </p>
 
-<form action="" method="post" name="newlot">
-{{ form.hidden_tag() }}
+<form method=post enctype=multipart/form-data>
+
       <p>
           Nieuw LOT-nummer:<br>
-          {{ form.lotnummer(size=30) }}<br>
-          {% for error in form.lotnummer.errors %}
-              <span style="color: red;">[{{ error }}]</span>
-          {% endfor %}<br>
-          <input type="submit" value="Voeg toe">
+          <input type=number name=lotnr>
+          <input type=submit value='Voeg toe'>
+
       </p>
 
 </form>

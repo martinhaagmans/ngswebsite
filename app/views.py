@@ -27,11 +27,11 @@ def boolean_to_number(x):
     return x
 
 @app.route('/')
-@app.route('/index')
+@app.route('/index/')
 def intro():
     return render_template('index.html')
 
-@app.route('/diagnostiek')
+@app.route('/diagnostiek/')
 def show_all_tests():
     T = TargetDatabase(DB)
     tests = T.get_all_tests()
@@ -42,7 +42,7 @@ def show_all_tests():
     return render_template('showalltests.html', tests=d)
 
 
-@app.route('/diagnostiek/<path:test>')
+@app.route('/diagnostiek/<test>')
 def show_testinfo(test):
     T = TargetDatabase(DB)
     tests = T.get_all_tests()
@@ -52,7 +52,6 @@ def show_testinfo(test):
     caps = T.get_all_captures_for_test(test)
 
     d = T.get_all_info_for_test(test)
-
 
     for i in ['printcnv', 'mozaiekdetectie']:
         if d['capdb'][i] == 1:
@@ -68,10 +67,10 @@ def show_testinfo(test):
     if d['genes']['agenen'] == [] and d['genes']['cgenen'] == []:
         d['genes']['agenen'] = d['genes']['genen']
 
-    return render_template('showtest.html',
-                            c=d['capdb'],g=d['genes'], caps=caps)
+    return render_template('showtest.html', c=d['capdb'],
+                           g=d['genes'], caps=caps)
 
-@app.route('/diagnostiek/nieuw', methods=['GET', 'POST'])
+@app.route('/diagnostiek/nieuw/', methods=['GET', 'POST'])
 def add_test():
 
     form = NewTestForm()
@@ -117,33 +116,29 @@ def add_test():
 
     return render_template('addtest.html', form=form)
 
-@app.route('/captures/<path:cap>', methods=['GET', 'POST'])
+@app.route('/captures/<cap>', methods=['GET', 'POST'])
 def show_tests_for_cap(cap):
     T = TargetDatabase(DB)
     tests = T.get_all_tests_for_capture(cap)
     lotnrs = T.get_all_lotnrs_for_capture(cap)
-    form = NewLotForm()
-    if form.validate_on_submit():
-        for test in tests:
-            sql = '''INSERT INTO capdb
-            (genesiscode, aandoening, capture, pakket, panel, OID, lot, actief,
-            verdund, cnvdetectie, printcnv, mozaiekdetectie)
-            SELECT genesiscode, aandoening, capture, pakket, panel, OID, {},
-            actief, verdund, cnvdetectie, printcnv, mozaiekdetectie
-            FROM capdb
-            WHERE genesiscode = '{}'
-            '''.format(form.lotnummer.data, test)
-            T.change(sql)
-            flash(sql)
-        return render_template('index.html')
+    if request.method == 'POST':
+        sql = '''INSERT INTO captures
+        (capture, OID, lot, verdund)
+        SELECT DISTINCT capture, OID, {}, verdund
+        FROM captures
+        WHERE capture = '{}'
+        '''.format(request.form['lotnr'], cap)
+        T.change(sql)
+        flash(sql)
+        lotnrs = T.get_all_lotnrs_for_capture(cap)
+        return render_template('showcap.html', cap=cap, tests=tests,
+                                               lotnrs=lotnrs)
     return render_template('showcap.html', cap=cap, tests=tests,
-                                           form=form, lotnrs=lotnrs)
+                                           lotnrs=lotnrs)
 
-@app.route('/createsamplesheet', methods=['GET', 'POST'])
+@app.route('/createsamplesheet/', methods=['GET', 'POST'])
 def upload_labexcel():
     if request.method == 'POST':
-        print(request.form['serie'])
-        print(request.form)
         if request.form['samples'] == '':
             flash('Geen input opgegeven')
             return render_template('uploadlabexcel.html')
@@ -168,7 +163,11 @@ def upload_labexcel():
     return render_template('uploadlabexcel.html')
 
 
-@app.route('/createsamplesheet/<path:filename>')
+@app.route('/createsamplesheet/created/<filename>')
 def uploaded_file(filename):
+    return render_template('download.html', filename=filename)
+
+@app.route('/createsamplesheet/<path:filename>')
+def download(filename):
     uploads = os.path.join(app.root_path, app.config['UPLOAD_FOLDER'])
     return send_from_directory(directory=uploads, filename=filename)
