@@ -3,7 +3,8 @@
 {% block content %}
 <h3>Download samplesheet </h3>
 <br>
-<a href="{{ url_for('download', filename=filename) }}" target="blank"><button class='btn btn-default'>Download {{filename}} </button></a>
+<a href="{{ url_for('download', filename=filename) }}" target="blank">
+    <button class='btn btn-default'>Download {{filename}} </button></a>
 
 
 {% endblock content %}

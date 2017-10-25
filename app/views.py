@@ -8,12 +8,15 @@ from werkzeug.utils import secure_filename
 
 from app import app
 
-sys.path.insert(0, os.path.join(os.path.expanduser('~'), 'Documents', 'ngsscriptlibrary'))
+HOME = os.path.expanduser('~')
+
+sys.path.insert(0, os.path.join(HOME, 'Documents', 'ngsscriptlibrary'))
 
 from ngsscriptlibrary import TargetDatabase, TargetFiles, TargetAnnotation, SampleSheet
 
-TARGETS = '/home/manager/Documents/ngstargets/'
-DB = '/home/manager/Documents/ngstargets/varia/capinfo.sqlite'
+TARGETS = os.path.join(HOME, 'Documents', 'ngstargets')
+DB = os.path.join(TARGETS, 'varia', 'capinfo.sqlite')
+MYSQLUSER = 'manager'
 
 def boolean_to_number(x):
     if x == 'False':
@@ -70,8 +73,9 @@ def show_testinfo(test):
     return render_template('showtest.html', c=d['capdb'],
                            g=d['genes'], caps=caps)
 
-# @app.route('/diagnostiek/nieuw/', methods=['GET', 'POST'])
-# def add_test():
+@app.route('/diagnostiek/nieuw/', methods=['GET', 'POST'])
+def add_test():
+    pass
 #
 #     form = NewTestForm()
 #     if form.validate_on_submit():
@@ -140,7 +144,9 @@ def new_capture():
 @app.route('/captures/nieuw/target/<cap>/<int:lot>/<int:oid>/<verdund>', methods=['GET', 'POST'])
 def new_target(cap, lot, oid, verdund):
     if request.method == 'POST':
-        pass
+        T = TargetAnnotation(bedfile=targetfile, genes=genefile,
+                             host='localhost', user=MYSQLUSER, db='annotation')
+
         # T = TargetDatabase(DB)
         # cap = request.form['capture']
         # oid = request.form['oid']
