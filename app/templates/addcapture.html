@@ -2,44 +2,29 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <h1>Nieuwe capture</h1>
-  <form action="" method="post" name="newcap">
-      {{ form.hidden_tag() }}
+  <h3>Nieuwe capture</h3>
+  <form method=post name=newcap>
       <p>
           Capture:<br>
-          {{ form.capture(size=80) }}<br>
-          {% for error in form.capture.errors %}
-              <span style="color: red;">[{{ error }}]</span>
-          {% endfor %}<br>
-
-            Targetfile:<br>
-            {{ form.capturetarget }}<br>
-            {% for error in form.capturetarget.errors %}
-                <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}<br>
-
-            File met gennamen:<br>
-            {{ form.capturegenen}}<br>
-            {% for error in form.capturegenen.errors %}
-                <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}<br>
+          <input type=text name=capture>
       </p>
+
       <p>
           OID:<br>
-          {{ form.oid(size=80) }}<br>
-          {% for error in form.oid.errors %}
-              <span style="color: red;">[{{ error }}]</span>
-          {% endfor %}<br>
+          <input type=number name=oid>
       </p>
 
       <p>
           LOT:<br>
-          {{ form.lotnummer(size=80) }}<br>
-          {% for error in form.lotnummer.errors %}
-              <span style="color: red;">[{{ error }}]</span>
-          {% endfor %}<br>
+          <input type=number name=lot>
       </p>
 
-      <p><input type="submit" value="Voeg toe"></p>
+      <p>
+          Verdund hybridiseren:
+          <input type=checkbox name=verdund>
+     </p>
+
+     <p><input type=submit value='Voeg toe'></p>
+
   </form>
 {% endblock %}

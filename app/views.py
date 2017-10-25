@@ -1,14 +1,14 @@
 import os
 import json
-from flask import render_template, flash, redirect, url_for, request, send_from_directory, after_this_request
+import sys
+from collections import OrderedDict
+
+from flask import render_template, flash, redirect, url_for, request, send_from_directory
 from werkzeug.utils import secure_filename
 
 from app import app
-from .forms import NewTestForm, NewLotForm
-from collections import OrderedDict
 
-import sys
-sys.path.append('/home/manager/Documents/ngsscriptlibrary')
+sys.path.insert(0, os.path.join(os.path.expanduser('~'), 'Documents', 'ngsscriptlibrary'))
 
 from ngsscriptlibrary import TargetDatabase, TargetFiles, TargetAnnotation, SampleSheet
 
@@ -70,51 +70,86 @@ def show_testinfo(test):
     return render_template('showtest.html', c=d['capdb'],
                            g=d['genes'], caps=caps)
 
-@app.route('/diagnostiek/nieuw/', methods=['GET', 'POST'])
-def add_test():
+# @app.route('/diagnostiek/nieuw/', methods=['GET', 'POST'])
+# def add_test():
+#
+#     form = NewTestForm()
+#     if form.validate_on_submit():
+#
+#         if not str(form.oid.data).startswith('OID'):
+#             form.oid.data = 'OID{}'.format(form.oid.data)
+#         if form.pakket.data == '':
+#             form.pakket.data = form.capture.data
+#         if form.panel.data == '':
+#             form.panel.data = 'False'
+#
+#         sql_info = '''INSERT INTO capdb
+#         (genesiscode, aandoening, capture, pakket, panel, OID, lot, actief,
+#         verdund, cnvdetectie, printcnv, mozaiekdetectie)
+#         VALUES ('{}', '{}', '{}', '{}', '{}', '{}', {}, {}, {}, {}, {}, {})
+#         '''.format(form.genesis.data, form.aandoening.data, form.capture.data,
+#         form.pakket.data, form.panel.data, form.oid.data, form.lotnummer.data,
+#         boolean_to_number(form.actief.data),
+#         boolean_to_number(form.verdund.data),
+#         boolean_to_number(form.cnvdetectie.data),
+#         boolean_to_number(form.printcnv.data),
+#         boolean_to_number(form.mozaiekdetectie.data))
+#         # print(sql_info, form.genesis.data)
+#         T = TargetDatabase(DB)
+#         T.change(sql_info)
+#         # f = form.capturetarget.data
+#         capturetarget = secure_filename(form.capturetarget.data.filename)
+#         form.capturetarget.data.save(os.path.join(app.config['UPLOAD_FOLDER'],
+#                                                   capturetarget))
+#
+#         capturegenen = secure_filename(form.capturegenen.data.filename)
+#         form.capturegenen.data.save(os.path.join(app.config['UPLOAD_FOLDER'],
+#                                                  capturegenen))
+#         TF = TargetFiles(str(form.genesis.data), TARGETS,
+#                          bedfile=os.path.join(app.config['UPLOAD_FOLDER'],
+#                                                   capturetarget))
+#         capturegenen =  TF.genelist(os.path.join(app.config['UPLOAD_FOLDER'],
+#                                                  capturegenen))
+#
+#         flash(capturegenen)
+#         return redirect(url_for('show_all_tests'))
+#
+#     return render_template('addtest.html', form=form)
 
-    form = NewTestForm()
-    if form.validate_on_submit():
 
-        if not str(form.oid.data).startswith('OID'):
-            form.oid.data = 'OID{}'.format(form.oid.data)
-        if form.pakket.data == '':
-            form.pakket.data = form.capture.data
-        if form.panel.data == '':
-            form.panel.data = 'False'
-
-        sql_info = '''INSERT INTO capdb
-        (genesiscode, aandoening, capture, pakket, panel, OID, lot, actief,
-        verdund, cnvdetectie, printcnv, mozaiekdetectie)
-        VALUES ('{}', '{}', '{}', '{}', '{}', '{}', {}, {}, {}, {}, {}, {})
-        '''.format(form.genesis.data, form.aandoening.data, form.capture.data,
-        form.pakket.data, form.panel.data, form.oid.data, form.lotnummer.data,
-        boolean_to_number(form.actief.data),
-        boolean_to_number(form.verdund.data),
-        boolean_to_number(form.cnvdetectie.data),
-        boolean_to_number(form.printcnv.data),
-        boolean_to_number(form.mozaiekdetectie.data))
-        # print(sql_info, form.genesis.data)
+@app.route('/captures/nieuw/', methods=['GET', 'POST'])
+def new_capture():
+    if request.method == 'POST':
         T = TargetDatabase(DB)
-        T.change(sql_info)
-        # f = form.capturetarget.data
-        capturetarget = secure_filename(form.capturetarget.data.filename)
-        form.capturetarget.data.save(os.path.join(app.config['UPLOAD_FOLDER'],
-                                                  capturetarget))
+        cap = request.form['capture']
+        oid = request.form['oid']
+        lot = request.form['lot']
+        if 'verdund' in request.form:
+            verdund = request.form['verdund']
+        elif not 'verdund' in request.form:
+            verdund = False
+        verdund = boolean_to_number(verdund)
+        sql = "INSERT INTO captures {}, {}, {}, {}".format(cap, oid, lot,
+                                                            verdund)
+        flash(request.form['capture'])
+        # T.change(sql)
+        return redirect(url_for('new_target', cap=cap, lot=lot, oid=oid, verdund=verdund))
 
-        capturegenen = secure_filename(form.capturegenen.data.filename)
-        form.capturegenen.data.save(os.path.join(app.config['UPLOAD_FOLDER'],
-                                                 capturegenen))
-        TF = TargetFiles(str(form.genesis.data), TARGETS,
-                         bedfile=os.path.join(app.config['UPLOAD_FOLDER'],
-                                                  capturetarget))
-        capturegenen =  TF.genelist(os.path.join(app.config['UPLOAD_FOLDER'],
-                                                 capturegenen))
+    return render_template('addcapture.html')
 
-        flash(capturegenen)
-        return redirect(url_for('show_all_tests'))
+@app.route('/captures/nieuw/target/<cap>/<int:lot>/<int:oid>/<verdund>', methods=['GET', 'POST'])
+def new_target(cap, lot, oid, verdund):
+    if request.method == 'POST':
+        pass
+        # T = TargetDatabase(DB)
+        # cap = request.form['capture']
+        # oid = request.form['oid']
+        # lot = request.form['lot']
+        # verdund = request.form['verdund']
+        # sql = "INSERT INTO captures {}, {}, {}, {}".format(cap, oid, lot, verdund)
+        # T.change(sql)
+    return render_template('addtargets.html', cap=cap, oid=oid, lot=lot, verdund=verdund)
 
-    return render_template('addtest.html', form=form)
 
 @app.route('/captures/<cap>', methods=['GET', 'POST'])
 def show_tests_for_cap(cap):
@@ -129,7 +164,6 @@ def show_tests_for_cap(cap):
         WHERE capture = '{}'
         '''.format(request.form['lotnr'], cap)
         T.change(sql)
-        flash(sql)
         lotnrs = T.get_all_lotnrs_for_capture(cap)
         return render_template('showcap.html', cap=cap, tests=tests,
                                                lotnrs=lotnrs)
