@@ -3,10 +3,18 @@ import json
 import sys
 from collections import OrderedDict
 
+from flask import Flask
 from flask import render_template, flash, redirect, url_for, request, send_from_directory
 from werkzeug.utils import secure_filename
 
-from app import app
+
+UPLOAD_FOLDER = 'uploads'
+ALLOWED_EXTENSIONS = set(['xls', 'xlsx'])
+
+app = Flask(__name__)
+app.secret_key = 'super secret key'
+app.config['SESSION_TYPE'] = 'filesystem'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 HOME = os.path.expanduser('~')
 
@@ -76,50 +84,6 @@ def show_testinfo(test):
 @app.route('/diagnostiek/nieuw/', methods=['GET', 'POST'])
 def add_test():
     pass
-#
-#     form = NewTestForm()
-#     if form.validate_on_submit():
-#
-#         if not str(form.oid.data).startswith('OID'):
-#             form.oid.data = 'OID{}'.format(form.oid.data)
-#         if form.pakket.data == '':
-#             form.pakket.data = form.capture.data
-#         if form.panel.data == '':
-#             form.panel.data = 'False'
-#
-#         sql_info = '''INSERT INTO capdb
-#         (genesiscode, aandoening, capture, pakket, panel, OID, lot, actief,
-#         verdund, cnvdetectie, printcnv, mozaiekdetectie)
-#         VALUES ('{}', '{}', '{}', '{}', '{}', '{}', {}, {}, {}, {}, {}, {})
-#         '''.format(form.genesis.data, form.aandoening.data, form.capture.data,
-#         form.pakket.data, form.panel.data, form.oid.data, form.lotnummer.data,
-#         boolean_to_number(form.actief.data),
-#         boolean_to_number(form.verdund.data),
-#         boolean_to_number(form.cnvdetectie.data),
-#         boolean_to_number(form.printcnv.data),
-#         boolean_to_number(form.mozaiekdetectie.data))
-#         # print(sql_info, form.genesis.data)
-#         T = TargetDatabase(DB)
-#         T.change(sql_info)
-#         # f = form.capturetarget.data
-#         capturetarget = secure_filename(form.capturetarget.data.filename)
-#         form.capturetarget.data.save(os.path.join(app.config['UPLOAD_FOLDER'],
-#                                                   capturetarget))
-#
-#         capturegenen = secure_filename(form.capturegenen.data.filename)
-#         form.capturegenen.data.save(os.path.join(app.config['UPLOAD_FOLDER'],
-#                                                  capturegenen))
-#         TF = TargetFiles(str(form.genesis.data), TARGETS,
-#                          bedfile=os.path.join(app.config['UPLOAD_FOLDER'],
-#                                                   capturetarget))
-#         capturegenen =  TF.genelist(os.path.join(app.config['UPLOAD_FOLDER'],
-#                                                  capturegenen))
-#
-#         flash(capturegenen)
-#         return redirect(url_for('show_all_tests'))
-#
-#     return render_template('addtest.html', form=form)
-
 
 @app.route('/captures/nieuw/', methods=['GET', 'POST'])
 def new_capture():
@@ -211,3 +175,6 @@ def uploaded_file(filename):
 def download(filename):
     uploads = os.path.join(app.root_path, app.config['UPLOAD_FOLDER'])
     return send_from_directory(directory=uploads, filename=filename)
+
+if __name__ == '__main__':
+    app.run(debug=True)
