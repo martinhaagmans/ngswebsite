@@ -2,81 +2,42 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <h1>Nieuwe diagnostische test</h1>
-  <form action="" method="POST" enctype="multipart/form-data">
-      {{ form.hidden_tag() }}
-      {{ form.csrf_token }}
-      <p>
-          Genesis code:<br>
-          {{ form.genesis(size=80) }}<br>
+<h1>Nieuwe diagnostische test</h1>
+<p>
+    Een diagnostische test moet worden gelinkt aan een capture.
+    Een capture kan <a href="{{ url_for('new_capture') }}">hier </a> worden
+    toegevoegd.
+</p>
 
-          {% for error in form.genesis.errors %}
-              <span style="color: red;">[{{ error }}]</span>
-          {% endfor %}<br>
+<form name=newtest action method=POST enctype=multipart/form-data>
+<p>
+    Selecteer de capture <br>
+    <select name=capture>
+      {% for cap in captures %}
+          <option value="{{ cap }}">{{ cap }}</option>
+      {% endfor %}
+    </select>
+    <br><br>
+    Genesis:<br>
+    <input type=text name=genesis>
+    <br>
+    Aandoening:<br>
+    <input type=text name=aandoening>
+    <br>
+    Pakket:<br>
+    <input type=text name=pakket>
+    <br>
+    Panel:<br>
+    <input type=text name=panel>
 
-      </p>
-      <p>
-          Aandoening:<br>
-          {{ form.aandoening(size=80) }}<br>
-          {% for error in form.aandoening.errors %}
-              <span style="color: red;">[{{ error }}]</span>
-          {% endfor %}<br>
-      </p>
-      <p>
-          Capture:<br>
-            Naam:
-            {{ form.capture(size=80) }}<br>
-            {% for error in form.capture.errors %}
-              <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}<br>
+</p>
 
-            Targetfile:
-            {{ form.capturetarget }}<br>
-            {% for error in form.capturetarget.errors %}
-                <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}<br>
 
-            File met gennamen:
-            {{ form.capturegenen}}<br>
-            {% for error in form.capturegenen.errors %}
-                <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}<br>
-      </p>
-      <p>
-          Pakket:<br>
-          {{ form.pakket(size=80) }}<br>
-          {% for error in form.pakket.errors %}
-              <span style="color: red;">[{{ error }}]</span>
-          {% endfor %}<br>
-      </p>
-      <p>
-          Panel:<br>
-          {{ form.panel(size=80) }}<br>
-          {% for error in form.panel.errors %}
-              <span style="color: red;">[{{ error }}]</span>
-          {% endfor %}<br>
-      </p>
-      <p>
-          OID:<br>
-          {{ form.oid(size=80) }}<br>
-          {% for error in form.oid.errors %}
-              <span style="color: red;">[{{ error }}]</span>
-          {% endfor %}<br>
-      </p>
-      <p>
-          LOT:<br>
-          {{ form.lotnummer(size=80) }}<br>
-          {% for error in form.lotnummer.errors %}
-              <span style="color: red;">[{{ error }}]</span>
-          {% endfor %}<br>
-      </p>
-      <p>{{ form.actief }} Actief</p>
-      <p>{{ form.verdund }} Verdund hybridiseren</p>
-      <p>{{ form.cnvdetectie }} CNV detectie (screening)</p>
-      <p>{{ form.printcnv }} CNV detectie gevalideerd</p>
-      <p>{{ form.mozaiekdetectie }} Mozaiek detectie</p>
 
-      <p><input type="submit" value="Voeg toe"></p>
-  </form>
+
+<br><br>
+
+    <p><input type="submit" value="Voeg toe"></p>
+</form>
 
 {% endblock %}

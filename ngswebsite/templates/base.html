@@ -11,12 +11,14 @@
   <title>AMC NGS</title>
   {% endif %}
 </head>
+
 <body>
     <div>
-        <a href="/index">Home</a>
-        <a href="{{ url_for('new_capture') }}">Nieuw</a>
-        <a href="{{ url_for('show_all_tests') }}">Aanbod</a>
-        <a href="{{ url_for('upload_labexcel') }}">Samplesheet</a>
+        <a href="{{ url_for('intro') }}"> Intro </a>
+        <a href="{{ url_for('new_menu') }}"> Nieuw </a>
+
+        <a href="{{ url_for('show_all_tests') }}"> Aanbod </a>
+        <a href="{{ url_for('upload_labexcel') }}"> Samplesheet </a>
     </div>
     <hr>
     {% with messages = get_flashed_messages() %}

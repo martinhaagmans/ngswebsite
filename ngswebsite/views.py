@@ -1,12 +1,10 @@
 import os
-import json
 import sys
 from collections import OrderedDict
 
 from flask import Flask
-from flask import render_template, flash, redirect, url_for, request, send_from_directory
-from werkzeug.utils import secure_filename
-
+from flask import render_template, flash, redirect, url_for, request
+from flask import send_from_directory
 
 UPLOAD_FOLDER = 'uploads'
 ALLOWED_EXTENSIONS = set(['xls', 'xlsx'])
@@ -20,11 +18,13 @@ HOME = os.path.expanduser('~')
 
 sys.path.insert(0, os.path.join(HOME, 'Documents', 'ngsscriptlibrary'))
 
-from ngsscriptlibrary import TargetDatabase, TargetFiles, TargetAnnotation, SampleSheet
+from ngsscriptlibrary import TargetDatabase, TargetAnnotation
+from ngsscriptlibrary import SampleSheet
 
 TARGETS = os.path.join(HOME, 'Documents', 'ngstargets')
 DB = os.path.join(TARGETS, 'varia', 'capinfo.sqlite')
 MYSQLUSER = 'manager'
+
 
 def boolean_to_number(x):
     if x == 'False':
@@ -37,10 +37,17 @@ def boolean_to_number(x):
         x = 1
     return x
 
+
 @app.route('/')
 @app.route('/index/')
 def intro():
     return render_template('index.html')
+
+
+@app.route('/nieuw/')
+def new_menu():
+    return render_template('new.html')
+
 
 @app.route('/diagnostiek/')
 def show_all_tests():
@@ -81,9 +88,12 @@ def show_testinfo(test):
     return render_template('showtest.html', c=d['capdb'],
                            g=d['genes'], caps=caps)
 
+
 @app.route('/diagnostiek/nieuw/', methods=['GET', 'POST'])
 def add_test():
-    pass
+    captures = TargetDatabase(DB).get_all_captures()
+    return render_template('addtest.html', captures=captures)
+
 
 @app.route('/captures/nieuw/', methods=['GET', 'POST'])
 def new_capture():
@@ -94,18 +104,21 @@ def new_capture():
         lot = request.form['lot']
         if 'verdund' in request.form:
             verdund = request.form['verdund']
-        elif not 'verdund' in request.form:
+        elif 'verdund' not in request.form:
             verdund = False
         verdund = boolean_to_number(verdund)
         sql = "INSERT INTO captures {}, {}, {}, {}".format(cap, oid, lot,
-                                                            verdund)
-        flash(request.form['capture'])
-        # T.change(sql)
-        return redirect(url_for('new_target', cap=cap, lot=lot, oid=oid, verdund=verdund))
+                                                           verdund)
+        flash('{} toegevoegd aan database'.format(request.form['capture']))
+        T.change(sql)
+        return redirect(url_for('new_target', cap=cap, lot=lot,
+                                oid=oid, verdund=verdund))
 
     return render_template('addcapture.html')
 
-@app.route('/captures/nieuw/target/<cap>/<int:lot>/<int:oid>/<verdund>', methods=['GET', 'POST'])
+
+@app.route('/captures/nieuw/target/<cap>/<int:lot>/<int:oid>/<verdund>',
+           methods=['GET', 'POST'])
 def new_target(cap, lot, oid, verdund):
     if request.method == 'POST':
         T = TargetAnnotation(bedfile=targetfile, genes=genefile,
@@ -118,7 +131,8 @@ def new_target(cap, lot, oid, verdund):
         # verdund = request.form['verdund']
         # sql = "INSERT INTO captures {}, {}, {}, {}".format(cap, oid, lot, verdund)
         # T.change(sql)
-    return render_template('addtargets.html', cap=cap, oid=oid, lot=lot, verdund=verdund)
+    return render_template('addtargets.html', cap=cap, oid=oid,
+                           lot=lot, verdund=verdund)
 
 
 @app.route('/captures/<cap>', methods=['GET', 'POST'])
@@ -135,10 +149,11 @@ def show_tests_for_cap(cap):
         '''.format(request.form['lotnr'], cap)
         T.change(sql)
         lotnrs = T.get_all_lotnrs_for_capture(cap)
-        return render_template('showcap.html', cap=cap, tests=tests,
-                                               lotnrs=lotnrs)
-    return render_template('showcap.html', cap=cap, tests=tests,
-                                           lotnrs=lotnrs)
+        return render_template('showcap.html', cap=cap,
+                               tests=tests, lotnrs=lotnrs)
+    return render_template('showcap.html', cap=cap,
+                           tests=tests, lotnrs=lotnrs)
+
 
 @app.route('/createsamplesheet/', methods=['GET', 'POST'])
 def upload_labexcel():
@@ -159,10 +174,12 @@ def upload_labexcel():
                         dnr, bc, test = line.split()
                         f.write('{}\t{}\t{}\n'.format(dnr, test, bc))
 
-            S = SampleSheet(os.path.join(uploads, 'samplesheet.tmp'), request.form['serie'],
+            S = SampleSheet(os.path.join(uploads, 'samplesheet.tmp'),
+                            request.form['serie'],
                             os.path.join(uploads, 'SampleSheet.csv'))
             S.write_files()
-            return redirect(url_for('uploaded_file', filename='SampleSheet.csv'))
+            return redirect(url_for('uploaded_file',
+                                    filename='SampleSheet.csv'))
 
     return render_template('uploadlabexcel.html')
 
@@ -171,10 +188,12 @@ def upload_labexcel():
 def uploaded_file(filename):
     return render_template('download.html', filename=filename)
 
+
 @app.route('/createsamplesheet/<path:filename>')
 def download(filename):
     uploads = os.path.join(app.root_path, app.config['UPLOAD_FOLDER'])
     return send_from_directory(directory=uploads, filename=filename)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
