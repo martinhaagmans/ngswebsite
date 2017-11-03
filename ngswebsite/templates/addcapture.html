@@ -1,30 +1,21 @@
 <!-- extend from base layout -->
 {% extends "base.html" %}
-
 {% block content %}
-  <h3>Nieuwe capture</h3>
-  <form method=post name=newcap>
-      <p>
-          Capture:<br>
-          <input type=text name=capture>
-      </p>
-
-      <p>
-          OID:<br>
-          <input type=number name=oid>
-      </p>
-
-      <p>
-          LOT:<br>
-          <input type=number name=lot>
-      </p>
-
-      <p>
-          Verdund hybridiseren:
-          <input type=checkbox name=verdund>
-     </p>
-
-     <p><input type=submit value='Voeg toe'></p>
-
-  </form>
+<h1>Nieuwe capture</h1>
+<br>
+<form method=post name=newcap>
+    Capture:<br>
+    <input type=text name=capture><br>
+    <br>
+    OID:<br>
+    <input type=number name=oid><br>
+    <br>
+    LOT:<br>
+    <input type=number name=lot><br>
+    <br><br>
+    Verdund hybridiseren:
+    <input type=checkbox name=verdund><br>
+    <br>
+    <input type=submit value='Voeg toe'>
+</form>
 {% endblock %}

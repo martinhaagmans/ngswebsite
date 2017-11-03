@@ -95,6 +95,15 @@ def add_test():
     return render_template('addtest.html', captures=captures)
 
 
+@app.route('/captures/nieuw/linktest/', methods=['GET', 'POST'])
+def link_test():
+    T = TargetDatabase(DB)
+    captures = T.get_all_captures()
+    tests = T.get_all_tests()
+    return render_template('addexistingtest.html',
+                           captures=captures, tests=tests)
+
+
 @app.route('/captures/nieuw/', methods=['GET', 'POST'])
 def new_capture():
     if request.method == 'POST':
@@ -107,9 +116,11 @@ def new_capture():
         elif 'verdund' not in request.form:
             verdund = False
         verdund = boolean_to_number(verdund)
-        sql = "INSERT INTO captures {}, {}, {}, {}".format(cap, oid, lot,
-                                                           verdund)
-        flash('{} toegevoegd aan database'.format(request.form['capture']))
+        sql = """INSERT INTO captures (capture, OID, lot, verdund)
+                 VALUES ('{}', 'OID{}', {}, {})
+                 """.format(cap, oid, lot, verdund)
+        # flash('{} toegevoegd aan database'.format(request.form['capture']))
+        # flash(sql)
         T.change(sql)
         return redirect(url_for('new_target', cap=cap, lot=lot,
                                 oid=oid, verdund=verdund))
@@ -121,9 +132,9 @@ def new_capture():
            methods=['GET', 'POST'])
 def new_target(cap, lot, oid, verdund):
     if request.method == 'POST':
-        T = TargetAnnotation(bedfile=targetfile, genes=genefile,
-                             host='localhost', user=MYSQLUSER, db='annotation')
-
+        # T = TargetAnnotation(bedfile=targetfile, genes=genefile,
+        #                      host='localhost', user=MYSQLUSER, db='annotation')
+        pass
         # T = TargetDatabase(DB)
         # cap = request.form['capture']
         # oid = request.form['oid']

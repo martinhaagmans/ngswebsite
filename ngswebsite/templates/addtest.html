@@ -1,6 +1,5 @@
 <!-- extend from base layout -->
 {% extends "base.html" %}
-
 {% block content %}
 <h1>Nieuwe diagnostische test</h1>
 <p>
@@ -8,36 +7,30 @@
     Een capture kan <a href="{{ url_for('new_capture') }}">hier </a> worden
     toegevoegd.
 </p>
-
 <form name=newtest action method=POST enctype=multipart/form-data>
-<p>
-    Selecteer de capture <br>
-    <select name=capture>
-      {% for cap in captures %}
-          <option value="{{ cap }}">{{ cap }}</option>
-      {% endfor %}
-    </select>
+    <p>
+        Selecteer de capture <br>
+        <select name=capture>
+          {% for cap in captures %}
+              <option value="{{ cap }}">{{ cap }}</option>
+          {% endfor %}
+        </select>
+        <br><br>
+        Genesis:<br>
+        <input type=text name=genesis>
+        <br>
+        Aandoening:<br>
+        <input type=text name=aandoening>
+        <br>
+        Pakket:<br>
+        <input type=text name=pakket>
+        <br>
+        Panel:<br>
+        <input type=text name=panel>
+    </p>
     <br><br>
-    Genesis:<br>
-    <input type=text name=genesis>
-    <br>
-    Aandoening:<br>
-    <input type=text name=aandoening>
-    <br>
-    Pakket:<br>
-    <input type=text name=pakket>
-    <br>
-    Panel:<br>
-    <input type=text name=panel>
-
-</p>
-
-
-
-
-<br><br>
-
-    <p><input type="submit" value="Voeg toe"></p>
+    <p>
+        <input type="submit" value="Voeg toe">
+    </p>
 </form>
-
 {% endblock %}

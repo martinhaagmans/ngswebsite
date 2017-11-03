@@ -1,7 +1,30 @@
 <!-- extend from base layout -->
 {% extends "base.html" %}
-
 {% block content %}
-<h1>Diagnostische test aan capture linken</h1>
-
+<h1>Link genesiscode(s) aan capture</h1>
+<p>
+    Hieronder kan een capture gelinkt worden aan een of meerdere genesiscodes.
+    Hiervoor dient altijd 1 capture geselecteerd te worden met daarbij
+    een of meerdere genesis-code(s).
+    <br>
+    <b>Gebruik Ctrl om meerdere genesis-codes te selecteren.</b>
+</p>
+<br>
+<form method=post name=link>
+    Capture:<br>
+    <select name=capture>
+      {% for cap in captures %}
+          <option value="{{ cap }}">{{ cap }}</option>
+      {% endfor %}
+    </select>
+    <br><br>
+    Genesiscode(s):<br>
+    <select multiple size=12 name=test>
+      {% for test in tests %}
+          <option value="{{ test }}">{{ test }}</option>
+      {% endfor %}
+    </select>
+    <br><br>
+    <input type=submit value='Voeg toe'>
+</form>
 {% endblock %}

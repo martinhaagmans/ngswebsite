@@ -2,23 +2,17 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <h3>Targets toevoegen</h3>
-  <form method=post enctype=multipart/form-data name=newtargets>
-
-      <p> {{cap}} <br>
-          OID: {{oid}} <br>
-          LOT: {{lot}} <br>
-      </p>
-      <p>
-          Targetfile:<br>
-          <input type=file name=targetfile>
-      </p>
-      <p>
-          File met gennamen:<br>
-          <input type=file name=genfile>
-      </p>
-
-      <p><input type="submit" value="Voeg toe"></p>
-
-  </form>
+<h1>Targets toevoegen</h1>
+<form method=post enctype=multipart/form-data name=newtargets>
+    {{cap}} <br>
+    OID: {{oid}} <br>
+    LOT: {{lot}} <br>
+    Targetfile:<br>
+    <input type=file name=targetfile>
+    <br>
+    File met gennamen:<br>
+    <input type=file name=genfile>
+    <br>
+    <input type="submit" value="Voeg toe"></p>
+</form>
 {% endblock %}
