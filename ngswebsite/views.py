@@ -89,7 +89,7 @@ def show_testinfo(test):
                            g=d['genes'], caps=caps)
 
 
-@app.route('/diagnostiek/nieuw/', methods=['GET', 'POST'])
+@app.route('/diagnostiek/nieuw/')
 def add_test():
     captures = TargetDatabase(DB).get_all_captures()
     return render_template('addtest.html', captures=captures)
@@ -119,8 +119,8 @@ def new_capture():
         sql = """INSERT INTO captures (capture, OID, lot, verdund)
                  VALUES ('{}', 'OID{}', {}, {})
                  """.format(cap, oid, lot, verdund)
-        # flash('{} toegevoegd aan database'.format(request.form['capture']))
-        # flash(sql)
+        flash('{} toegevoegd aan database'.format(request.form['capture']))
+        flash(sql)
         T.change(sql)
         return redirect(url_for('new_target', cap=cap, lot=lot,
                                 oid=oid, verdund=verdund))
@@ -128,9 +128,9 @@ def new_capture():
     return render_template('addcapture.html')
 
 
-@app.route('/captures/nieuw/target/<cap>/<int:lot>/<int:oid>/<verdund>',
+@app.route('/captures/nieuw/target/<cap>/',
            methods=['GET', 'POST'])
-def new_target(cap, lot, oid, verdund):
+def new_target(cap):
     if request.method == 'POST':
         # T = TargetAnnotation(bedfile=targetfile, genes=genefile,
         #                      host='localhost', user=MYSQLUSER, db='annotation')
