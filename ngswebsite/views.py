@@ -1,29 +1,23 @@
 import os
-import sys
 from collections import OrderedDict
 
 from flask import Flask
 from flask import render_template, flash, redirect, url_for, request
 from flask import send_from_directory
 
-UPLOAD_FOLDER = 'uploads'
-ALLOWED_EXTENSIONS = set(['xls', 'xlsx'])
+import config as cfg
+from ngsscriptlibrary import TargetDatabase, TargetAnnotation
+from ngsscriptlibrary import SampleSheet
 
 app = Flask(__name__)
 app.secret_key = 'super secret key'
 app.config['SESSION_TYPE'] = 'filesystem'
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['UPLOAD_FOLDER'] = 'uploads'
 
-HOME = os.path.expanduser('~')
-
-sys.path.insert(0, os.path.join(HOME, 'Documents', 'ngsscriptlibrary'))
-
-from ngsscriptlibrary import TargetDatabase, TargetAnnotation
-from ngsscriptlibrary import SampleSheet
-
-TARGETS = os.path.join(HOME, 'Documents', 'ngstargets')
-DB = os.path.join(TARGETS, 'varia', 'capinfo.sqlite')
-MYSQLUSER = 'manager'
+HOME = cfg.HOME
+TARGETS = cfg.TARGETS
+DB = cfg.DB
+MYSQLUSER = cfg.MYSQLUSER
 
 
 def boolean_to_number(x):
