@@ -3,8 +3,7 @@
 
 {% block content %}
     <h1>AMC diagnostiek</h1>
-
-<table style="width:80%">
+<table>
   <tr>
     <th>Genesiscode </th>
     <th>Capture </th>
@@ -14,7 +13,6 @@
   </tr>
   {% for test, data in tests.items() %}
   <tr>
-
       <td><li><a href="{{ url_for('show_testinfo', test=test) }}">{{test}}</a></li></td>
       <td><a href="{{ url_for('show_tests_for_cap', cap=data.capture) }}">{{data.capture}}</a></td>
       <td>{{data.pakket}} </td>
@@ -22,8 +20,6 @@
       <td>{{data.aandoening}}</td>
 {% endfor %}
   </tr>
-
-
 </table>
 
 

@@ -5,6 +5,40 @@
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  */
 /*! normalize.css v5.0.0 | MIT License | github.com/necolas/normalize.css */
+body {
+    margin: 0;
+    font-family: sans-serif;
+}
+table {
+    border-collapse: collapse;
+    border: none;
+}
+table tr {
+    border: none;
+}
+
+table tr, table th {
+    margin: 0;
+    border: 1px solid white;
+    padding-left: 0.25em;
+    padding-right: 0.25em;
+}
+table th:not(:empty) {
+    background-color: #fec;
+    text-align: left;
+    font-weight: bold;
+}
+table tr:nth-child(2) th:empty {
+    border-left: none;
+    border-right: 1px dashed #888;
+}
+table td {
+
+    background-color: #f4f4ff;
+}
+
+
+
 html {
   font-family: sans-serif;
   line-height: 1.15;

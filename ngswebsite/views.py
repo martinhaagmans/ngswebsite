@@ -38,6 +38,11 @@ def intro():
     return render_template('index.html')
 
 
+@app.route('/index/database/')
+def database_explained():
+    return render_template('database_explanation.html')
+
+
 @app.route('/nieuw/')
 def new_menu():
     return render_template('new.html')

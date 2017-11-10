@@ -1,30 +1,15 @@
 {% extends "base.html" %}
 {% block content %}
-<head>
-    <style>
-        th, td {
-            padding-left: 2px;
-            padding-right: 5px;
-        }
-    </style>
-</head>
 
-<h1> AMC NGS-diagnostiek</h1>
+<h1> AMC NGS-diagnostiek</h1><br>
 <p>
-
-<li>De in het AMC gehanteerde definities voor gen- en corepanels staan
-<a href="http://amcpipeline.readthedocs.io/nl/latest/pakketten.html">hier</a> uitgelegd.</li>
-
-<li>Een overzicht van alle diagnostische NGS-gentesten die het AMC aanbiedt is
-<a href="{{ url_for('show_all_tests') }}">hier</a> te vinden.</li>
+De in de pipeline gehanteerde definities voor gen- en corepanels staan <a href="http://amcpipeline.readthedocs.io/nl/latest/pakketten.html">hier</a> uitgelegd en een overzicht van diagnostische testen die de pipeline kan verwerken staat <a href="{{ url_for('show_all_tests') }}">hier</a>.  <br>
 <br>
-Onderstaande tabel beschrijft de benodigde files voor het correct runnen van de AMC-pipeline, waarvoor ze nodig zijn en wanneer ze verplicht zijn.
-<br>
-<br>
+Onderstaande tabel beschrijft de benodigde files voor het correct runnen van de AMC-pipeline, waarvoor ze nodig zijn en wanneer ze verplicht zijn.<br>
 <table>
     <tr>
       <th>Targetfile</th>
-      <th>Gebruikt voor </th>
+      <th>Gebruikt voor</th>
       <th>Verplicht/optioneel</th>
     </tr>
     <tr>
@@ -57,25 +42,17 @@ Onderstaande tabel beschrijft de benodigde files voor het correct runnen van de 
 <hr>
 <br>
 <p>
-<h3> Wijzigen bestaande test en toevoegen nieuwe test </h3>
 <br>
-Voor CNV-detectie geldt dat elke wijziging aan een target file betekent dat alle samples opnieuw door GATK geanalyseerd moeten worden.
-Aangezien heranalyse computertijd kost moeten de voor CNV-analyse gebruikte targetfiles hetzelfde blijven. Om dit mogelijk te maken wordt per ontworpen capture een targetfile gemaakt die op het moment van bestellen definitief wordt gemaakt. Dit target zal gebruikt worden voor CNV-analyse zodat de data van de volledige capture gebruikt kan worden voor normalisatie.
+Voor CNV-detectie geldt dat elke wijziging aan een target file betekent dat alle samples opnieuw door GATK geanalyseerd moeten worden. Aangezien heranalyse computertijd kost moeten de voor CNV-analyse gebruikte targetfiles hetzelfde blijven. Om dit mogelijk te maken wordt bij het ontwerpen van de capture een targetfile gemaakt die als de capture besteld is niet meer verandert. Dit target zal gebruikt worden voor CNV-analyse zodat de data van de volledige capture gebruikt kan worden voor normalisatie. <br>
 <br>
+Deze targets worden geannoteerd met een gennaam zodat de targetfiles voor een pakket of panel gemaakt kunnen worden door een lijst met gennamen aan te bieden voor het betreffende pakket/panel. Een script zal voor de genen in de lijst alle targets aanwezig op de capture in een targetfile zetten die in de pipeline gebruikt kan worden volgens bovenstaande tabel. Indien er targets in een pakket of panel zitten die niet binnen een gengebied vallen kunnen deze als volgt worden opgenomen in de lijst met gennamen: chr:start-stop <br>
 <br>
-Naast een targetfile per capture is er een targetfile per pakket. Als dit pakket C-kwaliteit targets bevat is er ook een targetfile met de te beoordelen A-kwaliteit gebieden van het pakket.
-Deze verzameling A-kwaliteit gebieden is het panel.
+Er kan om klinische of technische redenen worden besloten om bepaalde targets niet meer (diagnostisch) aan te bieden. Indien ervoor gekozen is bepaalde genen of gebieden helemaal niet meer aan te bieden dienen deze uit de pakkettargets gehaald te worden en wordt de pakketversie aangepast. Indien ervoor gekozen is bepaalde genen of gebieden voortaan als C-kwaliteit aan te bieden dienen deze uit de paneltargets gehaald te worden en wordt de panelversie aangepast. Deze indeling maakt het dus mogelijk veranderingen aan te brengen in welke varianten en te sangeren gebieden gerapporteerd worden zonder dat dit van invloed is op de CNV-analyse. <br>
 <br>
+Een nieuw OID houdt in dat de capture targets gewijzigd of gebalanceerd zijn en zal resulteren in een verhoging van de capture versie. Dit kan leiden tot een verhoging van de versie(s) van een of meerdere pakketten op deze capture, maar als er bijvoorbeeld een pakket aan de capture is toegevoegd of de capture alleen gebalanceerd is kunnen de pakketversies gelijk bijven.<br>
 <br>
-Er kan om klinische of technische redenen worden besloten om bepaalde targets niet meer (diagnostisch) aan te bieden.
-Indien ervoor gekozen is bepaalde genen of gebieden helemaal niet meer aan te bieden dienen deze uit de pakkettargets gehaald te worden en wordt de pakketversie aangepast.
-Indien ervoor gekozen is bepaalde genen of gebieden voortaan als C-kwaliteit aan te bieden dienen deze uit de paneltargets gehaald te worden en wordt de panelversie aangepast.
+Een nieuw lot houdt in dat de capture targets ongewijzigd blijven en dus het versienummers gelijk blijft. Indien er op de betreffende capture een of meerdere pakketten staat/staan waarvoor CNV-analyse plaatsvindt zal de connaiseur bepalen of het nieuwe lot een voldoende vergelijkbaar coverageprofiel heeft om aan het bestaande archief toegevoegd te worden.<br>
 <br>
-<br>
-Een nieuw OID houdt in dat de capture targets gewijzigd of gebalanceerd zijn en zal resulteren in een verhoging van de capture versie. Dit kan leiden tot een verhoging van de versie(s) van een of meerdere pakketten op deze capture, maar als er bijvoorbeeld een pakket aan de capture is toegevoegd of de capture alleen gebalanceerd is kunnen de pakketversies gelijk bijven.
-<br>
-<br>
-Een nieuw lot houdt in dat de capture targets ongewijzigd blijven en dus het versienummers gelijk blijft. Indien er op de betreffende capture een of meerdere pakketten staat/staan waarvoor CNV-analyse plaatsvindt zal de connaiseur bepalen of het nieuwe lot een voldoende vergelijkbaar coverageprofiel heeft om aan het bestaande archief toegevoegd te worden.
-<br>
+Welke versie bij welke test hoort wordt bijgehouden in een <a href={{url_for('database_explained')}}> database </a>. Hier wordt ook in aangegeven welke analyses voor een test gerund moeten worden.
 </p>
 {% endblock %}
