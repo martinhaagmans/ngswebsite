@@ -16,9 +16,8 @@ Daaraast zal de pipeline voor bepaalde analyses (bijvoorbeeld CNV-diagnostiek) d
 </p>
 <br>
 <h2 id="Tabel-genesis">Genesis</h2><p>Koppeling tussen genesiscode en capture, pakket, panel en wel of niet runnen van CNV of mozaiek analyses in de pipeline.</p>
-<table border="1" class="dataframe">
+<table>
   <thead>
-    <tr style="text-align: right;">
       <th>genesis</th>
       <th>capture</th>
       <th>pakket</th>
@@ -34,53 +33,52 @@ Daaraast zal de pipeline voor bepaalde analyses (bijvoorbeeld CNV-diagnostiek) d
       <td>AGPPVM</td>
       <td>AGP</td>
       <td>None</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
+      <td>Wel</td>
+      <td>Niet</td>
+      <td>Niet</td>
     </tr>
     <tr>
       <td>ALS</td>
       <td>NEURO</td>
       <td>ALS</td>
       <td>ALS</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
+      <td>Wel</td>
+      <td>Niet</td>
+      <td>Niet</td>
     </tr>
     <tr>
       <td>ARTM</td>
       <td>SCD</td>
       <td>SCD</td>
       <td>None</td>
-      <td>1</td>
-      <td>1</td>
-      <td>0</td>
+      <td>Wel</td>
+      <td>Wel</td>
+      <td>Niet</td>
     </tr>
     <tr>
       <td>BLALBI</td>
       <td>BH</td>
       <td>ALBI</td>
       <td>None</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
+      <td>Wel</td>
+      <td>Niet</td>
+      <td>Niet</td>
     </tr>
     <tr>
       <td>BLCRD</td>
       <td>BH</td>
       <td>BH</td>
       <td>CRD</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
+      <td>Wel</td>
+      <td>Niet</td>
+      <td>Niet</td>
     </tr>
   </tbody>
 </table>
 <br>
 <h2 id="Tabel-captures">Captures</h2><p>Hierin staan alle captures met versienummer met daaraan gekoppeld een OID, een of meerdere LOT-nummers en de genen op de capture. Ook de grootte van de capture is hier te vinden en deze wordt gebruikt om de verhoudingen tussen verschillende captures te bepalen als deze samen gesequenced worden.</p>
-<table border="1" class="dataframe">
+<table>
   <thead>
-    <tr style="text-align: right;">
       <th>capture</th>
       <th>versie</th>
       <th>oid</th>
@@ -98,7 +96,7 @@ Daaraast zal de pipeline voor bepaalde analyses (bijvoorbeeld CNV-diagnostiek) d
       <td>40821</td>
       <td>0</td>
       <td>307000</td>
-      <td>["POLD1", "BMPR2", "ECEL1", "MLH1", "MYH8", "A...</td>
+      <td>POLD1, BMPR2, ECEL1, MLH1, MYH8, A...</td>
     </tr>
     <tr>
       <td>BH</td>
@@ -107,7 +105,7 @@ Daaraast zal de pipeline voor bepaalde analyses (bijvoorbeeld CNV-diagnostiek) d
       <td>6167501</td>
       <td>0</td>
       <td>1267000</td>
-      <td>["CSPP1", "TEAD1", "CRX", "RIMS1", "MITF", "ML...</td>
+      <td>CSPP1, TEAD1, CRX, RIMS1, MITF, ML...</td>
     </tr>
     <tr>
       <td>CHC</td>
@@ -116,7 +114,7 @@ Daaraast zal de pipeline voor bepaalde analyses (bijvoorbeeld CNV-diagnostiek) d
       <td>31614501</td>
       <td>1</td>
       <td>154000</td>
-      <td>["LHX3", "PROP1", "SLC5A5", "TRH", "HOXA3", "T...</td>
+      <td>LHX3, PROP1, SLC5A5, TRH, HOXA3, T...</td>
     </tr>
     <tr>
       <td>CM</td>
@@ -125,7 +123,7 @@ Daaraast zal de pipeline voor bepaalde analyses (bijvoorbeeld CNV-diagnostiek) d
       <td>47469</td>
       <td>0</td>
       <td>508000</td>
-      <td>["RBM20", "ACTC1", "PRKAG2", "DSC2", "PLN", "P...</td>
+      <td>RBM20, ACTC1, PRKAG2, DSC2, PLN, P...</td>
     </tr>
     <tr>
       <td>COWSO</td>
@@ -134,16 +132,14 @@ Daaraast zal de pipeline voor bepaalde analyses (bijvoorbeeld CNV-diagnostiek) d
       <td>111514901</td>
       <td>0</td>
       <td>76000</td>
-      <td>["SDHD", "PIK3R2", "PTEN", "PIK3CA", "MTOR", "...</td>
+      <td>SDHD, PIK3R2, PTEN, PIK3CA, MTOR, ...</td>
     </tr>
   </tbody>
 </table>
 <br>
 <h2 id="Tabel-pakketten">Pakketten</h2><p>Hierin staan alle pakketten met versienummer met daaraan gekoppeld de genen in het pakket en de grootte van het pakket.</p>
-<table border="1" class="dataframe">
+<table>
   <thead>
-    <tr style="text-align: right;">
-
       <th>pakket</th>
       <th>versie</th>
       <th>grootte</th>
@@ -155,39 +151,38 @@ Daaraast zal de pipeline voor bepaalde analyses (bijvoorbeeld CNV-diagnostiek) d
       <td>AGP</td>
       <td>5</td>
       <td>36971</td>
-      <td>["ECEL1", "MYBPC1", "MYH3", "MYH8", "PIEZO2", ...</td>
+      <td>ECEL1, MYBPC1, MYH3, MYH8, PIEZO2, ...</td>
     </tr>
     <tr>
       <td>VM</td>
       <td>4</td>
       <td>57106</td>
-      <td>["ACVRL1", "ANTXR1", "BMPR2", "CAV1", "CCM2", ...</td>
+      <td>ACVRL1, ANTXR1, BMPR2, CAV1, CCM2, ...</td>
     </tr>
     <tr>
       <td>PP</td>
       <td>4</td>
       <td>71895</td>
-      <td>["ACVRL1", "APC", "AXIN2", "BMPR1A", "ENG", "E...</td>
+      <td>ACVRL1, APC, AXIN2, BMPR1A, ENG, E...</td>
     </tr>
     <tr>
       <td>BH</td>
       <td>3</td>
       <td>826173</td>
-      <td>["ABCA4", "ABCB6", "ABCC6", "ABHD12", "ACO2", ...</td>
+      <td>ABCA4, ABCB6, ABCC6, ABHD12, ACO2, ...</td>
     </tr>
     <tr>
       <td>ALBI</td>
       <td>1</td>
       <td>64575</td>
-      <td>["AP3B1", "BLOC1S3", "BLOC1S6", "C10orf11", "D...</td>
+      <td>AP3B1, BLOC1S3, BLOC1S6, C10orf11, D...</td>
     </tr>
   </tbody>
 </table>
 <br>
 <h2 id="Tabel-panels">Panels</h2><p>Hierin staan alle panels met versienummer met daaraan gekoppeld de genen in het panel en de grootte van het panel.</p>
-<table border="1" class="dataframe">
+<table>
   <thead>
-    <tr style="text-align: right;">
       <th>panel</th>
       <th>versie</th>
       <th>grootte</th>
@@ -199,39 +194,38 @@ Daaraast zal de pipeline voor bepaalde analyses (bijvoorbeeld CNV-diagnostiek) d
       <td>LCA</td>
       <td>1</td>
       <td>52103</td>
-      <td>["AIPL1", "CABP4", "CEP290", "CRB1", "CRX", "D...</td>
+      <td>AIPL1, CABP4, CEP290, CRB1, CRX, D...</td>
     </tr>
     <tr>
       <td>OVR</td>
       <td>1</td>
       <td>0</td>
-      <td>[]</td>
+      <td></td>
     </tr>
     <tr>
       <td>RP</td>
       <td>2</td>
       <td>231550</td>
-      <td>["ABCA4", "ADGRA3", "ARL2BP", "ARL6", "BBS1", ...</td>
+      <td>ABCA4, ADGRA3, ARL2BP, ARL6, BBS1, ...</td>
     </tr>
     <tr>
       <td>CRD</td>
       <td>2</td>
       <td>111042</td>
-      <td>["ABCA4", "ADAM9", "AIPL1", "ATF6", "BEST1", "...</td>
+      <td>ABCA4, ADAM9, AIPL1, ATF6, BEST1, ...</td>
     </tr>
     <tr>
       <td>CMT</td>
       <td>3</td>
       <td>85438</td>
-      <td>["BSCL2", "CTDP1", "DCTN1", "EGR2", "FGD4", "F...</td>
+      <td>BSCL2, CTDP1, DCTN1, EGR2, FGD4, F...</td>
     </tr>
   </tbody>
 </table>
 <br>
 <h2 id="Tabel-aandoeningen">Aandoeningen</h2><p>Koppeling tussen genesiscode en aandoening.</p>
-<table border="1" class="dataframe">
+<table>
   <thead>
-    <tr style="text-align: right;">
       <th>genesis</th>
       <th>aandoening</th>
     </tr>

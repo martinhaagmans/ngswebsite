@@ -6,7 +6,7 @@
  */
 /*! normalize.css v5.0.0 | MIT License | github.com/necolas/normalize.css */
 body {
-    margin: 0;
+    margin: 1em;
     font-family: sans-serif;
 }
 table {
@@ -18,7 +18,7 @@ table tr {
 }
 
 table tr, table th {
-    margin: 0;
+    margin: 1em;
     border: 1px solid white;
     padding-left: 0.25em;
     padding-right: 0.25em;
@@ -44,10 +44,6 @@ html {
   line-height: 1.15;
   -ms-text-size-adjust: 100%;
   -webkit-text-size-adjust: 100%;
-}
-
-body {
-  margin: 0;
 }
 
 article,
