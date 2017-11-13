@@ -1,9 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <link href="/static/css/bootstrap.css" rel="stylesheet" media="screen">
-    <script src="http://code.jquery.com/jquery-latest.js"></script>
-  <!-- <script src="/static/js/bootstrap.min.js"></script> -->
+  <link href="/static/css/bootstrapcustom.css" rel="stylesheet" media="screen">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   {% if title %}
   <title>{{ title }}</title>
@@ -11,8 +9,7 @@
   <title>AMC NGS</title>
   {% endif %}
 </head>
-
-<body>
+<body width=100%>
     <div>
         <a href="{{ url_for('intro') }}"> Intro </a>
         <a href="{{ url_for('new_menu') }}"> Nieuw </a>
