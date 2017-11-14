@@ -55,7 +55,7 @@ def show_all_tests():
     tests.sort()
     d = OrderedDict()
     for test in tests:
-        d[test] = T.get_active_capture_for_test(test)
+        d[test] = T.get_info_for_genesis(test)
     return render_template('showalltests.html', tests=d)
 
 
@@ -64,11 +64,13 @@ def show_testinfo(test):
     T = TargetDatabase(DB)
     tests = T.get_all_tests()
     if test not in tests:
-        flash('Niet gevonden')
+        flash('{} niet gevonden'.format(test))
         return redirect(url_for('show_all_tests'))
-    caps = T.get_all_captures_for_test(test)
-
-    d = T.get_all_info_for_test(test)
+    caps = T.get_all_captures_for_genesis(test)
+    caps = [T.get_all_versions_for_capture(cap) for cap in caps]
+    d = dict()
+    for cap in caps:
+        d[cap] = T.get_all_info_for_vcapture(test)
 
     for i in ['printcnv', 'mozaiekdetectie']:
         if d['capdb'][i] == 1:
