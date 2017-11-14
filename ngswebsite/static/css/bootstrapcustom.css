@@ -33,7 +33,10 @@ table tr:nth-child(2) th:empty {
     border-right: 1px dashed #888;
 }
 table td {
-
+    margin: 1em;
+    border: 1px solid white;
+    padding-left: 0.25em;
+    padding-right: 0.25em;
     background-color: #f4f4ff;
 }
 
@@ -339,7 +342,7 @@ template {
   }
   .table-bordered th,
   .table-bordered td {
-    border: 1px solid #ddd !important;
+    /*border: 1px solid #ddd !important;*/
   }
 }
 
@@ -494,7 +497,7 @@ caption {
 }
 
 th {
-  text-align: center;
+  text-align: left;
 }
 
 label {

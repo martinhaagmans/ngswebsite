@@ -6,7 +6,8 @@ from flask import render_template, flash, redirect, url_for, request
 from flask import send_from_directory
 
 import config as cfg
-from ngsscriptlibrary import TargetDatabase, TargetAnnotation
+from ngsscriptlibrary import TargetDatabase
+# from ngsscriptlibrary import TargetAnnotation
 from ngsscriptlibrary import SampleSheet
 
 app = Flask(__name__)
@@ -59,35 +60,39 @@ def show_all_tests():
     return render_template('showalltests.html', tests=d)
 
 
-@app.route('/diagnostiek/<test>')
-def show_testinfo(test):
+@app.route('/diagnostiek/<genesis>')
+def show_testinfo(genesis):
     T = TargetDatabase(DB)
     tests = T.get_all_tests()
-    if test not in tests:
+    if genesis not in tests:
         flash('{} niet gevonden'.format(test))
         return redirect(url_for('show_all_tests'))
-    caps = T.get_all_captures_for_genesis(test)
-    caps = [T.get_all_versions_for_capture(cap) for cap in caps]
+
     d = dict()
+    d['captures'] = dict()
+    d['pakketten'] = dict()
+    d['panels'] = dict()
+
+    caps = T.get_all_captures_for_genesis(genesis)
+    caps = [T.get_all_versions_for_capture(cap) for cap in caps]
     for cap in caps:
-        d[cap] = T.get_all_info_for_vcapture(test)
+        for vcap in cap:
+            d['captures'][vcap] = T.get_all_info_for_vcapture(vcap)
 
-    for i in ['printcnv', 'mozaiekdetectie']:
-        if d['capdb'][i] == 1:
-            d['capdb'][i] = 'Ja'
-        elif d['capdb'][i] == 0:
-            d['capdb'][i] = 'Nee'
-    if d['genes']['panelsize'] is None:
-        d['genes']['panelsize'] = 0
-    if d['capdb']['panel'] == 'False':
-        d['capdb']['panel'] = 'Geen'
-    if d['capdb']['panel'] == 'OVRv1':
-        d['genes']['panelsize'] = 0
-    if d['genes']['agenen'] == [] and d['genes']['cgenen'] == []:
-        d['genes']['agenen'] = d['genes']['genen']
+    pakketten = T.get_all_pakketten_for_genesis(genesis)
+    pakketten = [T.get_all_versions_for_pakket(p) for p in pakketten]
+    for p in pakketten:
+        for vp in p:
+            d['pakketten'][vp] = T.get_all_info_for_vpakket(vp)
 
-    return render_template('showtest.html', c=d['capdb'],
-                           g=d['genes'], caps=caps)
+    panels = T.get_all_panels_for_genesis(genesis)
+    panels = [T.get_all_versions_for_panel(p) for p in panels]
+    for p in panels:
+        if p is None: continue
+        for vp in p:
+            d['panels'][vp] = T.get_all_info_for_vpanel(vp)
+    todo_list = T.get_info_for_genesis(genesis)
+    return render_template('showtest.html', info=d, todo=todo_list)
 
 
 @app.route('/diagnostiek/nieuw/')

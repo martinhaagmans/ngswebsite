@@ -1,61 +1,135 @@
 <!-- extend from base layout -->
 {% extends "base.html" %}
-
 {% block content %}
-  <h1> {{ c.aandoening }} </h1>
-<br><br>
-  <table style="width:25%">
+<h1> {{ todo.aandoening }} </h1><br>
+<table width="30%">
+<col width=160>
     <tr>
-      <th> </th>
-<th> </th>
-      <th>Grootte</th>
+        <th colspan=2>Pipeline targets en analyses</th>
     </tr>
     <tr>
-      <td>Pakket: </td>
-      <td>{{c.pakket}}</td>
-      <td>{{g.pakketsize}} bp</td>
+        <td>Genpakket: </td>
+        <td>{{todo.pakket}}</td>
     </tr>
     <tr>
-      <td>Type A panel: </td>
-       <td>{{c.panel}}</td>
-      <td>{{g.panelsize}} bp</td>
+        <td>Type A panel: </td>
+        <td>{{todo.panel}}</td>
     </tr>
+    <tr>
+        <td>CNV screening:</td>
+        <td>{{'Ja' if todo.cnvscreening else 'Nee'}}</td>
     </tr>
-  </table>
+    <tr>
+        <td>CNV diagnostiek: </td>
+        <td>{{'Ja' if todo.cnvdiagnostiek else 'Nee'}}</td>
+    </tr>
+    <tr>
+        <td>Mozaiek diagnostiek: </td>
+        <td>{{'Ja' if todo.mozaiekdiagnostiek else 'Nee'}}</td>
+    </tr>
+</table>
 <br>
-<p>
-  <li> {{ c.OID }} </li>
-  <li> LOT: {{ c.lot }} </li>
-  <li> CNV diagnostiek: {{ c.printcnv }} </li>
-  <li> Mozaiek diagnostiek: {{ c.mozaiekdetectie }} </li>
-</p>
-<br>
+{% if todo.pakket %}
+    <hr>
+    <h2>{{todo.pakket}} genen</h2>
+    <p>
+        A-kwaliteit in groen.<br>
+        <br>
+        {% if todo.panel %}
+            {% for grootte, genen in info.pakketten[todo.pakket]  %}
+                {%  for gen in genen %}
+                    <font color=green>
+                        {{ gen if gen in info.panels[todo.panel][0][1]}}
+                    </font>
+                    {{ gen if gen not in info.panels[todo.panel][0][1]}}
 
-<p>
-  <h2> Capture historie </h2>
-        {% for cap in caps %}
-            <td><li><a href="{{ url_for('show_tests_for_cap', cap=cap) }}">{{cap}}</a></li></td>
-        {% endfor %}
-</p>
-<br>
-<p>
-  <h2> Genen </h2>
-        {% for gen in g.genen %}
-            {{ gen }}
-        {% endfor %}
-
-</p>
-<p> {% if g.agenen %}
-  <h2> A-genen </h2>
-        {% for gen in g.agenen %}
-            {{ gen }}
-         {% endfor %}
+                {% endfor %}
+            {% endfor %}
+        </p>
+    {% elif not todo.panel %}
+            {% for grootte, genen in info.pakketten[todo.pakket] %}
+                {% for gen in genen %}
+                    <font color=green>
+                        {{ gen }}
+                    </font>
+                {% endfor %}
+            {% endfor %}
+        </p>
     {% endif %}
+{% endif %}
 
-</p>
+<hr>
+<h3>Captures</h3>
+<table width="30%">
+    <col width=30%>
+    <col width=15%>
+    <col width=15%>
+    <col width=20%>
+    <col width=20%>
+    <tr>
+        <th>Versie</th>
+        <th>OID</th>
+        <th>LOT</th>
+        <th>verdund</th>
+        <th>grootte</th>
+    </tr>
+    {% for capture in info.captures  %}
+        {% for oid, lot, verdund, grootte in info.captures[capture]  %}
+            <tr>
+                <td>{{capture}}</td>
+                <td>{{oid}}</td>
+                <td>{{lot}}</td>
+                <td>{{'Ja' if verdund else 'Nee' }}</td>
+                <td>{{'{:,}'.format(grootte)}}</td>
+            </tr>
+        {% endfor %}
+    {% endfor %}
+</table>
 
+<hr>
+<h3>Pakketten</h3>
+<table width="30%">
+    <col width=30%>
+    <col width=50%>
+    <col width=20%>
+    <tr>
+        <th>Versie</th>
+        <th>grootte</th>
+        <th># genen</th>
+    </tr>
+    {% for pakket in info.pakketten  %}
+        {% for grootte, genen in info.pakketten[pakket]  %}
+            <tr>
+                <td>{{pakket}}</td>
+                <td>{{'{:,}'.format(grootte)}}</td>
+                <td>{{genen|length}}</td>
+            </tr>
+        {% endfor %}
+    {% endfor %}
+</table>
 
-
-
+{% if todo.panel %}
+    <hr>
+    <h3>Panels</h3>
+    <table width="30%">
+    <col width=30%>
+    <col width=50%>
+    <col width=20%>
+    <tr>
+        <th>Versie</th>
+        <th>grootte</th>
+        <th># genen</th>
+    </tr>
+    {% for panel in info.panels  %}
+        {% for grootte, genen in info.panels[panel]  %}
+            <tr>
+                <td>{{panel}}</td>
+                <td>{{'{:,}'.format(grootte)}}</td>
+                <td>{{genen|length}}</td>
+            </tr>
+        {% endfor %}
+    {% endfor %}
+    </table>
+{% endif %}
 
 {% endblock %}

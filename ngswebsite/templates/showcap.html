@@ -2,16 +2,20 @@
 {% extends "base.html" %}
 
 {% block content %}
- <h3> Diagnostische tests op {{ cap }} </h3>
+<h3> Diagnostische tests op {{ cap }}</h3><br>
 <p>
     <tr>
         {% for test in tests %}
-            <td><li><a href="{{ url_for('show_testinfo', test=test) }}">{{test}}</a></li></td>
+            <td>
+                <li><a href="{{ url_for('show_testinfo', genesis=test)}}">
+                    {{test}}</a>
+                </li>
+            </td>
         {% endfor %}
     </tr>
 </p>
-<h3>Bestaande LOT-nummers voor {{cap}}</h3>
 
+<h3>Bestaande LOT-nummers voor {{cap}}</h3>
 <p>
     <tr>
         {% for lotnr in lotnrs %}
@@ -21,18 +25,11 @@
 </p>
 
 <form method=post enctype=multipart/form-data>
-
       <p>
           Nieuw LOT-nummer:<br>
           <input type=number name=lotnr>
           <input type=submit value='Voeg toe'>
-
       </p>
-
 </form>
-
-
-
-
 
 {% endblock %}
