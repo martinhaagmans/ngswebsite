@@ -2,16 +2,13 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Targets toevoegen</h1>
+<h1>{{cap}} targets en genen</h1>
 <form method=post enctype=multipart/form-data name=newtargets>
-    {{cap}} <br>
-    OID: {{oid}} <br>
-    LOT: {{lot}} <br>
-    Targetfile:<br>
-    <input type=file name=targetfile>
-    <br>
-    File met gennamen:<br>
-    <input type=file name=genfile>
+     <br><br>
+    Targetfile: <input type=file name=targetfile>
+    <br><br>
+    Gennamen:<br>
+    <textarea rows=12 cols=16 name=genen></textarea> <br>
     <br>
     <input type="submit" value="Voeg toe"></p>
 </form>

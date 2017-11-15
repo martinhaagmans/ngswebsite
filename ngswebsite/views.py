@@ -4,10 +4,10 @@ from collections import OrderedDict
 from flask import Flask
 from flask import render_template, flash, redirect, url_for, request
 from flask import send_from_directory
-
+from werkzeug.utils import secure_filename
 import config as cfg
 from ngsscriptlibrary import TargetDatabase
-# from ngsscriptlibrary import TargetAnnotation
+from ngsscriptlibrary import TargetAnnotation
 from ngsscriptlibrary import SampleSheet
 
 app = Flask(__name__)
@@ -122,34 +122,54 @@ def new_capture():
         elif 'verdund' not in request.form:
             verdund = False
         verdund = boolean_to_number(verdund)
-        sql = """INSERT INTO captures (capture, OID, lot, verdund)
-                 VALUES ('{}', 'OID{}', {}, {})
-                 """.format(cap, oid, lot, verdund)
+        allcaptures = T.get_all_captures()
+        if not cap in allcaptures:
+            versie = 1
+        elif cap in allcaptures:
+            versies = T.get_all_versions_for_capture(cap)
+            versies = [_.split('v')[1] for _ in versies]
+            versies.sort()
+            versie = int(versies[-1]) + 1
+        vcap = '{}v{}'.format(cap, versie)
+        sql = """INSERT INTO captures (capture, versie, OID, lot, verdund)
+                 VALUES ('{}', {}, {}, {}, {})
+                 """.format(cap, versie, oid, lot, verdund)
         flash('{} toegevoegd aan database'.format(request.form['capture']))
         flash(sql)
-        T.change(sql)
-        return redirect(url_for('new_target', cap=cap, lot=lot,
-                                oid=oid, verdund=verdund))
+        # T.change(sql)
+        return redirect(url_for('new_target', cap=vcap))
 
     return render_template('addcapture.html')
 
 
-@app.route('/captures/nieuw/target/<cap>/',
+@app.route('/captures/nieuw/target/<cap>',
            methods=['GET', 'POST'])
 def new_target(cap):
     if request.method == 'POST':
-        # T = TargetAnnotation(bedfile=targetfile, genes=genefile,
-        #                      host='localhost', user=MYSQLUSER, db='annotation')
-        pass
-        # T = TargetDatabase(DB)
-        # cap = request.form['capture']
-        # oid = request.form['oid']
-        # lot = request.form['lot']
-        # verdund = request.form['verdund']
-        # sql = "INSERT INTO captures {}, {}, {}, {}".format(cap, oid, lot, verdund)
-        # T.change(sql)
-    return render_template('addtargets.html', cap=cap, oid=oid,
-                           lot=lot, verdund=verdund)
+        genelist = request.form['genen'].split()
+        targetfile = request.files['targetfile']
+        name = secure_filename(targetfile.filename)
+        targetfile.save(os.path.join(app.root_path,
+                                     app.config['UPLOAD_FOLDER'],
+                                     name))
+        targetfile = os.path.join(app.root_path,
+                                  app.config['UPLOAD_FOLDER'],
+                                  name)
+        T = TargetAnnotation(bedfile=targetfile, genes=genelist,
+                             host='localhost', user=MYSQLUSER, db='annotation')
+        notfound, notrequested = T.report_genecomp()
+        annotated_bed_file = os.path.join(app.root_path,
+                            app.config['UPLOAD_FOLDER'],
+                            name.replace('.bed', '.annotated'))
+        annotated_bed = T.annotate_bed_and_filter_genes()
+        with open(annotated_bed_file, 'w') as f:
+            for line in annotated_bed:
+                chromosome, start, end, gene = line
+                f.write('{}\t{}\t{}\t{}\n'.format(chromosome, start, end, gene))
+        return render_template('newcapreport.html',
+                               notfound=notfound,
+                               notrequested=notrequested)
+    return render_template('addtargets.html', cap=cap)
 
 
 @app.route('/captures/<cap>', methods=['GET', 'POST'])

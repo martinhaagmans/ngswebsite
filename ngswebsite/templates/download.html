@@ -1,10 +1,13 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h3>Download samplesheet </h3>
+
+<img src='/static/miseq.png' width=35% height=35%>
 <br>
 <a href="{{ url_for('download', filename=filename) }}" target="blank">
-    <button class='btn btn-default'>Download {{filename}} </button></a>
-
-
+    <button  style="font-size:21pt;color:white;
+    background-color:green;border:2px solid #336600;padding:3px;">
+        Download {{filename}}
+    </button>
+</a>
 {% endblock content %}
