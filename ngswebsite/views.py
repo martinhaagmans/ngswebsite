@@ -1,4 +1,6 @@
 import os
+import re
+import json
 from collections import OrderedDict
 
 from flask import Flask
@@ -9,6 +11,7 @@ import config as cfg
 from ngsscriptlibrary import TargetDatabase
 from ngsscriptlibrary import TargetAnnotation
 from ngsscriptlibrary import SampleSheet
+from ngsscriptlibrary import get_picard_header, boolean_to_number
 
 app = Flask(__name__)
 app.secret_key = 'super secret key'
@@ -20,17 +23,6 @@ TARGETS = cfg.TARGETS
 DB = cfg.DB
 MYSQLUSER = cfg.MYSQLUSER
 
-
-def boolean_to_number(x):
-    if x == 'False':
-        x = 0
-    elif not x:
-        x = 0
-    elif x == 'True':
-        x = 1
-    elif x:
-        x = 1
-    return x
 
 
 @app.route('/')
@@ -109,18 +101,25 @@ def link_test():
     return render_template('addexistingtest.html',
                            captures=captures, tests=tests)
 
+@app.route('/captures/<cap>', methods=['GET', 'POST'])
+def show_tests_for_cap(cap):
+    pass
 
 @app.route('/captures/nieuw/', methods=['GET', 'POST'])
 def new_capture():
     if request.method == 'POST':
         T = TargetDatabase(DB)
-        cap = request.form['capture']
+        cap = request.form['capture'].lower()
         oid = request.form['oid']
         lot = request.form['lot']
+        vcap = re.search(r'v\d+$', cap)
+        if vcap is not None:
+            re.sub(r'v\d+$', cap)
         if 'verdund' in request.form:
             verdund = request.form['verdund']
         elif 'verdund' not in request.form:
             verdund = False
+        cap = cap.upper()
         verdund = boolean_to_number(verdund)
         allcaptures = T.get_all_captures()
         if not cap in allcaptures:
@@ -130,67 +129,76 @@ def new_capture():
             versies = [_.split('v')[1] for _ in versies]
             versies.sort()
             versie = int(versies[-1]) + 1
-        vcap = '{}v{}'.format(cap, versie)
-        sql = """INSERT INTO captures (capture, versie, OID, lot, verdund)
-                 VALUES ('{}', {}, {}, {}, {})
+        sql = """INSERT INTO captures (capture, versie, OID, lot, verdund, grootte)
+                 VALUES ('{}', {}, {}, {}, {}, 0)
                  """.format(cap, versie, oid, lot, verdund)
         flash('{} toegevoegd aan database'.format(request.form['capture']))
         flash(sql)
-        # T.change(sql)
-        return redirect(url_for('new_target', cap=vcap))
+        T.change(sql)
+        return redirect(url_for('new_target', cap='{}v{}'.format(cap, versie)))
 
     return render_template('addcapture.html')
 
-
-@app.route('/captures/nieuw/target/<cap>',
-           methods=['GET', 'POST'])
+@app.route('/captures/nieuw/target/<cap>', methods=['GET', 'POST'])
 def new_target(cap):
     if request.method == 'POST':
+        capture, versie = cap.split('v')
+        targetrepo = os.path.join(TARGETS, capture)
+        if not os.path.isdir(targetrepo):
+            os.system('mkdir -p {}'.format(targetrepo))
         genelist = request.form['genen'].split()
         targetfile = request.files['targetfile']
-        name = secure_filename(targetfile.filename)
-        targetfile.save(os.path.join(app.root_path,
-                                     app.config['UPLOAD_FOLDER'],
-                                     name))
-        targetfile = os.path.join(app.root_path,
-                                  app.config['UPLOAD_FOLDER'],
-                                  name)
+        name = '{}_exonplus20.bed'.format(cap)
+        targetfile.save(os.path.join(targetrepo, name))
+        targetfile = os.path.join(targetrepo, name)
         T = TargetAnnotation(bedfile=targetfile, genes=genelist,
                              host='localhost', user=MYSQLUSER, db='annotation')
         notfound, notrequested = T.report_genecomp()
-        annotated_bed_file = os.path.join(app.root_path,
-                            app.config['UPLOAD_FOLDER'],
-                            name.replace('.bed', '.annotated'))
         annotated_bed = T.annotate_bed_and_filter_genes()
+        annotated_bed_file = os.path.join(targetrepo,
+                                          name.replace('.bed', '.annotated'))
+        capsize = 0
         with open(annotated_bed_file, 'w') as f:
             for line in annotated_bed:
                 chromosome, start, end, gene = line
                 f.write('{}\t{}\t{}\t{}\n'.format(chromosome, start, end, gene))
-        return render_template('newcapreport.html',
-                               notfound=notfound,
-                               notrequested=notrequested)
+                size = int(end) - int(start)
+                capsize += size
+
+        generegion_file = os.path.join(targetrepo,
+                                       '{}_generegions.bed'.format(cap))
+        with open(generegion_file, 'w') as f:
+            for gene in genelist:
+                for region in T.get_region(gene):
+                    chromosome, start, end = region
+                    f.write('{}\t{}\t{}\n'.format(chromosome, start, end))
+
+        picardheader = get_picard_header()
+        picard_file = os.path.join(targetrepo,
+                                       '{}_targets.interval_list'.format(cap))
+        with open(picard_file, 'w') as f:
+            for line in picardheader:
+                f.write(line)
+            for line in annotated_bed:
+                chromosome, start, end, gene = line
+                f.write('{}\t{}\t{}\t+\t{}\n'.format(chromosome,
+                                                         start, end, cap))
+        sql = '''UPDATE captures
+        SET grootte={}, genen='{}'
+        WHERE (capture='{}' AND versie={})
+        '''.format(capsize, json.dumps(genelist), capture, versie)
+        TargetDatabase(DB).change(sql)
+        return render_template('newcapreport.html', notfound=notfound,
+                                                    notrequested=notrequested,
+                                                    cap=cap)
+
     return render_template('addtargets.html', cap=cap)
 
 
 @app.route('/captures/<cap>', methods=['GET', 'POST'])
-def show_tests_for_cap(cap):
-    T = TargetDatabase(DB)
-    tests = T.get_all_tests_for_capture(cap)
-    lotnrs = T.get_all_lotnrs_for_capture(cap)
-    if request.method == 'POST':
-        sql = '''INSERT INTO captures
-        (capture, OID, lot, verdund)
-        SELECT DISTINCT capture, OID, {}, verdund
-        FROM captures
-        WHERE capture = '{}'
-        '''.format(request.form['lotnr'], cap)
-        T.change(sql)
-        lotnrs = T.get_all_lotnrs_for_capture(cap)
-        return render_template('showcap.html', cap=cap,
-                               tests=tests, lotnrs=lotnrs)
-    return render_template('showcap.html', cap=cap,
-                           tests=tests, lotnrs=lotnrs)
-
+def show_capture(cap):
+    capture, versie = cap.split('v')
+    return render_template('index.html')
 
 @app.route('/createsamplesheet/', methods=['GET', 'POST'])
 def upload_labexcel():
