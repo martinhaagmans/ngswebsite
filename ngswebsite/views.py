@@ -1,12 +1,17 @@
 import os
 import re
 import json
+import hashlib
+import uuid
+from functools import wraps
 from collections import OrderedDict
 
 from flask import Flask
-from flask import render_template, flash, redirect, url_for, request
+from flask import render_template, flash, redirect, url_for, request, session
 from flask import send_from_directory
 from werkzeug.utils import secure_filename
+from werkzeug.security import generate_password_hash, check_password_hash
+
 import config as cfg
 from ngsscriptlibrary import TargetDatabase
 from ngsscriptlibrary import TargetAnnotation
@@ -14,7 +19,7 @@ from ngsscriptlibrary import SampleSheet
 from ngsscriptlibrary import get_picard_header, boolean_to_number
 
 app = Flask(__name__)
-app.secret_key = 'super secret key'
+app.secret_key = 'super secrefft keyse3'
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config['UPLOAD_FOLDER'] = 'uploads'
 
@@ -22,23 +27,55 @@ HOME = cfg.HOME
 TARGETS = cfg.TARGETS
 DB = cfg.DB
 MYSQLUSER = cfg.MYSQLUSER
+check_user = cfg.USER
+check_passwd = cfg.PASSWORD
 
 
+def hash_password(password):
+    # uuid is used to generate a random number
+    salt = uuid.uuid4().hex
+    return hashlib.sha256(salt.encode() + password.encode()).hexdigest() + ':' + salt
+
+def check_password(hashed_password, user_password):
+    password, salt = hashed_password.split(':')
+    return password == hashlib.sha256(salt.encode() + user_password.encode()).hexdigest()
+
+
+def logged_in(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if session.get('logged_in') is not None:
+            return f(*args, **kwargs)
+        else:
+            flash('Moet ingelogd zijn.', 'error')
+            return redirect(url_for('do_connaiseur_login'))
+    return decorated_function
 
 @app.route('/')
-@app.route('/index/')
 def intro():
     return render_template('index.html')
 
+@app.route('/login/', methods=['GET', 'POST'])
+def do_connaiseur_login():
+    if request.method == 'POST':
+        user = request.form['username']
+        pwd = request.form['password']
+        if user == check_user and check_password(check_passwd, pwd):
+            session['logged_in'] = True
+            return redirect(url_for('new_menu'))
+        else:
+            flash('Verkeerde gebruiker of wachtwoord.', 'error')
+            return render_template('login.html')
+    return render_template('login.html')
 
 @app.route('/index/database/')
 def database_explained():
     return render_template('database_explanation.html')
 
-
-@app.route('/nieuw/')
+@app.route('/nieuw/', methods=['GET', 'POST'])
+@logged_in
 def new_menu():
-    return render_template('new.html')
+    return render_template('connoimenu.html')
 
 
 @app.route('/diagnostiek/')
@@ -46,9 +83,22 @@ def show_all_tests():
     T = TargetDatabase(DB)
     tests = T.get_all_tests()
     tests.sort()
-    d = OrderedDict()
+    tmp = dict()
+    capture_test = dict()
+
     for test in tests:
-        d[test] = T.get_info_for_genesis(test)
+        tmp[test] = T.get_info_for_genesis(test)
+        cap = tmp[test]['capture']
+        capture_test[cap] = test
+    d = OrderedDict()
+    captures = list(capture_test.keys())
+    captures.sort()
+    for cap in captures:
+        for test in tests:
+            if tmp[test]['capture'] == cap:
+                d[test] = tmp[test]
+
+
     return render_template('showalltests.html', tests=d)
 
 
@@ -87,25 +137,48 @@ def show_testinfo(genesis):
     return render_template('showtest.html', info=d, todo=todo_list)
 
 
-@app.route('/diagnostiek/nieuw/')
+@app.route('/diagnostiek/nieuw/', methods=['GET', 'POST'])
 def add_test():
     captures = TargetDatabase(DB).get_all_captures()
     return render_template('addtest.html', captures=captures)
 
 
 @app.route('/captures/nieuw/linktest/', methods=['GET', 'POST'])
+@logged_in
 def link_test():
     T = TargetDatabase(DB)
     captures = T.get_all_captures()
     tests = T.get_all_tests()
+    if request.method == 'POST':
+        capture = request.form['capture']
+        gcodes =  request.form.getlist('test')
+        for gc in gcodes:
+            sql = """UPDATE genesis
+            SET capture='{}'
+            WHERE genesis='{}'
+            """.format(capture, gc)
+            T.change(sql)
+            return redirect(url_for('show_all_tests'))
     return render_template('addexistingtest.html',
                            captures=captures, tests=tests)
 
-@app.route('/captures/<cap>', methods=['GET', 'POST'])
+@app.route('/captures/<cap>')
 def show_tests_for_cap(cap):
-    pass
+    T = TargetDatabase(DB)
+    info = T.get_all_info_for_vcapture(cap)
+    genesis = T.get_all_genesiscodes_for_vcapture(cap)
+    oid = list()
+    lot = list()
+    for tup in info:
+        o, l, verdund, size = tup
+        oid.append(o)
+        lot.append(l)
+
+    return render_template('showcap.html', oid=oid, lot=lot, genesis=genesis,
+                           verdund=verdund, size=size, cap=cap)
 
 @app.route('/captures/nieuw/', methods=['GET', 'POST'])
+@logged_in
 def new_capture():
     if request.method == 'POST':
         T = TargetDatabase(DB)
@@ -114,7 +187,7 @@ def new_capture():
         lot = request.form['lot']
         vcap = re.search(r'v\d+$', cap)
         if vcap is not None:
-            re.sub(r'v\d+$', cap)
+            re.sub(r'v\d+$', '', cap)
         if 'verdund' in request.form:
             verdund = request.form['verdund']
         elif 'verdund' not in request.form:
@@ -140,6 +213,7 @@ def new_capture():
     return render_template('addcapture.html')
 
 @app.route('/captures/nieuw/target/<cap>', methods=['GET', 'POST'])
+@logged_in
 def new_target(cap):
     if request.method == 'POST':
         capture, versie = cap.split('v')
@@ -194,11 +268,73 @@ def new_target(cap):
 
     return render_template('addtargets.html', cap=cap)
 
+@app.route('/pakketten/nieuw/', methods=['GET', 'POST'])
+@logged_in
+def new_pakket():
+    if request.method == 'POST':
+        if request.form['naam'] == '':
+            flash('Geen pakket opgegeven')
+            return redirect(url_for('new_pakket'))
+        if request.form['genen'] == '':
+            flash('Geen genen opgegeven')
+            return redirect(url_for('new_pakket'))
+        pakket = request.form['naam'].lower()
+        genen = request.form['genen'].split()
 
-@app.route('/captures/<cap>', methods=['GET', 'POST'])
-def show_capture(cap):
-    capture, versie = cap.split('v')
-    return render_template('index.html')
+        vpakket = re.search(r'v\d+$', pakket)
+        if vpakket is not None:
+            re.sub(r'v\d+$', '', pakket)
+        pakket = pakket.upper()
+        T = TargetDatabase(DB)
+        allpakketten = T.get_all_pakketten()
+        if not pakket in allpakketten:
+            versie = 1
+        elif pakket in allpakketten:
+            versies = T.get_all_versions_for_pakket(pakket)
+            versies = [_.split('v')[1] for _ in versies]
+            versies.sort()
+            versie = int(versies[-1]) + 1
+        sql = """INSERT INTO pakketten (pakket, versie, genen)
+                 VALUES ('{}', {}, '{}')
+                 """.format(pakket, versie,  json.dumps(genen))
+        T.change(sql)
+        return redirect(url_for('show_all_tests'))
+    return render_template('addpakket.html')
+
+@app.route('/panels/nieuw/', methods=['GET', 'POST'])
+@logged_in
+def new_panel():
+    if request.method == 'POST':
+        if request.form['naam'] == '':
+            flash('Geen panel opgegeven')
+            return redirect(url_for('new_panel'))
+        if request.form['genen'] == '':
+            flash('Geen genen opgegeven')
+            return redirect(url_for('new_panel'))
+        panel = request.form['naam'].lower()
+        genen = request.form['genen'].split()
+
+        vpanel = re.search(r'v\d+$', panel)
+        if vpanel is not None:
+            re.sub(r'v\d+$', '', panel)
+            re.sub(r'typea$', '', panel)
+        panel = panel.upper()
+        T = TargetDatabase(DB)
+        allpanels = T.get_all_panels()
+        if panel not in allpanels:
+            versie = 1
+        elif panel in allpanels:
+            versies = T.get_all_versions_for_panel(panel)
+            versies = [_.split('v')[1] for _ in versies]
+            versies.sort()
+            versie = int(versies[-1]) + 1
+        sql = """INSERT INTO panels (panel, versie, genen)
+                 VALUES ('{}', {}, '{}')
+                 """.format(panel, versie,  json.dumps(genen))
+        T.change(sql)
+        return redirect(url_for('show_all_tests'))
+    return render_template('addpanel.html')
+
 
 @app.route('/createsamplesheet/', methods=['GET', 'POST'])
 def upload_labexcel():

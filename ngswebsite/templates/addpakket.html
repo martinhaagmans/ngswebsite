@@ -1,0 +1,15 @@
+<!-- extend from base layout -->
+{% extends "base.html" %}
+{% block content %}
+<h1>Nieuw pakket</h1>
+<br>
+<form method=post name=newpakket>
+    Pakket:<br>
+    <input type=text name=naam><br>
+    <br>
+    Genen:<br>
+    <textarea rows=12 cols=16 name=genen></textarea><br>
+    <br>
+    <input type=submit value='Voeg toe'>
+</form>
+{% endblock %}

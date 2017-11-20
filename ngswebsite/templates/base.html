@@ -12,20 +12,33 @@
 <body width=100%>
     <div>
         <a href="{{ url_for('intro') }}"> Intro </a>
-        <a href="{{ url_for('new_menu') }}"> Nieuw </a>
         <a href="{{ url_for('show_all_tests') }}"> Aanbod </a>
         <a href="{{ url_for('upload_labexcel') }}"> Samplesheet </a>
+    {% if session['logged_in'] %}
+        <a class=right href="{{ url_for('new_menu') }}"> &#x2714; Connoiseur </a>
+    {% else %}
+        <a class=right href="{{ url_for('new_menu') }}"> Connoiseur </a>
+    {% endif %}
     </div>
-    <hr>
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        <ul>
-        {% for message in messages %}
-            <li><span style="color: red;">[{{ message }}]</span></li>
+    <hr style="border: 1px solid #808080;">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+
+        {% for category, message in messages %}
+            {% if category == 'error' %}
+                <span><strong style='color: red'>Error:</strong> {{message}}</strong> </span>
+            {% else %}
+                <li><span>{{ message }}</span></li>
+            {% endif %}
         {% endfor %}
-        </ul>
-      {% endif %}
+
     {% endwith %}
     {% block content %}{% endblock %}
 </body>
+<style>
+.right {
+    text-align: right;
+    float: right;
+}
+
+</style>
 </html>

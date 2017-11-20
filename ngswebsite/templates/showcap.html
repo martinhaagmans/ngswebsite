@@ -2,27 +2,38 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h3> Diagnostische tests op {{ cap }}</h3><br>
-<p>
-    <tr>
-        {% for test in tests %}
-            <td>
-                <li><a href="{{ url_for('show_testinfo', genesis=test)}}">
-                    {{test}}</a>
-                </li>
-            </td>
-        {% endfor %}
-    </tr>
-</p>
 
-<h3>Bestaande LOT-nummers voor {{cap}}</h3>
-<p>
-    <tr>
-        {% for lotnr in lotnrs %}
-            <td><li>{{lotnr}}</li></td>
-        {% endfor %}
-    </tr>
-</p>
+<h1>{{cap}}</h1>
+<br>
+<h5>Genesis:</h5>
+<tr>
+    {% for test in genesis %}
+        <td>
+            <li><a href="{{ url_for('show_testinfo', genesis=test)}}">
+                {{test}}</a>
+            </li>
+        </td>
+    {% endfor %}
+</tr>
+<br>
+
+<h5>OID-nummers</h5>
+<tr>
+    {% for o in oid %}
+        <td><li>OID{{o}}</li></td>
+    {% endfor %}
+</tr>
+
+<br>
+
+<h5>LOT-nummers</h5>
+<tr>
+    {% for lotnr in lot %}
+        <td><li>{{lotnr}}</li></td>
+    {% endfor %}
+</tr>
+
+<br>
 
 <form method=post enctype=multipart/form-data>
       <p>

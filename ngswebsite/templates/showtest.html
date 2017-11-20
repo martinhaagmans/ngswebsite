@@ -2,8 +2,7 @@
 {% extends "base.html" %}
 {% block content %}
 <h1> {{ todo.aandoening }} </h1><br>
-<table width="30%">
-<col width=160>
+<table>
     <tr>
         <th colspan=2>Pipeline targets en analyses</th>
     </tr>
@@ -60,7 +59,7 @@
 
 <hr>
 <h3>Captures</h3>
-<table width="30%">
+<table>
     <col width=30%>
     <col width=15%>
     <col width=15%>
@@ -88,9 +87,9 @@
 
 <hr>
 <h3>Pakketten</h3>
-<table width="30%">
+<table>
     <col width=30%>
-    <col width=50%>
+    <col width=30%>
     <col width=20%>
     <tr>
         <th>Versie</th>
@@ -101,7 +100,7 @@
         {% for grootte, genen in info.pakketten[pakket]  %}
             <tr>
                 <td>{{pakket}}</td>
-                <td>{{'{:,}'.format(grootte)}}</td>
+                <td>{{'{:,}'.format(grootte) if grootte is not none else ''}}</td>
                 <td>{{genen|length}}</td>
             </tr>
         {% endfor %}
@@ -111,9 +110,9 @@
 {% if todo.panel %}
     <hr>
     <h3>Panels</h3>
-    <table width="30%">
+    <table>
     <col width=30%>
-    <col width=50%>
+    <col width=30%>
     <col width=20%>
     <tr>
         <th>Versie</th>
@@ -124,7 +123,7 @@
         {% for grootte, genen in info.panels[panel]  %}
             <tr>
                 <td>{{panel}}</td>
-                <td>{{'{:,}'.format(grootte)}}</td>
+                <td>{{'{:,}'.format(grootte) if grootte is not none else ''}}</td>
                 <td>{{genen|length}}</td>
             </tr>
         {% endfor %}

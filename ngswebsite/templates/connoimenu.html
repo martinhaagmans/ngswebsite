@@ -1,0 +1,11 @@
+<!-- extend from base layout -->
+{% extends "base.html" %}
+{% block content %}
+<h1>Fysiek</h1>
+<li><a href="{{ url_for('new_capture') }}">Nieuwe capture</a>
+<li><a href="{{ url_for('add_test') }}">Nieuw aanvraagformulier (genesis)</a>
+<hr>
+<h1>Virtueel</h1>
+<li><a href="{{ url_for('new_pakket') }}">Nieuw pakket</a>
+<li><a href="{{ url_for('new_panel') }}">Nieuw panel</a>
+{% endblock content %}
