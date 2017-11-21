@@ -357,7 +357,7 @@ def new_pakket():
                                                           end, 'EXTRA'))
                         size += int(end) - int(start)
 
-            with open(cap_generegions, 'w') as f, open(pakket_generegs) as fout:
+            with open(cap_generegions) as f, open(pakket_generegs, 'w') as fout:
                 for line in f:
                     chromosome, start, end, gen = line.split()
                     if gen in genen:
@@ -366,7 +366,7 @@ def new_pakket():
             sql = """UPDATE pakketten
             SET grootte={}
             WHERE (pakket='{}' AND versie={})
-            """.format(pakket, int(versie))
+            """.format(size, pakket, int(versie))
             T.change(sql)
         return redirect(url_for('show_all_tests'))
     return render_template('addpakket.html')
@@ -407,6 +407,9 @@ def new_panel():
         pakket, versiepakket = vpakket.split('v')
         vcapture = T.get_capture_for_pakket(pakket)
         capture, versiecapture = vcapture.split('v')
+        annoted_bed = os.path.join(TARGETS, capture,
+                                   '{}_exonplus20.annotated'.format(vcapture))
+
         if capture == pakket:
             targetrepo = os.path.join(TARGETS, capture)
         elif capture != pakket:
@@ -417,8 +420,6 @@ def new_panel():
         if not os.path.isdir(corepanels):
             os.system('mkdir -p {}'.format(corepanels))
 
-        annoted_bed = os.path.join(targetrepo,
-                                   '{}_exonplus20.annotated'.format(vcapture))
         panelbed = os.path.join(corepanels,
                                 '{}typeAv{}.bed'.format(panel,
                                                         versie))
