@@ -3,12 +3,15 @@
 
 <h1> AMC NGS-diagnostiek</h1><br>
 <p>
-De in de pipeline gehanteerde definities voor gen- en corepanels staan <a href="http://amcpipeline.readthedocs.io/nl/latest/pakketten.html">hier</a> uitgelegd en een overzicht van diagnostische testen die de pipeline kan verwerken staat <a href="{{ url_for('show_all_tests') }}">hier</a>.  <br>
+<li> De gebruikte pipeline staat <a href="{{ url_for('pipeline_explained') }}">hier</a> uitgelegd. </li>
+<li> De in de pipeline gehanteerde definities voor gen- en corepanels staan <a href="{{ url_for('nomenclature_explained') }}">hier</a> uitgelegd. </li>
+<li> Een overzicht van diagnostische testen die de pipeline kan verwerken staat <a href="{{ url_for('show_all_tests') }}">hier.</a></li>
 <br>
-Onderstaande tabel beschrijft de benodigde files voor het correct runnen van de AMC-pipeline, waarvoor ze nodig zijn en wanneer ze verplicht zijn.<br>
+
+<br>
 <table>
     <tr>
-      <th>Targetfile</th>
+      <th> </th>
       <th>Gebruikt voor</th>
       <th>Verplicht/optioneel</th>
     </tr>
@@ -28,7 +31,7 @@ Onderstaande tabel beschrijft de benodigde files voor het correct runnen van de 
       <td>Optioneel</td>
     </tr>
     <tr>
-      <td>Genregio pakket</td>
+      <td>Genregio's pakket</td>
       <td>Callen varianten </td>
       <td>Verplicht per pakket</td>
     </tr>

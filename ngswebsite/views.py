@@ -73,9 +73,19 @@ def do_connaiseur_login():
     return render_template('login.html')
 
 
-@app.route('/index/database/')
+@app.route('/database/')
 def database_explained():
-    return render_template('database_explanation.html')
+    return render_template('explanation_database.html')
+
+
+@app.route('/pipeline/')
+def pipeline_explained():
+    return render_template('explanation_pipeline.html')
+
+
+@app.route('/naamgeving/')
+def nomenclature_explained():
+    return render_template('explanation_nomenclature.html')
 
 
 @app.route('/nieuw/')

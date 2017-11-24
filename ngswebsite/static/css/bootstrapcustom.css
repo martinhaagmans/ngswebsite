@@ -46,7 +46,12 @@ html {
   -ms-text-size-adjust: 100%;
   -webkit-text-size-adjust: 100%;
 }
-
+li {
+    margin-left: 1em;
+    margin-right: 1em;
+    margin-bottom: 0.1em;
+    margin-right: 0.1em;
+}
 article,
 aside,
 footer,
