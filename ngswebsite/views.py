@@ -487,6 +487,41 @@ def upload_labexcel():
     return render_template('uploadlabexcel.html')
 
 
+@app.route('/faciliteit/', methods=['GET', 'POST'])
+def linda_samplesheet():
+    if request.method == 'POST':
+        if request.form['samples'] == '':
+            flash('Geen input opgegeven', 'error')
+            return render_template('faciliteit.html')
+        if request.form['readlength'] == '':
+            flash('Geen read lengte opgegeven', 'error')
+            return render_template('faciliteit.html')
+        if request.form['serie'] == '':
+            serie = 'Nvt'
+        else:
+            serie = request.form['serie']
+
+        readlength = request.form['readlength']
+        todo = request.form['samples']
+
+        uploads = os.path.join(app.root_path, app.config['UPLOAD_FOLDER'])
+        with open(os.path.join(uploads, 'samplesheet.tmp'), 'w') as f:
+            for line in todo.split('\n'):
+                if line:
+                    dnr, bc = line.split()
+                    f.write('{}\t{}\t{}\n'.format(dnr, serie, bc))
+
+        S = SampleSheet(os.path.join(uploads, 'samplesheet.tmp'),
+                        serie,
+                        os.path.join(uploads, 'SampleSheet.csv'),
+                        faciliteit=True)
+        S.write_files(readlength=readlength)
+        return redirect(url_for('uploaded_file',
+                                filename='SampleSheet.csv'))
+
+    return render_template('faciliteit.html')
+
+
 @app.route('/createsamplesheet/created/<filename>')
 def uploaded_file(filename):
     return render_template('download.html', filename=filename)
