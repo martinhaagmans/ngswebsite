@@ -8,7 +8,6 @@ from collections import OrderedDict
 
 from flask import Flask
 from flask import render_template, flash, redirect, url_for, request, session
-from flask import send_from_directory
 
 import config as cfg
 from ngsscriptlibrary import TargetDatabase
