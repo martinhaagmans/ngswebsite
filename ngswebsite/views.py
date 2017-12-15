@@ -502,6 +502,7 @@ def linda_samplesheet():
             serie = request.form['serie']
 
         readlength = request.form['readlength']
+
         todo = request.form['samples']
 
         uploads = os.path.join(app.root_path, app.config['UPLOAD_FOLDER'])
@@ -513,11 +514,11 @@ def linda_samplesheet():
 
         S = SampleSheet(os.path.join(uploads, 'samplesheet.tmp'),
                         serie,
-                        os.path.join(uploads, 'SampleSheet.csv'),
+                        os.path.join(uploads, 'SampleSheetFaciliteit.csv'),
                         faciliteit=True)
-        S.write_files(readlength=readlength)
+        S.write_files(readlength=int(readlength))
         return redirect(url_for('uploaded_file',
-                                filename='SampleSheet.csv'))
+                                filename='SampleSheetFaciliteit.csv'))
 
     return render_template('faciliteit.html')
 
@@ -529,8 +530,17 @@ def uploaded_file(filename):
 
 @app.route('/createsamplesheet/<path:filename>')
 def download(filename):
-    uploads = os.path.join(app.root_path, app.config['UPLOAD_FOLDER'])
-    return send_from_directory(directory=uploads, filename=filename)
+    path = os.path.join(os.path.join(app.root_path,
+                                     app.config['UPLOAD_FOLDER'],
+                                     filename))
+
+    def generate():
+        with open(path) as f:
+            yield from f
+        os.remove(path)
+    r = app.response_class(generate(), mimetype='text/csv')
+    r.headers.set('Content-Disposition', 'attachment', filename=filename)
+    return r
 
 
 if __name__ == '__main__':
