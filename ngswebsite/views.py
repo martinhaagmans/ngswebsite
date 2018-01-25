@@ -102,6 +102,7 @@ def show_all_tests():
     capture_test = dict()
 
     for test in tests:
+        print(test)
         tmp[test] = T.get_info_for_genesis(test)
         cap = tmp[test]['capture']
         capture_test[cap] = test
@@ -540,6 +541,11 @@ def download(filename):
     r = app.response_class(generate(), mimetype='text/csv')
     r.headers.set('Content-Disposition', 'attachment', filename=filename)
     return r
+
+
+@app.route('/aantallen/')
+def aantallen():
+    return render_template('aantallen.html')
 
 
 if __name__ == '__main__':
