@@ -25,9 +25,11 @@
 
         {% for category, message in messages %}
             {% if category == 'error' %}
-                <span><strong style='color: red'>Error:</strong> {{message}}</strong> </span>
+                <br>
+                <span><strong style='color:red;font-size:40px'>Error: {{message}}</strong> </span><br>
+                <br>
             {% else %}
-                <li><span>{{ message }}</span></li>
+                <li ><span>{{ message }}</span></li>
             {% endif %}
         {% endfor %}
 

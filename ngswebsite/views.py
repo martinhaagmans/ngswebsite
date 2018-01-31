@@ -462,10 +462,10 @@ def new_panel():
 def upload_labexcel():
     if request.method == 'POST':
         if request.form['samples'] == '':
-            flash('Geen input opgegeven')
+            flash('Geen input opgegeven', 'error')
             return render_template('uploadlabexcel.html')
         if request.form['serie'] == '':
-            flash('Geen serienummer opgegeven')
+            flash('Geen serienummer opgegeven', 'error')
             return render_template('uploadlabexcel.html')
 
         nullijst_todo = request.form['samples']
@@ -475,6 +475,12 @@ def upload_labexcel():
                 for line in nullijst_todo.split('\n'):
                     if line:
                         dnr, bc, test = line.split()
+
+                        if not test.endswith('.NGS'):
+                            flash('{} is geen geldige genesiscode'.format(test),
+                                  'error')
+                            return render_template('uploadlabexcel.html')
+
                         f.write('{}\t{}\t{}\n'.format(dnr, test, bc))
 
             S = SampleSheet(os.path.join(uploads, 'samplesheet.tmp'),
