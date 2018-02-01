@@ -6,7 +6,7 @@ import uuid
 from functools import wraps
 from collections import OrderedDict
 
-from flask import Flask
+from flask import Flask, make_response
 from flask import render_template, flash, redirect, url_for, request, session
 
 import config as cfg
@@ -115,7 +115,7 @@ def show_all_tests():
     return render_template('showalltests.html', tests=d)
 
 
-@app.route('/diagnostiek/<genesis>')
+@app.route('/diagnostiek/<genesis>', methods=['GET', 'POST'])
 def show_testinfo(genesis):
     T = TargetDatabase(DB)
     tests = T.get_all_tests()
@@ -148,6 +148,28 @@ def show_testinfo(genesis):
         for vp in p:
             d['panels'][vp] = T.get_all_info_for_vpanel(vp)
     todo_list = T.get_info_for_genesis(genesis)
+
+    if request.method == 'POST':
+        pakket = todo_list['pakket']
+        panel = todo_list['panel']
+        genes = d['pakketten'][pakket][0][1]
+        agenes = d['panels'][panel][0][1]
+        out = list()
+        if agenes is not None:
+            for gene in genes:
+                if gene in agenes:
+                    out.append('{},A'.format(gene))
+                elif gene not in agenes:
+                    out.append('{},C'.format(gene))
+        elif agenes is None:
+            for gene in genes:
+                out.append('{},A'.format(gene))
+        r = make_response('\n'.join(out))
+        cd = 'attachment; filename={}.{}.{}.csv'.format(genesis, pakket, panel)
+        r.headers['Content-Disposition'] = cd
+        r.mimetype='text/csv'
+        return r
+
     return render_template('showtest.html', info=d, todo=todo_list)
 
 

@@ -32,7 +32,10 @@
     <hr>
     <h2>{{todo.pakket}} genen</h2>
     <p>
-        A-kwaliteit in groen.<br>
+        A-kwaliteit in groen.
+        <form action="" method=post enctype=multipart/form-data>
+              <input type=submit value="Download">
+        </form>
         <br>
         {% if todo.panel %}
             {% for grootte, genen in info.pakketten[todo.pakket]  %}
