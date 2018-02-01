@@ -48,7 +48,7 @@ def logged_in(f):
         if session.get('logged_in') is not None:
             return f(*args, **kwargs)
         else:
-            flash('Moet ingelogd zijn.', 'error')
+            flash('Niet ingelogd.', 'error')
             return redirect(url_for('do_connaiseur_login'))
     return decorated_function
 
@@ -102,7 +102,6 @@ def show_all_tests():
     capture_test = dict()
 
     for test in tests:
-        print(test)
         tmp[test] = T.get_info_for_genesis(test)
         cap = tmp[test]['capture']
         capture_test[cap] = test
@@ -234,12 +233,13 @@ def new_capture():
 def new_target(cap):
     if request.method == 'POST':
         capture, versie = cap.split('v')
-        targetrepo = os.path.join(TARGETS, capture)
+        targetrepo = os.path.join(TARGETS, 'captures')
         if not os.path.isdir(targetrepo):
-            os.system('mkdir -p {}'.format(targetrepo))
+            flash('{} bestaat niet'.format(targetrepo), 'error')
+            return redirect(url_for('intro'))
         genelist = request.form['genen'].split()
         targetfile = request.files['targetfile']
-        name = '{}_exonplus20.bed'.format(cap)
+        name = '{}_target.bed'.format(cap)
         targetfile.save(os.path.join(targetrepo, name))
         targetfile = os.path.join(targetrepo, name)
         T = TargetAnnotation(bedfile=targetfile, genes=genelist,
@@ -268,7 +268,7 @@ def new_target(cap):
 
         picardheader = get_picard_header()
         picard_file = os.path.join(targetrepo,
-                                   '{}_targets.interval_list'.format(cap))
+                                   '{}_target.interval_list'.format(cap))
         with open(picard_file, 'w') as f:
             for line in picardheader:
                 f.write(line)
@@ -292,10 +292,10 @@ def new_target(cap):
 def new_pakket():
     if request.method == 'POST':
         if request.form['naam'] == '':
-            flash('Geen pakket opgegeven')
+            flash('Geen pakket opgegeven', 'error')
             return redirect(url_for('new_pakket'))
         if request.form['genen'] == '':
-            flash('Geen genen opgegeven')
+            flash('Geen genen opgegeven', 'error')
             return redirect(url_for('new_pakket'))
         pakket = request.form['naam'].lower()
         genen = request.form['genen'].split()
@@ -313,12 +313,25 @@ def new_pakket():
             versies = [_.split('v')[1] for _ in versies]
             versies.sort()
             versie = int(versies[-1]) + 1
+
+        vcapture = T.get_capture_for_pakket(pakket)
+        capture, capversie = vcapture.split('v')
+        capgenen = T.get_genes_for_vcapture(vcapture)
+        notfound = list()
+        for g in genen:
+            if g not in capgenen:
+                notfound.append(g)
+
+        if len(notfound) > 0:
+            flash('{} niet in capture target'.format(', '.join(notfound)),
+                  'error')
+            return redirect(url_for('new_pakket'))
+
         sql = """INSERT INTO pakketten (pakket, versie, genen)
                  VALUES ('{}', {}, '{}')
                  """.format(pakket, versie,  json.dumps(genen))
         T.change(sql)
-        vcapture = T.get_capture_for_pakket(pakket)
-        capture, capversie = vcapture.split('v')
+
         if capture == pakket:
             sql = """UPDATE pakketten
             SET grootte=(SELECT grootte
@@ -328,34 +341,34 @@ def new_pakket():
             """.format(capture, int(capversie), pakket, versie)
             T.change(sql)
         else:
-            targetrepo = os.path.join(TARGETS, capture)
+            targetrepo = os.path.join(TARGETS, 'pakketten')
             if not os.path.isdir(targetrepo):
-                raise OSError('{} does not exist.'.format(targetrepo))
-            targetrepo = os.path.join(TARGETS, capture, pakket)
-            os.system('mkdir -p {}'.format(targetrepo))
-            annoted_bed = os.path.join(TARGETS, capture,
-                                       '{}_exonplus20.annotated'.format(vcapture)
+                flash('{} bestaat niet'.format(targetrepo), 'error')
+                return redirect(url_for('intro'))
+
+            annoted_bed = os.path.join(TARGETS, 'captures',
+                                       '{}_target.annotated'.format(vcapture)
                                        )
-            cap_generegions = os.path.join(TARGETS, capture,
+            cap_generegions = os.path.join(TARGETS, 'captures',
                                            '{}_generegions.bed'.format(vcapture))
             pakketbed = os.path.join(targetrepo,
-                                     '{}v{}_exonplus20.bed'.format(pakket,
-                                                                   versie))
-            annotated_pakketbed = os.path.join(targetrepo,
-                                               '{}v{}_exonplus20.annotated'.format(pakket,
-                                                                                   versie))
+                                     '{}v{}_target.bed'.format(pakket, versie))
+            # annotated_pakketbed = os.path.join(targetrepo,
+            #                                    '{}v{}_target.annotated'.format(pakket,
+            #                                                                        versie))
 
             pakket_generegs = os.path.join(targetrepo,
                                            '{}v{}_generegions.bed'.format(pakket,
                                                                           versie))
             TA = TargetAnnotation(annoted_bed)
             size = 0
-            with open(pakketbed, 'w') as f, open(annotated_pakketbed, 'w') as fa:
+            # with open(pakketbed, 'w') as f, open(annotated_pakketbed, 'w') as fa:
+            with open(pakketbed, 'w') as f:
                 for line in TA.bed:
                     chromosome, start, end, gen = line
                     if gen in genen:
-                        fa.write('{}\t{}\t{}\t{}\n'.format(chromosome, start,
-                                                           end, gen))
+                        # fa.write('{}\t{}\t{}\t{}\n'.format(chromosome, start,
+                        #                                    end, gen))
                         f.write('{}\t{}\t{}\t{}\n'.format(chromosome, start,
                                                           end, gen))
                         size += int(end) - int(start)
