@@ -153,19 +153,22 @@ def show_testinfo(genesis):
         pakket = todo_list['pakket']
         panel = todo_list['panel']
         genes = d['pakketten'][pakket][0][1]
-        agenes = d['panels'][panel][0][1]
         out = list()
-        if agenes is not None:
+        if panel is not None:
+            agenes = d['panels'][panel][0][1]
+            cd = 'attachment; filename={}.{}.{}.csv'.format(genesis, pakket,
+                                                            panel)
             for gene in genes:
                 if gene in agenes:
                     out.append('{},A'.format(gene))
                 elif gene not in agenes:
                     out.append('{},C'.format(gene))
-        elif agenes is None:
+        elif panel is None:
+            cd = 'attachment; filename={}.{}.csv'.format(genesis, pakket)
             for gene in genes:
                 out.append('{},A'.format(gene))
         r = make_response('\n'.join(out))
-        cd = 'attachment; filename={}.{}.{}.csv'.format(genesis, pakket, panel)
+
         r.headers['Content-Disposition'] = cd
         r.mimetype='text/csv'
         return r
