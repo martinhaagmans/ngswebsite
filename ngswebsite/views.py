@@ -6,7 +6,7 @@ import uuid
 from functools import wraps
 from collections import OrderedDict
 
-from flask import Flask, make_response
+from flask import Flask, make_response, send_file
 from flask import render_template, flash, redirect, url_for, request, session
 
 import config as cfg
@@ -51,6 +51,48 @@ def logged_in(f):
             flash('Niet ingelogd.', 'error')
             return redirect(url_for('do_connaiseur_login'))
     return decorated_function
+
+
+def download_genelist(todo_list, d, genesis):
+    pakket = todo_list['pakket']
+    panel = todo_list['panel']
+    genes = d['pakketten'][pakket][0][1]
+    out = list()
+    if panel is not None:
+        agenes = d['panels'][panel][0][1]
+        cd = 'attachment; filename={}.{}.{}.csv'.format(genesis, pakket,
+                                                        panel)
+        for gene in genes:
+            if gene in agenes:
+                out.append('{},A'.format(gene))
+            elif gene not in agenes:
+                out.append('{},C'.format(gene))
+    elif panel is None:
+        cd = 'attachment; filename={}.{}.csv'.format(genesis, pakket)
+        for gene in genes:
+            out.append('{},A'.format(gene))
+    r = make_response('\n'.join(out))
+
+    r.headers['Content-Disposition'] = cd
+    r.mimetype = 'text/csv'
+    return r
+
+
+def download_target(targetname, targetsoort):
+    out = list()
+    target = os.path.join(TARGETS, targetsoort,
+                          '{}_target.bed'.format(targetname))
+    with open(target, 'r') as f:
+        for line in f:
+            out.append(line.strip())
+
+    cd = 'attachment; filename={}_target.bed'.format(targetname)
+    r = make_response('\n'.join(out))
+    r.headers['Content-Disposition'] = cd
+    r.mimetype = 'text/csv'
+    return r
+
+
 
 
 @app.route('/')
@@ -150,28 +192,14 @@ def show_testinfo(genesis):
     todo_list = T.get_info_for_genesis(genesis)
 
     if request.method == 'POST':
-        pakket = todo_list['pakket']
-        panel = todo_list['panel']
-        genes = d['pakketten'][pakket][0][1]
-        out = list()
-        if panel is not None:
-            agenes = d['panels'][panel][0][1]
-            cd = 'attachment; filename={}.{}.{}.csv'.format(genesis, pakket,
-                                                            panel)
-            for gene in genes:
-                if gene in agenes:
-                    out.append('{},A'.format(gene))
-                elif gene not in agenes:
-                    out.append('{},C'.format(gene))
-        elif panel is None:
-            cd = 'attachment; filename={}.{}.csv'.format(genesis, pakket)
-            for gene in genes:
-                out.append('{},A'.format(gene))
-        r = make_response('\n'.join(out))
-
-        r.headers['Content-Disposition'] = cd
-        r.mimetype='text/csv'
-        return r
+        if 'genes' in request.form:
+            r = download_genelist(todo_list, d, genesis)
+            return r
+        else:
+            data = request.form.to_dict()
+            targetname, targetsoort = list(data.keys())[0].split(':')
+            r = download_target(targetname, targetsoort)
+            return r
 
     return render_template('showtest.html', info=d, todo=todo_list)
 
@@ -521,12 +549,15 @@ def upload_labexcel():
 
                         f.write('{}\t{}\t{}\n'.format(dnr, test, bc))
 
+            serie = request.form['serie']
+            analist = request.form['analist']
+            analist = analist.replace(' ', '_')
             S = SampleSheet(os.path.join(uploads, 'samplesheet.tmp'),
-                            request.form['serie'],
-                            os.path.join(uploads, 'SampleSheet.csv'))
-            S.write_files()
+                            serie,
+                            os.path.join(uploads, 'MS{}.csv'.format(serie)))
+            S.write_files(analist=analist)
             return redirect(url_for('uploaded_file',
-                                    filename='SampleSheet.csv'))
+                                    filename='MS{}.csv'.format(serie)))
 
     return render_template('uploadlabexcel.html')
 
