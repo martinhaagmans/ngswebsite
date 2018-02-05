@@ -1,0 +1,14 @@
+<!-- extend from base layout -->
+{% extends "base.html" %}
+
+{% block content %}
+<h1>CNV archief</h1>
+<br>
+<form method=post name=newpakket>
+    <h4>Afwijkende samples</h4>
+    <br>Serie  sample  reden<br>
+    <textarea rows=12 cols=16 name=samples></textarea><br>
+    <br>
+    <input type=submit value='Voeg toe'>
+</form>
+{% endblock %}

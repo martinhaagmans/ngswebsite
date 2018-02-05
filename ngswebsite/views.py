@@ -3,10 +3,11 @@ import re
 import json
 import hashlib
 import uuid
+import sqlite3
 from functools import wraps
 from collections import OrderedDict
 
-from flask import Flask, make_response, send_file
+from flask import Flask, make_response
 from flask import render_template, flash, redirect, url_for, request, session
 
 import config as cfg
@@ -133,6 +134,15 @@ def nomenclature_explained():
 @logged_in
 def new_menu():
     return render_template('connoimenu.html')
+
+
+@app.route('/nonarchive/', methods=['GET', 'POST'])
+def show_all_nonarchive_samples():
+    if request.method == 'POST':
+        nonarchives = request.form['samples']
+        for line in nonarchives.split('\n'):
+            serie, sampleID, reason = line.split()
+    return render_template('addnonarchive.html')
 
 
 @app.route('/diagnostiek/')
