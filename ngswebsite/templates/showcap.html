@@ -25,22 +25,4 @@
 </tr>
 
 <br>
-
-<h5>LOT-nummers</h5>
-<tr>
-    {% for lotnr in lot %}
-        <td><li>{{lotnr}}</li></td>
-    {% endfor %}
-</tr>
-
-<br>
-
-<form method=post enctype=multipart/form-data>
-      <p>
-          Nieuw LOT-nummer:<br>
-          <input type=number name=lotnr>
-          <input type=submit value='Voeg toe'>
-      </p>
-</form>
-
 {% endblock %}

@@ -3,7 +3,6 @@ import re
 import json
 import hashlib
 import uuid
-import sqlite3
 from functools import wraps
 from collections import OrderedDict
 
@@ -92,8 +91,6 @@ def download_target(targetname, targetsoort):
     r.headers['Content-Disposition'] = cd
     r.mimetype = 'text/csv'
     return r
-
-
 
 
 @app.route('/')
@@ -226,13 +223,10 @@ def show_tests_for_cap(cap):
     info = T.get_all_info_for_vcapture(cap)
     genesis = T.get_all_genesiscodes_for_vcapture(cap)
     oid = list()
-    lot = list()
     for tup in info:
-        o, l, verdund, size = tup
+        o, verdund, size = tup
         oid.append(o)
-        lot.append(l)
-
-    return render_template('showcap.html', oid=oid, lot=lot, genesis=genesis,
+    return render_template('showcap.html', oid=oid, genesis=genesis,
                            verdund=verdund, size=size, cap=cap)
 
 
@@ -262,7 +256,6 @@ def new_capture():
         T = TargetDatabase(DB)
         cap = request.form['capture'].lower()
         oid = request.form['oid']
-        lot = request.form['lot']
         vcap = re.search(r'v\d+$', cap)
         if vcap is not None:
             re.sub(r'v\d+$', '', cap)
@@ -280,9 +273,9 @@ def new_capture():
             versies = [_.split('v')[1] for _ in versies]
             versies.sort()
             versie = int(versies[-1]) + 1
-        sql = """INSERT INTO captures (capture, versie, OID, lot, verdund, grootte)
+        sql = """INSERT INTO captures (capture, versie, OID, verdund, grootte)
                  VALUES ('{}', {}, {}, {}, {}, 0)
-                 """.format(cap, versie, oid, lot, verdund)
+                 """.format(cap, versie, oid, verdund)
         flash('{} toegevoegd aan database'.format(request.form['capture']))
         flash(sql)
         T.change(sql)

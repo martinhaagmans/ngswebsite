@@ -73,20 +73,18 @@
     <tr>
         <th>Versie</th>
         <th>OID</th>
-        <th>LOT</th>
         <th>verdund</th>
         <th>grootte</th>
-        <th>target </th>
+        <th style="text-align:center">BED</th>
     </tr>
     {% for capture in info.captures  %}
-        {% for oid, lot, verdund, grootte in info.captures[capture]  %}
+        {% for oid, verdund, grootte in info.captures[capture]  %}
             <tr>
                 <td>{{capture}}</td>
                 <td>{{oid}}</td>
-                <td>{{lot}}</td>
                 <td>{{'Ja' if verdund else 'Nee' }}</td>
                 <td>{{'{:,}'.format(grootte)}}</td>
-                <td>
+                <td style="text-align:center">
                     <form action="" method=post enctype=multipart/form-data>
                       <input type="submit" name="{{capture}}:captures" value="Download">
                   </form>
@@ -107,7 +105,7 @@
         <th>Versie</th>
         <th>grootte</th>
         <th># genen</th>
-        <th>target</th>
+        <th style="text-align:center">BED</th>
     </tr>
     {% for pakket in info.pakketten  %}
         {% for grootte, genen in info.pakketten[pakket]  %}
@@ -115,7 +113,7 @@
                 <td>{{pakket}}</td>
                 <td>{{'{:,}'.format(grootte) if grootte is not none else ''}}</td>
                 <td>{{genen|length}}</td>
-                <td>
+                <td style="text-align:center">
                     <form action="" method=post enctype=multipart/form-data>
                       <input type="submit" name="{{pakket}}:pakketten" value="Download">
                   </form>
@@ -137,7 +135,7 @@
         <th>Versie</th>
         <th>grootte</th>
         <th># genen</th>
-        <th>target</th>
+        <th style="text-align:center">BED</th>
     </tr>
     {% for panel in info.panels  %}
         {% for grootte, genen in info.panels[panel]  %}
@@ -145,7 +143,7 @@
                 <td>{{panel}}</td>
                 <td>{{'{:,}'.format(grootte) if grootte is not none else ''}}</td>
                 <td>{{genen|length}}</td>
-                <td>
+                <td style="text-align:center">
                     <form action="" method=post enctype=multipart/form-data>
                       <input type="submit" name="{{panel}}:panels" value="Download">
                     </form>
