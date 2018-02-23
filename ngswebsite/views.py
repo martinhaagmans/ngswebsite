@@ -16,7 +16,7 @@ from ngsscriptlibrary import SampleSheet
 from ngsscriptlibrary import get_picard_header, boolean_to_number
 
 app = Flask(__name__)
-app.secret_key = 'super secrefft keyse7'
+app.secret_key = 'supergeheim222'
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config['UPLOAD_FOLDER'] = 'uploads'
 
@@ -49,7 +49,10 @@ def logged_in(f):
             return f(*args, **kwargs)
         else:
             flash('Niet ingelogd.', 'error')
-            return redirect(url_for('do_connaiseur_login'))
+            next_url = request.url
+            login_url = '{}?next={}'.format(url_for('do_connaiseur_login'),
+                                            next_url)
+            return redirect(login_url)
     return decorated_function
 
 
@@ -72,7 +75,6 @@ def download_genelist(todo_list, d, genesis):
         for gene in genes:
             out.append('{},A'.format(gene))
     r = make_response('\n'.join(out))
-
     r.headers['Content-Disposition'] = cd
     r.mimetype = 'text/csv'
     return r
@@ -105,7 +107,8 @@ def do_connaiseur_login():
         pwd = request.form['password']
         if user == check_user and check_password(check_passwd, pwd):
             session['logged_in'] = True
-            return redirect(url_for('new_menu'))
+            next_url = request.args.get('next')
+            return redirect(next_url)
         else:
             flash('Verkeerde gebruiker of wachtwoord.', 'error')
             return render_template('login.html')
@@ -128,7 +131,6 @@ def nomenclature_explained():
 
 
 @app.route('/nieuw/')
-@logged_in
 def new_menu():
     return render_template('connoimenu.html')
 
@@ -212,8 +214,32 @@ def show_testinfo(genesis):
 
 
 @app.route('/diagnostiek/nieuw/', methods=['GET', 'POST'])
+@logged_in
 def add_test():
-    captures = TargetDatabase(DB).get_all_captures()
+    T = TargetDatabase(DB)
+    captures = T.get_all_captures()
+    if request.method == 'POST':
+        capture = request.form['capture']
+        genesis = request.form['genesis']
+        aandoening = request.form['aandoening']
+        if request.form['pakket'] != '':
+            pakket = request.form['pakket']
+        elif request.form['pakket'] == '':
+            pakket = capture
+        if request.form['panel'] != '':
+            panel = request.form['panel']
+        elif request.form['panel'] == '':
+            panel = None
+
+        T.change("""INSERT INTO genesis (genesis, capture, pakket, panel,
+        cnvscreening, cnvdiagnostiek, mozaiekdiagnostiek)
+        VALUES ('{}', '{}', '{}', '{}', 1, 0, 0)
+        """.format(genesis, capture, pakket, panel))
+
+        T.change("""INSERT INTO aandoeningen VALUES ('{}', '{}')
+                 """.format(genesis, aandoening))
+        return redirect(url_for('show_testinfo', genesis=genesis))
+
     return render_template('addtest.html', captures=captures)
 
 
@@ -273,12 +299,11 @@ def new_capture():
             versies = [_.split('v')[1] for _ in versies]
             versies.sort()
             versie = int(versies[-1]) + 1
-        sql = """INSERT INTO captures (capture, versie, OID, verdund, grootte)
+
+        T.change("""INSERT INTO captures (capture, versie, OID, verdund, grootte)
                  VALUES ('{}', {}, {}, {}, {}, 0)
-                 """.format(cap, versie, oid, verdund)
+                 """.format(cap, versie, oid, verdund))
         flash('{} toegevoegd aan database'.format(request.form['capture']))
-        flash(sql)
-        T.change(sql)
         return redirect(url_for('new_target', cap='{}v{}'.format(cap, versie)))
 
     return render_template('addcapture.html')
