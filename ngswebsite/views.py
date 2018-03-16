@@ -301,7 +301,7 @@ def new_capture():
             versie = int(versies[-1]) + 1
 
         T.change("""INSERT INTO captures (capture, versie, OID, verdund, grootte)
-                 VALUES ('{}', {}, {}, {}, {}, 0)
+                 VALUES ('{}', {}, {}, {}, 0)
                  """.format(cap, versie, oid, verdund))
         flash('{} toegevoegd aan database'.format(request.form['capture']))
         return redirect(url_for('new_target', cap='{}v{}'.format(cap, versie)))
