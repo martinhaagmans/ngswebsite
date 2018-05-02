@@ -3,6 +3,7 @@ import re
 import json
 import hashlib
 import uuid
+import subprocess
 from functools import wraps
 from collections import OrderedDict
 
@@ -591,6 +592,9 @@ def upload_labexcel():
                             os.path.join(uploads, 'MS{}.csv'.format(serie)))
             S.write_files(analist=analist)
 
+            p = subprocess.Popen(["scp", os.path.join(uploads, 'MS{}_sample_info.txt'.format(serie)),
+                                 "mahaagmans@ux-p-dnadiag:/data/dnadiag/databases/materiaalsoort"])
+            sts = os.waitpid(p.pid, 0)
 
             return redirect(url_for('uploaded_file',
                                     filename='MS{}.csv'.format(serie)))
