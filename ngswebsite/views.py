@@ -592,9 +592,8 @@ def upload_labexcel():
                             os.path.join(uploads, 'MS{}.csv'.format(serie)))
             S.write_files(analist=analist)
 
-            p = subprocess.Popen(["scp", os.path.join(uploads, 'MS{}_sample_info.txt'.format(serie)),
-                                 "mahaagmans@ux-p-dnadiag:/data/dnadiag/databases/materiaalsoort"])
-            sts = os.waitpid(p.pid, 0)
+            subprocess.call(["cp", os.path.join(uploads, 'MS{}_sample_info.txt'.format(serie)),
+                              "/data/dnadiag/databases/materiaalsoort"])
 
             return redirect(url_for('uploaded_file',
                                     filename='MS{}.csv'.format(serie)))
