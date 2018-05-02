@@ -323,8 +323,8 @@ def new_target(cap):
         name = '{}_target.bed'.format(cap)
         targetfile.save(os.path.join(targetrepo, name))
         targetfile = os.path.join(targetrepo, name)
-        T = TargetAnnotation(bedfile=targetfile, genes=genelist,
-                             host='localhost', user=MYSQLUSER, db='annotation')
+        T = TargetAnnotation(bedfile=targetfile, genes=genelist, host='localhost',
+                             user=MYSQLUSER, passwd=MYSQLUSER, db='annotation')
         notfound, notrequested = T.report_genecomp()
         annotated_bed = T.annotate_bed_and_filter_genes()
         annotated_bed_file = os.path.join(targetrepo,
@@ -562,28 +562,36 @@ def upload_labexcel():
             flash('Geen serienummer opgegeven', 'error')
             return render_template('uploadlabexcel.html')
 
+        serie = request.form['serie']
         nullijst_todo = request.form['samples']
         if nullijst_todo:
             uploads = os.path.join(app.root_path, app.config['UPLOAD_FOLDER'])
-            with open(os.path.join(uploads, 'samplesheet.tmp'), 'w') as f:
+            with open(os.path.join(uploads, 'samplesheet.tmp'), 'w') as f, open(os.path.join(uploads, 'MS{}_sample_info.txt'.format(serie)), 'w') as f_cnv:
                 for line in nullijst_todo.split('\n'):
                     if line:
-                        dnr, bc, test = line.split()
-
+                        line = line.replace(' ', '_')
+                        try:
+                            dnr, bc, test, cnvarchive = line.split()
+                        except ValueError as e:
+                            flash('Onvoldoende kolommen als input.', 'error')
+                            return render_template('uploadlabexcel.html')
                         if not test.endswith('.NGS'):
                             flash('{} is geen geldige genesiscode'.format(test),
                                   'error')
                             return render_template('uploadlabexcel.html')
 
                         f.write('{}\t{}\t{}\n'.format(dnr, test, bc))
+                        if cnvarchive.lower() != 'robot':
+                            f_cnv.write('{}\t{}\t{}\n'.format(serie, dnr, cnvarchive))
 
-            serie = request.form['serie']
             analist = request.form['analist']
             analist = analist.replace(' ', '_')
             S = SampleSheet(os.path.join(uploads, 'samplesheet.tmp'),
                             serie,
                             os.path.join(uploads, 'MS{}.csv'.format(serie)))
             S.write_files(analist=analist)
+
+
             return redirect(url_for('uploaded_file',
                                     filename='MS{}.csv'.format(serie)))
 
