@@ -325,7 +325,7 @@ def new_target(cap):
         targetfile.save(os.path.join(targetrepo, name))
         targetfile = os.path.join(targetrepo, name)
         T = TargetAnnotation(bedfile=targetfile, genes=genelist, host='localhost',
-                             user=MYSQLUSER, passwd=MYSQLUSER, db='annotation')
+                             user=MYSQLUSER, db='annotation')
         notfound, notrequested = T.report_genecomp()
         annotated_bed = T.annotate_bed_and_filter_genes()
         annotated_bed_file = os.path.join(targetrepo,
