@@ -28,6 +28,10 @@
                 <br>
                 <span><strong style='color:red;font-size:40px'>Error: {{message}}</strong> </span><br>
                 <br>
+            {% elif category == 'warning' %}
+                <br>
+                <span><strong style='color:orange;font-size:40px'>LET OP: {{message}}</strong> </span><br>
+                <br>
             {% else %}
                 <li ><span>{{ message }}</span></li>
             {% endif %}
