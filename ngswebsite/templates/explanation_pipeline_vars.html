@@ -1,0 +1,79 @@
+<!-- extend from base layout -->
+{% extends "base.html" %}
+
+{% block content %}
+<h1>PIPELINE</h1>
+
+<p>De AMC diagnostische pipeline voor de analyse van sequence capture data
+  alignt reads tegen het referentiegenoom, callt de varianten en verzamelt
+  informatie over de kwaliteit van de data. De varianten worden op kwaliteit
+  gefilterd en in een VCF geraporteerd zodat ze in Cartagenia verder
+  geanalyseerd kunnen worden. De verzamelde informatie wordt per patient in
+  een excel-file gerapporteerd.<br>
+  <br>
+  Als alle patiënten uit een serie de pipeline succesvol hebben
+  doorlopen dan worden er nog een aantal scripts gerund om informatie te
+  verzamelen en te presenteren.
+</p>
+
+<br>
+
+<h2>Read alignment en markeren van duplicaten</h2>
+<p>De reads worden vergeleken met de referentie en de aligner (BWA-MEM) kiest
+  de best passende locatie in het genoom. Wanneer alle reads aan de beurt zijn
+  geweest worden de reads die dezelfde start en eindlocatie hebben als duplicaat
+  gemarkeerd. Dit zijn door PCR gedupliceerde moleculen en deze bevatten
+  dezelfde informatie, zodat er maar 1 telt als coverage.
+</p>
+<pre><code class="snakemake">
+rule mapreads:
+    input:
+        "reads/{sample}.R1.fastq.gz",
+        "reads/{sample}.R2.fastq.gz"
+    output:
+        "alignments/{sample}.sorted.bam"
+    params:
+        rg = "@RG\\tID:{sample}\\tLB:{sample}\\tPL:ILLUMINA\\tPU:{sample}\\tSM:{sample}"
+    shell:
+        """(bwa mem  -R '{params.rg}' -t 1 -M {REF} {input} |\
+        samtools view -Shu - |\
+        samtools sort -T {wildcards.sample}.tmp -O bam - &gt; {output}) 2&gt; {log}
+        """
+
+rule markduplicates:
+    input:
+        rules.mapreads.output
+    output:
+        bam = "output/{sample}.DM.bam",
+        metrics = temp("picardmetrics/{sample}.dupmark.txt")
+    log:
+        "logfiles/{sample}.MarkDuplicates.log"
+    message:
+        "Marking duplicates with picard"
+    shell:
+        """{PICARD} MarkDuplicates  I={input} O={output.bam}  \
+        M={output.metrics} REMOVE_DUPLICATES=FALSE CREATE_INDEX=true > {log}  2>&1
+        """
+</code></pre>
+<br>
+
+<h2>Base score recalibratie</h2>
+<p>De MiSeq geeft elke base een kwaliteitsscore. Om deze scores onderling
+  beter te kunnen vergelijken worden deze gerecalibreerd met GATK. Dit heeft
+  als bijkomend voordeel dat het spectrum van scores breder wordt, waardoor
+  er gevoeliger gefilterd kan worden.
+</p>
+<pre><code class="snakemake">
+
+</code></pre>
+<br>
+
+<h2>Varianten callen</h2>
+<p>De varianten worden gecalld met de Haplotypecaller van GATK. Deze doet in
+  gebieden met een afwijking tov de referentie een lokale de-novo reassembly
+  van de reads en verdeelt de reads over verschillende haplotypes. Uit de twee
+  haplotypes met het meeste bewijs worden de varianten gecalld.
+</p>
+
+
+{% endblock content %}

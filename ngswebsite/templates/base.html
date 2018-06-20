@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
   <link href="/static/css/bootstrapcustom.css" rel="stylesheet" media="screen">
+  <!-- <link href="/static/css/custom.css" rel="stylesheet" media="screen"> -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   {% if title %}
   <title>{{ title }}</title>
@@ -10,14 +12,14 @@
   {% endif %}
 </head>
 <body width=100%>
-    <div>
+    <div name=menu>
         <a href="{{ url_for('intro') }}"> Intro </a>
         <a href="{{ url_for('show_all_tests') }}"> Aanbod </a>
         <a href="{{ url_for('upload_labexcel') }}"> Samplesheet </a>
     {% if session['logged_in'] %}
-        <a class=right href="{{ url_for('new_menu') }}"> &#x2714; Connoiseur </a>
+        <a class=connoisseur href="{{ url_for('new_menu') }}"> &#x2714; Connoiseur </a>
     {% else %}
-        <a class=right href="{{ url_for('new_menu') }}"> Connoiseur </a>
+        <a  href="{{ url_for('new_menu') }}"> Connoiseur </a>
     {% endif %}
     </div>
     <hr style="border: 1px solid #808080;">
@@ -41,7 +43,7 @@
     {% block content %}{% endblock %}
 </body>
 <style>
-.right {
+.connoisseur {
     text-align: right;
     float: right;
 }

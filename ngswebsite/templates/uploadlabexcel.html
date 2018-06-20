@@ -2,18 +2,50 @@
 
 {% block content %}
 <h3>Samplesheet voor MiSeq</h3>
+
+<div class="row">
+  <div class="column">
 <br>
-<form method=post enctype=multipart/form-data>
-   <h4>Input</h4>
-   SampleID  Barcode  Genesiscode  Materiaal<br>
-   <textarea rows=14 cols=32 name=samples></textarea> <br>
-   <br>
-   <h4>Serienummer</h4>
-   <input type=number name=serie><br><br>
-   <h4>Analist</h4>
-   <input type=text name=analist value='Robert'><br>
-   <br><br>
-   <input type=submit value='Maak samplesheet' style="font-size:21pt;color:white;
-   background-color:green;border:2px solid #336600;padding:3px;">
-</form>
+  <form method=post enctype=multipart/form-data>
+     <h4>Input</h4>
+     SampleID  Barcode  Genesiscode  Materiaal<br>
+     <textarea rows=14 cols=32 name=samples></textarea> <br>
+     <br>
+     <h4>Serienummer</h4>
+     <input type=number name=serie><br><br>
+     <h4>Analist</h4>
+     <input type=text name=analist value='Robert'><br>
+     <br><br>
+     <input type=submit value='Maak samplesheet' style="font-size:21pt;color:white;background-color:green;border:2px solid #336600;padding:3px;">
+  </form>
+  </div>
+  <div class="column">
+    <br><br><br>
+    <p>Voor het maken van een samplesheet moeten het serienummer en de naam van de analist worden ingevoerd.
+      Verder zijn per sample de volgende gegevens nodig:
+      <ul>
+        <li>SampleID (meestal een D-nummer)
+        <li>Barcode AMC-nummer
+        <li>Genesis code aanvraag
+        <li>Materiaalsoort voor CNV-analyse
+      </ul>
+      Dit wordt gecombineerd tot een samplesheet waarmee de MiSeq en de analyse-pipeline voor de betreffende serie gestart kunnen worden.<br>
+      Een uitgebreidere uitleg is <a href="{{ url_for('samplesheet_explained') }}">hier</a> te vinden.
+    </p>
+  </div>
+</div>
+
+<style>
+.column {
+    float: left;
+    width: 50%;
+}
+
+/* Clear floats after the columns */
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+</style>
 {% endblock content %}

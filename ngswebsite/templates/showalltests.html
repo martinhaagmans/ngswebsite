@@ -2,26 +2,47 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Actueel aanbod</h1>
+<h1 >AANBOD</h1>
 <br>
-<table>
-  <tr>
-    <th>Genesiscode </th>
-    <th>Capture </th>
-    <th>Pakket </th>
-    <th>Panel </th>
-    <th>Aandoening</th>
-  </tr>
-  {% for test, data in tests.items() %}
-  <tr>
-      <td><a href="{{ url_for('show_testinfo', genesis=test) }}">{{test}}</a></td>
-      <td><a href="{{ url_for('show_tests_for_cap', cap=data.capture) }}">{{data.capture}}</a></td>
-      <td>{{data.pakket}} </td>
-      <td>{{data.panel if data.panel is not none else '' }}</td>
-      <td>{{data.aandoening if data.aandoening is not none else '' }}</td>
-{% endfor %}
-  </tr>
-</table>
-
-
-{% endblock %}
+    <h2 >Analyses</h2>
+    <br>
+    <p>
+      De standaard pipeline alignt reads tegen het referentiegenoom, callt
+      varianten en rapporteert (gebrek aan) coverage en andere voor diagnostiek
+      relevante informatie. Deze pipeline wordt voor alle pakketten gerund,
+      voor sommige pakketten wordt ook een extra analyse gerund. Er is een analyse
+      die mozaieken detecteert en een analyse die copynumbervariatie detecteert.
+      Klik op de link hieronder voor meer uitleg over specifieke onderdelen van de
+      pipeline.
+      <ul>
+          <li style="margin-left: 0;">
+            <a href="{{ url_for('std_pipe') }}">SNV en kleine InDel detectie</a>
+          </li>
+          <li style="margin-left: 0;">Copynumbervariatie(CNV)-detectie
+          </li>
+          <li style="margin-left: 0;">Mozaiëk-detectie
+          </li>
+        </ul>
+     </p>
+     <br>
+     <h2>Genpakketten</h2>
+     <br>
+     <table>
+       <tr>
+         <th>Genesiscode </th>
+         <th>Capture </th>
+         <th>Pakket </th>
+         <th>Panel </th>
+         <th>Aandoening</th>
+       </tr>
+       {% for test, data in tests.items() %}
+       <tr>
+           <td><a href="{{ url_for('show_testinfo', genesis=test) }}">{{test}}</a></td>
+           <td><a href="{{ url_for('show_tests_for_cap', cap=data.capture) }}">{{data.capture}}</a></td>
+           <td>{{data.pakket}} </td>
+           <td>{{data.panel if data.panel is not none else '' }}</td>
+           <td>{{data.aandoening if data.aandoening is not none else '' }}</td>
+     {% endfor %}
+       </tr>
+     </table>
+{% endblock content %}

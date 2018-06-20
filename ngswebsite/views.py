@@ -116,19 +116,37 @@ def do_connaiseur_login():
     return render_template('login.html')
 
 
-@app.route('/database/')
+@app.route('/uitleg/database/')
 def database_explained():
     return render_template('explanation_database.html')
 
 
-@app.route('/pipeline/')
+@app.route('/uitleg/pipeline/')
 def pipeline_explained():
     return render_template('explanation_pipeline.html')
 
 
-@app.route('/naamgeving/')
+@app.route('/uitleg/naamgeving/')
 def nomenclature_explained():
     return render_template('explanation_nomenclature.html')
+
+
+@app.route('/uitleg/samplesheet/')
+def samplesheet_explained():
+    return render_template('explanation_samplesheet.html')
+
+@app.route('/uitleg/pipeline/snv')
+def std_pipe():
+    return render_template('explanation_pipeline_vars.html')
+
+@app.route('/uitleg/pipeline/cnv')
+def cnv_pipe():
+    return render_template('explanation_pipeline_cnv.html')
+
+@app.route('/uitleg/pipeline/')
+def mosaic_pipe():
+    return render_template('explanation_pipeline_mosaic.html')
+
 
 
 @app.route('/nieuw/')
