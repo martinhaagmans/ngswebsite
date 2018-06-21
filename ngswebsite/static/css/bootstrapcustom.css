@@ -5,10 +5,27 @@
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  */
 /*! normalize.css v5.0.0 | MIT License | github.com/necolas/normalize.css */
+
 body {
-    margin: 1em;
+    max-width: 800px;
+    margin: auto;
     font-family: sans-serif;
 }
+
+html {
+  font-family: sans-serif;
+  line-height: 1.15;
+  -ms-text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
+.snakemake{
+  display: block;
+  padding: 20px;
+  margin: 1em;
+  font-size: 10;
+}
+
 table {
     border-collapse: collapse;
     border: none;
@@ -40,12 +57,6 @@ table td {
     background-color: #f4f4ff;
 }
 
-html {
-  font-family: sans-serif;
-  line-height: 1.15;
-  -ms-text-size-adjust: 100%;
-  -webkit-text-size-adjust: 100%;
-}
 li {
     margin-left: 1em;
     margin-right: 1em;
@@ -64,12 +75,16 @@ section {
 h1 {
   font-size: 2em;
   margin: 0.67em 0;
+  text-transform: uppercase;
 }
 
 figcaption,
 figure,
 main {
   display: block;
+  text-align:center;
+  font-size:8;
+  font-style: italic;
 }
 
 figure {
@@ -642,10 +657,3 @@ samp {
   font-size: 0.9em;
   margin-left: 1em;
 }
-
-/* pre {
-  margin-top: 0;
-  margin-bottom: 1rem;
-  overflow: auto;
-  -ms-overflow-style: scrollbar;
-} */

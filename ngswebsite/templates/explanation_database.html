@@ -1,14 +1,29 @@
 {% extends "base.html" %}
 {% block content %}
 
-<h1 id="Database">DATABASE</h1>
+<h1>Database</h1>
 <hr>
-<p>De database bestaat uit aantal tabellen die de informatie bevatten die nodig is om de pipeline correct te runnen voor een specifieke genesiscode. Welke genesiscode voor welk sample gerund moet worden staat in de samplesheet die ook gebruikt wordt om de MiSeq aan te sturen. Voor deze genesiscode wordt uit onderstaande tabellen  de targetversies voor de gebruikte capture, het te gebruiken pakket en eventueel panel gehaald. Hiervoor wordt eerst de bij een genesiscode horende capture, pakket en panel opgehaald. Voor elk van deze worden alle versies opgehaald waarna telkens de hoogste versie gekozen wordt. Van deze versies worden de targetfiles en/of genlijst gebruikt in de pipeline.<br>
-<br>
-Daarnaast zal de pipeline voor bepaalde analyses (bijvoorbeeld CNV-diagnostiek) de database raadplegen om te bepalen of deze gerund moeten worden.
+<p>De database bestaat uit aantal tabellen die de informatie bevatten 
+  die nodig is om de pipeline correct te runnen voor een specifieke 
+  genesiscode. Welke genesiscode voor welk sample gerund moet worden 
+  staat in de samplesheet die ook gebruikt wordt om de MiSeq aan te 
+  sturen. Voor deze genesiscode wordt uit onderstaande tabellen de 
+  targetversies voor de gebruikte capture, het te gebruiken pakket
+  en eventueel panel gehaald. Hiervoor wordt eerst de bij een genesiscode 
+  horende capture, pakket en panel opgehaald. Voor elk van deze worden 
+  alle versies opgehaald waarna telkens de hoogste versie gekozen wordt. 
+  Van deze versies worden de targetfiles en/of genlijst gebruikt in de pipeline.<br>
+  <br>
+  Daarnaast zal de pipeline voor bepaalde analyses (bijvoorbeeld CNV-diagnostiek) 
+  de database raadplegen om te bepalen of deze gerund moeten worden.
 </p>
+
 <br>
-<h2 id="Tabel-genesis">Genesis</h2><p>Koppeling tussen genesiscode en capture, pakket, panel en wel of niet runnen van CNV of mozaiek analyses in de pipeline.</p>
+
+<h2>Genesis</h2>
+<p>Koppeling tussen genesiscode en capture, pakket, panel en wel of 
+  niet runnen van CNV of mozaiek analyses in de pipeline.
+</p>
 <table>
   <thead>
       <col width="80">
@@ -72,7 +87,14 @@ Daarnaast zal de pipeline voor bepaalde analyses (bijvoorbeeld CNV-diagnostiek) 
   </tbody>
 </table>
 <br>
-<h2 id="Tabel-captures">Captures</h2><p>Hierin staan alle captures met versienummer met daaraan gekoppeld een OID, een of meerdere LOT-nummers en de genen op de capture. Ook de grootte van de capture is hier te vinden en deze wordt gebruikt om de verhoudingen tussen verschillende captures te bepalen als deze samen gesequenced worden.</p>
+
+<h2>Captures</h2>
+<p>Hierin staan alle captures met versienummer met daaraan gekoppeld een OID, 
+  een of meerdere LOT-nummers en de genen op de capture. Ook de grootte van 
+  de capture is hier te vinden en deze wordt gebruikt om de verhoudingen 
+  tussen verschillende captures te bepalen als deze samen gesequenced worden.
+</p>
+
 <table style="text-align:right">
     <tr>
       <col width="80">
@@ -139,7 +161,11 @@ Daarnaast zal de pipeline voor bepaalde analyses (bijvoorbeeld CNV-diagnostiek) 
   </tbody>
 </table>
 <br>
-<h2 id="Tabel-pakketten">Pakketten</h2><p>Hierin staan alle pakketten met versienummer met daaraan gekoppeld de genen in het pakket en de grootte van het pakket.</p>
+
+<h2>Pakketten</h2>
+<p>Hierin staan alle pakketten met versienummer met daaraan gekoppeld 
+  de genen in het pakket en de grootte van het pakket.
+</p>
 <table style="text-align:right">
   <thead>
       <th>pakket</th>
@@ -182,7 +208,11 @@ Daarnaast zal de pipeline voor bepaalde analyses (bijvoorbeeld CNV-diagnostiek) 
   </tbody>
 </table>
 <br>
-<h2 id="Tabel-panels">Panels</h2><p>Hierin staan alle panels met versienummer met daaraan gekoppeld de genen in het panel en de grootte van het panel.</p>
+
+<h2>Panels</h2>
+<p>Hierin staan alle panels met versienummer met daaraan 
+  gekoppeld de genen in het panel en de grootte van het panel.
+</p>
 <table style="text-align:right">
   <thead>
       <th>panel</th>
@@ -225,7 +255,9 @@ Daarnaast zal de pipeline voor bepaalde analyses (bijvoorbeeld CNV-diagnostiek) 
   </tbody>
 </table>
 <br>
-<h2 id="Tabel-aandoeningen">Aandoeningen</h2><p>Koppeling tussen genesiscode en aandoening.</p>
+
+<h2>Aandoeningen</h2>
+<p>Koppeling tussen genesiscode en aandoening.</p>
 <table style="text-align:right">
   <thead>
       <th>genesis</th>
