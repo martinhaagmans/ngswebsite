@@ -573,7 +573,7 @@ def upload_labexcel():
             with open(os.path.join(uploads, 'samplesheet.tmp'), 'w') as f, open(os.path.join(uploads, 'MS{}_sample_info.txt'.format(serie)), 'w') as f_cnv:
                 for line in nullijst_todo.split('\n'):
                     if line:
-                        line = line.replace(' ', '_')
+                        line = line.replace(' ', '-')
                         try:
                             dnr, bc, test, cnvarchive = line.split()
                         except ValueError as e:
@@ -581,6 +581,10 @@ def upload_labexcel():
                             return render_template('uploadlabexcel.html')
                         if not test.endswith('.NGS'):
                             flash('{} is geen geldige genesiscode'.format(test),
+                                  'error')
+                            return render_template('uploadlabexcel.html')
+                        if not dnr.isalnum():
+                            flash('{} is geen geldig sampleID'.format(dnr),
                                   'error')
                             return render_template('uploadlabexcel.html')
 
