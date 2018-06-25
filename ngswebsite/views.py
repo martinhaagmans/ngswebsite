@@ -512,18 +512,16 @@ def new_panel():
         pakket, versiepakket = vpakket.split('v')
         vcapture = T.get_capture_for_pakket(pakket)
         capture, versiecapture = vcapture.split('v')
-        annoted_bed = os.path.join(TARGETS, capture,
-                                   '{}_exonplus20.annotated'.format(vcapture))
+        annoted_bed = os.path.join(TARGETS, 'captures',
+                                   '{}_target.annotated'.format(vcapture))
 
         if capture == pakket:
-            targetrepo = os.path.join(TARGETS, capture)
+            targetrepo = os.path.join(TARGETS, 'captures')
         elif capture != pakket:
-            targetrepo = os.path.join(TARGETS, capture, pakket)
+            targetrepo = os.path.join(TARGETS, 'pakketten')
         if not os.path.isdir(targetrepo):
             raise OSError('{} does not exist.'.format(targetrepo))
-        corepanels = os.path.join(targetrepo, 'corepanels')
-        if not os.path.isdir(corepanels):
-            os.system('mkdir -p {}'.format(corepanels))
+        corepanels = os.path.join(TARGETS, 'panels')
 
         panelbed = os.path.join(corepanels,
                                 '{}typeAv{}.bed'.format(panel,
