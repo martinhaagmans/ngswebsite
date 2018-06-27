@@ -1,14 +1,28 @@
 {% extends "base.html" %}
 {% block content %}
 
-<h1 id="Database">DATABASE</h1>
+<h1>Database</h1>
 <hr>
-<p>De database bestaat uit aantal tabellen die de informatie bevatten die nodig is om de pipeline correct te runnen voor een specifieke genesiscode. Welke genesiscode voor welk sample gerund moet worden staat in de samplesheet die ook gebruikt wordt om de MiSeq aan te sturen. Voor deze genesiscode wordt uit onderstaande tabellen  de targetversies voor de gebruikte capture, het te gebruiken pakket en eventueel panel gehaald. Hiervoor wordt eerst de bij een genesiscode horende capture, pakket en panel opgehaald. Voor elk van deze worden alle versies opgehaald waarna telkens de hoogste versie gekozen wordt. Van deze versies worden de targetfiles en/of genlijst gebruikt in de pipeline.<br>
-<br>
-Daarnaast zal de pipeline voor bepaalde analyses (bijvoorbeeld CNV-diagnostiek) de database raadplegen om te bepalen of deze gerund moeten worden.
+<p>De database bestaat uit aantal tabellen die de informatie bevatten 
+  die nodig is om de pipeline correct te runnen voor een specifieke 
+  genesiscode. Welke genesiscode voor welk sample gerund moet worden 
+  staat in de samplesheet die ook gebruikt wordt om de MiSeq aan te 
+  sturen. Voor deze genesiscode wordt uit onderstaande tabellen de 
+  targetversies voor de gebruikte capture, het te gebruiken pakket
+  en eventueel panel gehaald. Voor elk van deze worden 
+  alle versies opgehaald waarna telkens de hoogste versie gekozen wordt. 
+  Van deze versies worden de targetfiles en/of genlijst gebruikt in de pipeline.<br>
+  <br>
+  Daarnaast zal de pipeline voor bepaalde analyses (bijvoorbeeld CNV-diagnostiek) 
+  de database raadplegen om te bepalen of deze gerund moeten worden.
 </p>
-<br>
-<h2 id="Tabel-genesis">Genesis</h2><p>Koppeling tussen genesiscode en capture, pakket, panel en wel of niet runnen van CNV of mozaiek analyses in de pipeline.</p>
+
+<hr>
+
+<h2>Genesis</h2>
+<p>Koppeling tussen genesiscode en capture, pakket, panel en wel of 
+  niet runnen van CNV of mozaiek analyses in de pipeline.
+</p>
 <table>
   <thead>
       <col width="80">
@@ -71,20 +85,24 @@ Daarnaast zal de pipeline voor bepaalde analyses (bijvoorbeeld CNV-diagnostiek) 
     </tr>
   </tbody>
 </table>
-<br>
-<h2 id="Tabel-captures">Captures</h2><p>Hierin staan alle captures met versienummer met daaraan gekoppeld een OID, een of meerdere LOT-nummers en de genen op de capture. Ook de grootte van de capture is hier te vinden en deze wordt gebruikt om de verhoudingen tussen verschillende captures te bepalen als deze samen gesequenced worden.</p>
+<hr>
+<h2>Captures</h2>
+<p>Hierin staan alle captures met versienummer met daaraan gekoppeld een OID, 
+  een en de genen op de capture. Ook de grootte van de capture is hier te vinden 
+  en deze kan worden gebruikt om de verhoudingen tussen verschillende captures 
+  te bepalen als deze samen gesequenced worden.
+</p>
+
 <table style="text-align:right">
     <tr>
       <col width="80">
       <col width="60">
       <col width="60">
-      <col width="90">
       <col width="80">
       <col width="80">
       <th>capture</th>
       <th>versie</th>
       <th>oid</th>
-      <th>lot</th>
       <th>verdund</th>
       <th>grootte</th>
       <th>genen</th>
@@ -95,7 +113,6 @@ Daarnaast zal de pipeline voor bepaalde analyses (bijvoorbeeld CNV-diagnostiek) 
       <td>AGPPVM</td>
       <td>1</td>
       <td>44292</td>
-      <td>40821</td>
       <td>Niet</td>
       <td>307000</td>
       <td>POLD1, BMPR2, ECEL1, MLH1, MYH8, A...</td>
@@ -104,7 +121,6 @@ Daarnaast zal de pipeline voor bepaalde analyses (bijvoorbeeld CNV-diagnostiek) 
       <td>BH</td>
       <td>3</td>
       <td>43443</td>
-      <td>6167501</td>
       <td>Niet</td>
       <td>1267000</td>
       <td>CSPP1, TEAD1, CRX, RIMS1, MITF, ML...</td>
@@ -113,7 +129,6 @@ Daarnaast zal de pipeline voor bepaalde analyses (bijvoorbeeld CNV-diagnostiek) 
       <td>CHC</td>
       <td>1</td>
       <td>43442</td>
-      <td>31614501</td>
       <td>Wel</td>
       <td>154000</td>
       <td>LHX3, PROP1, SLC5A5, TRH, HOXA3, T...</td>
@@ -122,7 +137,6 @@ Daarnaast zal de pipeline voor bepaalde analyses (bijvoorbeeld CNV-diagnostiek) 
       <td>CM</td>
       <td>15</td>
       <td>44549</td>
-      <td>47469</td>
       <td>Niet</td>
       <td>508000</td>
       <td>RBM20, ACTC1, PRKAG2, DSC2, PLN, P...</td>
@@ -131,15 +145,18 @@ Daarnaast zal de pipeline voor bepaalde analyses (bijvoorbeeld CNV-diagnostiek) 
       <td>COWSO</td>
       <td>1</td>
       <td>43135</td>
-      <td>111514901</td>
       <td>Niet</td>
       <td>76000</td>
       <td>SDHD, PIK3R2, PTEN, PIK3CA, MTOR, ...</td>
     </tr>
   </tbody>
 </table>
-<br>
-<h2 id="Tabel-pakketten">Pakketten</h2><p>Hierin staan alle pakketten met versienummer met daaraan gekoppeld de genen in het pakket en de grootte van het pakket.</p>
+<hr>
+
+<h2>Pakketten</h2>
+<p>Hierin staan alle pakketten met versienummer met daaraan gekoppeld 
+  de genen in het pakket en de grootte van het pakket.
+</p>
 <table style="text-align:right">
   <thead>
       <th>pakket</th>
@@ -181,8 +198,12 @@ Daarnaast zal de pipeline voor bepaalde analyses (bijvoorbeeld CNV-diagnostiek) 
     </tr>
   </tbody>
 </table>
-<br>
-<h2 id="Tabel-panels">Panels</h2><p>Hierin staan alle panels met versienummer met daaraan gekoppeld de genen in het panel en de grootte van het panel.</p>
+<hr>
+
+<h2>Panels</h2>
+<p>Hierin staan alle panels met versienummer met daaraan 
+  gekoppeld de genen in het panel en de grootte van het panel.
+</p>
 <table style="text-align:right">
   <thead>
       <th>panel</th>
@@ -224,8 +245,10 @@ Daarnaast zal de pipeline voor bepaalde analyses (bijvoorbeeld CNV-diagnostiek) 
     </tr>
   </tbody>
 </table>
-<br>
-<h2 id="Tabel-aandoeningen">Aandoeningen</h2><p>Koppeling tussen genesiscode en aandoening.</p>
+<hr>
+
+<h2>Aandoeningen</h2>
+<p>Koppeling tussen genesiscode en aandoening.</p>
 <table style="text-align:right">
   <thead>
       <th>genesis</th>

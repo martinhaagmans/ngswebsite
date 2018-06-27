@@ -10,6 +10,11 @@ from collections import OrderedDict
 from flask import Flask, make_response
 from flask import render_template, flash, redirect, url_for, request, session
 
+import sys, os
+
+ngslib = os.path.join('D:\\', 'GitHubRepos', 'ngsscriptlibrary')
+sys.path.append(ngslib)
+
 import config as cfg
 from ngsscriptlibrary import TargetDatabase
 from ngsscriptlibrary import TargetAnnotation
@@ -116,33 +121,44 @@ def do_connaiseur_login():
     return render_template('login.html')
 
 
-@app.route('/database/')
+@app.route('/uitleg/database/')
 def database_explained():
     return render_template('explanation_database.html')
 
 
-@app.route('/pipeline/')
+@app.route('/uitleg/pipeline/')
 def pipeline_explained():
     return render_template('explanation_pipeline.html')
 
 
-@app.route('/naamgeving/')
+@app.route('/uitleg/naamgeving/')
 def nomenclature_explained():
     return render_template('explanation_nomenclature.html')
+
+
+@app.route('/uitleg/samplesheet/')
+def samplesheet_explained():
+    return render_template('explanation_samplesheet.html')
+
+
+@app.route('/uitleg/pipeline/snv')
+def std_pipe():
+    return render_template('explanation_pipeline_vars.html')
+
+
+@app.route('/uitleg/pipeline/cnv')
+def cnv_pipe():
+    return render_template('explanation_pipeline_cnv.html')
+
+
+@app.route('/uitleg/pipeline/mosa')
+def mosaic_pipe():
+    return render_template('explanation_pipeline_mosa.html')
 
 
 @app.route('/nieuw/')
 def new_menu():
     return render_template('connoimenu.html')
-
-
-@app.route('/nonarchive/', methods=['GET', 'POST'])
-def show_all_nonarchive_samples():
-    if request.method == 'POST':
-        nonarchives = request.form['samples']
-        for line in nonarchives.split('\n'):
-            serie, sampleID, reason = line.split()
-    return render_template('addnonarchive.html')
 
 
 @app.route('/diagnostiek/')

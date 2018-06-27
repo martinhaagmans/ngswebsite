@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Samplesheet</h1>
+<hr>
+<p>
+  Een samplesheet bevat alle informatie die de MiSeq nodig heeft om een run
+  te starten. Hieronder vallen o.a. de gebruikte sequence kit, adaptersequenties
+  en de read- en barcodelengte. Daarnaast wordt de koppeling sampleID en
+  barcodeID hier vastgelegd voor de demultiplex.<br>
+  <br>
+  <h2>Barcodes</h2>
+  Aangezien in beide adapters een barcode-sequentie aanwezig is, zorgt de
+  combinatie van deze 2 sequenties voor de identificatie van het sample.
+  Deze barcodes zijn door de fabrikant genummerd van 97 tot en met 192 en
+  elk van deze getallen staat voor een combinatie van een I5 en een I7 barcode.
+  Omdat diversiteit in de sequenties (en dus het signaal) wenselijk is,
+  worden de barcodes zo opgeslagen dat twee opeenvolgende barcodes nooit
+  dezelfde I5 of I7 hebben.<br>
+  <br>
+  Om het overzichtelijk te houden zijn de barcodes
+  na het uitvullen opnieuw genummerd van 97-192, dit zijn dus de nummers
+  op de stripjes en deze worden ook ingevoerd bij het maken van een samplesheet.
+  Dit AMC-nummer wordt dan eerst omgezet in het nummer van de fabrikant waarna
+  wordt opgezocht welke I5/I7 combinatie dit voorstelt en deze wordt in de
+  samplesheet gezet.<br>
+  <br>
+  Voor de pipeline is het van belang welk pakket met daarbij horende analyses
+</p>
+
+{% endblock content %}

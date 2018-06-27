@@ -1,62 +1,76 @@
 body {
-    margin: 2;
-    font-family: Helvetica;
+  margin: 0;
+  padding: 0;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: #444;
 }
-table.dataframe {
-    border-collapse: collapse;
-    border: none;
+/*
+ * Formatting the header area
+ */
+header {
+  background-color: #DFB887;
+  height: 35px;
+  width: 100%;
+  opacity: .9;
+  margin-bottom: 10px;
 }
-table.dataframe tr {
-    border: none;
+header h1.logo {
+  margin: 0;
+  font-size: 1.7em;
+  color: #fff;
+  text-transform: uppercase;
+  float: left;
 }
-table.dataframe td, table.dataframe th {
-    margin: 0;
-    border: 1px solid white;
-    padding-left: 0.25em;
-    padding-right: 0.25em;
+header h1.logo:hover {
+  color: #fff;
+  text-decoration: none;
 }
-table.dataframe th:not(:empty) {
-    background-color: #fec;
-    text-align: left;
-    font-weight: normal;
+/*
+ * Centering the body content
+ */
+.container {
+  width: 1200px;
+  margin: 0 auto;
 }
-table.dataframe tr:nth-child(2) th:empty {
-    border-left: none;
-    border-right: 1px dashed #888;
+div.home {
+  padding: 10px 0 30px 0;
+  background-color: #E6E6FA;
+  -webkit-border-radius: 6px;
+     -moz-border-radius: 6px;
+          border-radius: 6px;
 }
-table.dataframe td {
-    border: 2px solid #ccf;
-    background-color: #f4f4ff;
+div.about {
+  padding: 10px 0 30px 0;
+  background-color: #E6E6FA;
+  -webkit-border-radius: 6px;
+     -moz-border-radius: 6px;
+          border-radius: 6px;
 }
-table {margin-left: 0 !important;}
-
-body {
-    margin: 0;
-    font-family: Helvetica;
+h2 {
+  font-size: 3em;
+  margin-top: 40px;
+  text-align: center;
+  letter-spacing: -2px;
 }
-table {
-    border-collapse: collapse;
-    border: none;
+h3 {
+  font-size: 1.7em;
+  font-weight: 100;
+  margin-top: 30px;
+  text-align: center;
+  letter-spacing: -1px;
+  color: #999;
 }
-table tr {
-    border: none;
+.menu {
+  float: right;
+  margin-top: 8px;
 }
-table td, table th {
-    margin: 0;
-    border: 1px solid white;
-    padding-left: 0.25em;
-    padding-right: 0.25em;
+.menu li {
+  display: inline;
 }
-table th:not(:empty) {
-    background-color: #fec;
-    text-align: left;
-    font-weight: normal;
+.menu li + li {
+  margin-left: 35px;
 }
-table tr:nth-child(2) th:empty {
-    border-left: none;
-    border-right: 1px dashed #888;
-}
-table td {
-    border: 2px solid #ccf;
-    background-color: #f4f4ff;
+.menu li a {
+  color: #444;
+  text-decoration: none;
 }

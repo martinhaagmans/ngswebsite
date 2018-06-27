@@ -1,0 +1,14 @@
+  var READTHEDOCS_DATA = {
+    project: "amcpipeline",
+    version: "latest",
+    language: "nl",
+    subprojects: {},
+    canonical_url: "http://amcpipeline.readthedocs.io/nl/latest/",
+    theme: "sphinx_rtd_theme",
+    builder: "sphinx",
+    docroot: "/./",
+    source_suffix: ".rst",
+    api_host: "https://readthedocs.org",
+    commit: "f573417e"
+  };
+  

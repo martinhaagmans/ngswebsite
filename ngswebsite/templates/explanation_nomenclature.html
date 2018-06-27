@@ -2,75 +2,80 @@
 {% block content %}
 
 <h1>NOMENCLATUUR</h1>
-<br>
+<hr>
 <h2>Capture</h2>
 <p>Een capture is een verzameling probes die gekocht worden bij de
-fabrikant, bijvoorbeeld Nimblegen. Doorgaans targetten deze probes de
-coderende gebieden van de genen van interesse, maar intronen of
-regalutoire elementen kunnen ook het taget zijn. In het AMC worden
-verschillende captures gebruikt en in de meeste gevallen bevat elke
-capture 1 genpakket. Indien het target van het genpakket kleiner dan 100
- kb is kan er om experimentele redenen (capture-efficiëntie) worden
-gekozen meerdere van deze kleine genpakketten op 1 capture te plaatsen.
-Een andere reden om dit te doen is kostenbesparing, als er weinig
-patiënten binnenkomen voor een bepaald pakket kan dit gecombineerd
-worden met een ander pakket waarvoor weinig patiënten binnenkomen zodat
-er toch meerdere patiënten op 1 capture kunnen en de kosten gedeeld
-worden. Deze verschillende genpakketten worden  na sequencing gescheiden
- gehouden in de analyse zodat alleen varianten van het betreffende
-genpakket gerapporteerd worden. Voor het uitrekenen van coverage,
-percentage reads ontarget en dergelijke wordt de capture als geheel
-geanalyseerd. Ook voor de normalisatie in de CNV-detectie zal de gehele
-capture gebruikt worden, uiteraard worden uiteindelijk alleen de
-gedetecteerde CNV’s binnen het aangevraagde genpakket gerapporteerd.</p>
+    fabrikant, bijvoorbeeld Nimblegen. Doorgaans targetten deze probes de
+    coderende gebieden van de genen van interesse, maar intronen of
+    regalutoire elementen kunnen ook het taget zijn. In het AMC worden
+    verschillende captures gebruikt en in de meeste gevallen bevat elke
+    capture 1 genpakket. Indien het target van het genpakket kleiner dan 100
+    kb is kan er om experimentele redenen (capture-efficiëntie) worden
+    gekozen meerdere van deze kleine genpakketten op 1 capture te plaatsen.
+    Een andere reden om dit te doen is kostenbesparing, als er weinig
+    patiënten binnenkomen voor een bepaald pakket kan dit gecombineerd
+    worden met een ander pakket waarvoor weinig patiënten binnenkomen zodat
+    er toch meerdere patiënten op 1 capture kunnen en de kosten gedeeld
+    worden. Deze verschillende genpakketten worden  na sequencing gescheiden
+    gehouden in de analyse zodat alleen varianten van het betreffende
+    genpakket gerapporteerd worden. Voor het uitrekenen van coverage,
+    percentage reads ontarget en dergelijke wordt de capture als geheel
+    geanalyseerd. Ook voor de normalisatie in de CNV-detectie zal de gehele
+    capture gebruikt worden, uiteraard worden uiteindelijk alleen de
+    gedetecteerde CNV’s binnen het aangevraagde genpakket gerapporteerd.
+    </p>
 <br>
+
 <h2>Genpakket</h2>
 <p>Een genpakket is een verzameling genen behorend bij een bepaalde
-(groep) aandoeningen. Tenzij uitdrukkelijk anders gespecificeerd worden
-van alle genen binnen een pakket de coderende exonen inclusief een flank
- van 20bp intron aan zowel de 5’ als aan de 3’ van het exon volledig
-geanalyseerd. Dit betekent <I>in principe</I> dat alle gebieden of
-zelfs basen met onvoldoende informatieve coverage voor variantdetectie
-met sanger sequencing geanalyseerd zullen worden en dus gerapporteerd
-zullen worden na bioinformatische analyse. Er worden nooit varianten
-buiten een genpakket gerapporteerd. </p>
+    (groep) aandoeningen. Tenzij uitdrukkelijk anders gespecificeerd worden
+    van alle genen binnen een pakket de coderende exonen inclusief een flank
+    van 20bp intron aan zowel de 5’ als aan de 3’ van het exon volledig
+    geanalyseerd. Dit betekent <I>in principe</I> dat alle gebieden of
+    zelfs basen met onvoldoende informatieve coverage voor variantdetectie
+    met sanger sequencing geanalyseerd zullen worden en dus gerapporteerd
+    zullen worden na bioinformatische analyse. Er worden nooit varianten
+    buiten een genpakket gerapporteerd. 
+</p>
 <br>
 
 <h2>TypeA-panel</h2>
 <p>Binnen een genpakket kan een panel onderscheiden worden. Dit kan
-bijvoorbeeld een verzameling belangrijke exonen of bekende mutaties
-zijn. Indien een genpakket een TypeA-panel bevat worden alleen de
-gebieden in dit panel volledig geanalyseerd en dus eventueel met sanger
-sequencing geanalyseerd. Omdat alle varianten binnen een genpakket
-gerapporteerd worden kunnen er dus varianten gerapporteerd worden buiten
- dit TypeA-panel. Er worden nooit te sangeren fragmenten gerapporteerd
-buiten een TypeA-panel.</p>
+    bijvoorbeeld een verzameling belangrijke exonen of bekende mutaties
+    zijn. Indien een genpakket een TypeA-panel bevat worden alleen de
+    gebieden in dit panel volledig geanalyseerd en dus eventueel met sanger
+    sequencing geanalyseerd. Omdat alle varianten binnen een genpakket
+    gerapporteerd worden kunnen er dus varianten gerapporteerd worden buiten
+    dit TypeA-panel. Er worden nooit te sangeren fragmenten gerapporteerd
+    buiten een TypeA-panel.
+</p>
 <br>
+
 <h2>TL;DR</h2>
 <table>
-<colgroup>
-    <col width="26%">
-    <col width="74%">
-</colgroup>
-<thead valign="bottom">
-    <tr class="row-odd">
-        <th class="head">Naam</th>
-        <th class="head">Korte beschrijving</th>
-    </tr>
-</thead>
-<tbody valign="top">
-    <tr class="row-even">
-        <td>Capture</td>
-        <td>Verzameling probes.</td>
-    </tr>
-    <tr class="row-odd">
-        <td>Genpakkett</td>
-        <td>Verzameling genen op een capture.</td>
-    </tr>
-    <tr class="row-even">
-        <td>TypeA-panel</td>
-        <td>Verzameling gebieden binnen een genpakket.</td>
-    </tr>
-</tbody>
+    <colgroup>
+        <col width="26%">
+        <col width="74%">
+    </colgroup>
+    <thead valign="bottom">
+        <tr class="row-odd">
+            <th class="head">Naam</th>
+            <th class="head">Korte beschrijving</th>
+        </tr>
+    </thead>
+    <tbody valign="top">
+        <tr class="row-even">
+            <td>Capture</td>
+            <td>Verzameling probes.</td>
+        </tr>
+        <tr class="row-odd">
+            <td>Genpakkett</td>
+            <td>Verzameling genen op een capture.</td>
+        </tr>
+        <tr class="row-even">
+            <td>TypeA-panel</td>
+            <td>Verzameling gebieden binnen een genpakket.</td>
+        </tr>
+    </tbody>
 </table>
 {% endblock %}
