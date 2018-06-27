@@ -12,9 +12,6 @@ from flask import render_template, flash, redirect, url_for, request, session
 
 import sys, os
 
-ngslib = os.path.join('D:\\', 'GitHubRepos', 'ngsscriptlibrary')
-sys.path.append(ngslib)
-
 import config as cfg
 from ngsscriptlibrary import TargetDatabase
 from ngsscriptlibrary import TargetAnnotation
