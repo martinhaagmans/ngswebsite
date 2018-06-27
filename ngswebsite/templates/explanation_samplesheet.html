@@ -7,10 +7,10 @@
   te starten. Hieronder vallen o.a. de gebruikte sequence kit, adaptersequenties
   en de read- en barcodelengte. Daarnaast wordt de koppeling sampleID en
   barcodeID hier vastgelegd voor de demultiplex.<br>
-  <br>
+  <hr>
   <h2>Barcodes</h2>
-  Aangezien in beide adapters een barcode-sequentie aanwezig is, zorgt de
-  combinatie van deze 2 sequenties voor de identificatie van het sample.
+  In beide adapters is een barcode-sequentie aanwezig is, en de
+  combinatie van deze 2 sequenties zorgt voor de identificatie van het sample.
   Deze barcodes zijn door de fabrikant genummerd van 97 tot en met 192 en
   elk van deze getallen staat voor een combinatie van een I5 en een I7 barcode.
   Omdat diversiteit in de sequenties (en dus het signaal) wenselijk is,
@@ -18,13 +18,25 @@
   dezelfde I5 of I7 hebben.<br>
   <br>
   Om het overzichtelijk te houden zijn de barcodes
-  na het uitvullen opnieuw genummerd van 97-192, dit zijn dus de nummers
-  op de stripjes en deze worden ook ingevoerd bij het maken van een samplesheet.
+  na het uitvullen opnieuw genummerd van 97-192, dit is de in het lab 
+  gehanteerde nummering en deze wordt gebruikt bij het maken van een samplesheet.
   Dit AMC-nummer wordt dan eerst omgezet in het nummer van de fabrikant waarna
   wordt opgezocht welke I5/I7 combinatie dit voorstelt en deze wordt in de
   samplesheet gezet.<br>
+  <hr>
+  <h2>Analyse</h2>
+  Voor de pipeline is het van belang welke aanvraag bij welk sample hoort. Door de 
+  database met de koppeling tussen genesiscode en capture, pakket, panel en analyses
+  is de genesiscode voldoende informatie voor de pipeline. Dit heeft als voordeel 
+  dat versies van captures, pakketten en panels centraal beheerd kunnen worden.<br>
   <br>
-  Voor de pipeline is het van belang welk pakket met daarbij horende analyses
+  Omdat er voor steeds meer pakketten CNV analyse wordt aangevraagd is ervoor gekozen
+  voor elk sample aan te geven of het geschikt is voor CNV analyse. Ingestuurd DNA is
+  dat vaak niet en deze worden geëxcludeerd uit het CNV archief. Deze informatie wordt
+  per sample opgegeven bij het maken van de samplesheet en dit wordt verwerkt in een 
+  database voor CNV analyse. Wanneer deze serie dan voor analyse wordt aangeboden is al 
+  bekend welke samples niet geschikt zijn voor het archief zodat de analyse meteen na het
+  sequencen kan starten.
 </p>
 
 {% endblock content %}
