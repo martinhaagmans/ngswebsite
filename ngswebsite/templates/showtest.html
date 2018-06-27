@@ -2,6 +2,7 @@
 {% extends "base.html" %}
 {% block content %}
 <h1> {{ todo.aandoening }} </h1><br>
+<hr>
 <table with=60%>
     <tr>
         <th colspan=2>Pipeline targets en analyses</th>
@@ -61,7 +62,7 @@
 {% endif %}
 
 <hr>
-<h3>Captures</h3>
+<h2>Captures</h2>
 <table width=60%>
     <col width=15%>
     <col width=10%>
@@ -95,11 +96,11 @@
 </table>
 
 <hr>
-<h3>Pakketten</h3>
-<table width=40%>
+<h2>Pakketten</h2>
+<table width=60%>
     <col width=15%>
     <col width=15%>
-    <col width=10%>
+    <col width=15%>
     <col width=10%>
     <tr>
         <th>Versie</th>
@@ -125,11 +126,11 @@
 
 {% if todo.panel %}
     <hr>
-    <h3>Panels</h3>
-<table width=40%>
+    <h2>Panels</h2>
+<table width=60%>
     <col width=15%>
     <col width=15%>
-    <col width=10%>
+    <col width=15%>
     <col width=10%>
         <tr>
         <th>Versie</th>

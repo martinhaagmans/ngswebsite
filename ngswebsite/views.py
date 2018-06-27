@@ -151,9 +151,9 @@ def cnv_pipe():
     return render_template('explanation_pipeline_cnv.html')
 
 
-@app.route('/uitleg/pipeline/')
+@app.route('/uitleg/pipeline/mosa')
 def mosaic_pipe():
-    return render_template('explanation_pipeline_mosaic.html')
+    return render_template('explanation_pipeline_mosa.html')
 
 
 @app.route('/nieuw/')

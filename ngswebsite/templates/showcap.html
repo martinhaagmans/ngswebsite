@@ -2,10 +2,9 @@
 {% extends "base.html" %}
 
 {% block content %}
-
 <h1>{{cap}}</h1>
-<br>
-<h5>Genesis:</h5>
+<hr>
+<h4>Genesis</h4>
 <tr>
     {% for test in genesis %}
         <td>
@@ -17,7 +16,7 @@
 </tr>
 <br>
 
-<h5>OID-nummers</h5>
+<h4>OID-nummers</h4>
 <tr>
     {% for o in oid %}
         <td><li>OID{{o}}</li></td>

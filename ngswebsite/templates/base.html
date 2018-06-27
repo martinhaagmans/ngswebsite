@@ -15,8 +15,10 @@
 <body width=100%>
     <div name=menu>
         <a href="{{ url_for('intro') }}"> Intro </a>
+        <a href="{{ url_for('pipeline_explained') }}">Pipeline</a>
+        <a href={{url_for('database_explained')}}>Database</a> 
         <a href="{{ url_for('show_all_tests') }}"> Aanbod </a>
-        <a href="{{ url_for('upload_labexcel') }}"> Samplesheet </a>
+        <a id=samplesheet href="{{ url_for('upload_labexcel') }}"> Samplesheet </a>
         {% if session['logged_in'] %}
             <a id=connoisseur href="{{ url_for('new_menu') }}"> &#x2714; Connoiseur </a>
         {% else %}
@@ -45,11 +47,4 @@
     {% endwith %}
     {% block content %}{% endblock %}
 </body>
-<style>
-.connoisseur {
-    text-align: right;
-    float: right;
-}
-
-</style>
 </html>

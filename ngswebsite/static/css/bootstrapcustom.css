@@ -21,8 +21,7 @@ html {
 
 .snakemake{
   display: block;
-  padding: 20px;
-  margin: 1em;
+  margin: 0.2em;
   font-size: 10;
 }
 
@@ -83,7 +82,7 @@ figure,
 main {
   display: block;
   text-align:center;
-  font-size:8;
+  font-size:0.85em;
   font-style: italic;
 }
 
@@ -656,4 +655,36 @@ samp {
   font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   font-size: 0.9em;
   margin-left: 1em;
+}
+
+#connoisseur {
+    text-align: right;
+    float: right;
+}
+
+.math {
+  text-align: center;
+  font-size: 1.5em;
+}
+
+.frac {
+  display: inline-block;
+  position: relative;
+  vertical-align: middle;
+  letter-spacing: 0.001em;
+  text-align: center;
+}
+.frac > span {
+  display: block;
+  padding: 0.5em;
+}
+.frac span.bottom {
+  border-top: thin solid black;
+}
+.frac span.symbol {
+  display: none;
+}
+.letop {
+  background-color: pink;
+  border-left: 6px solid black;
 }

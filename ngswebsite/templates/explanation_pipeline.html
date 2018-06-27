@@ -6,6 +6,10 @@
 <a href="https://snakemake.readthedocs.io/en/latest/">
     <img src="https://img.shields.io/badge/snakemake-≥3.5.2-brightgreen.svg?style=flat-square" alt="Snakemake" />
 </a>
+<br>
+<br>
+<div class="github-card" data-github="zaag/ngspipeline" data-width="400" data-height="" data-theme="default"></div>
+<script src="//cdn.jsdelivr.net/github-cards/latest/widget.js"></script>
 
 <p>De AMC-pipeline is een <a href="http://snakemake.readthedocs.io/en/stable/">snakemake</a>
     workflow.  Snakemake is een workflow management systeem dat gebruik maakt van
@@ -13,15 +17,29 @@
     input files (bijvoorbeeld fastq's) output files te maken (bam, vcf etc.).<br>
     <br>
     Een regel heeft input, output en een methode om output van input te maken. In
-    de weergegeven regel is die methode  een shell commando waarin o.a.
+    de hieronder weergegeven regel is die methode een shell commando waarin o.a.
     BWA wordt gebruikt. In plaats van voor elk sample de exacte filenamen van de
     in- en output files op te geven wordt er gebruik gemaakt van wildcards.
-    In dit voorbeeld is de gebruikte wildcard <code>{sample}</code> zodat snakemake voor elk
+    In dit voorbeeld is de gebruikte wildcard {sample} zodat snakemake voor elk
     sample met de R1 en R2 fastq een gesorteerde BAM maakt. Deze dient als input
     voor de volgende regel: het markeren van de duplicate reads. De output kan als
     temp-file worden aangemerkt en dat betekent dat snakemake het bestand verwijdert
-    wanneer het niet meer nodig is in de pipeline.<br>
-    <br>
+    wanneer het niet meer nodig is in de pipeline.
+    <pre><code class="snakemake">
+        rule mapreads:
+            input:
+                "reads/{sample}.R1.fastq.gz",
+                "reads/{sample}.R2.fastq.gz"
+            output:
+                "alignments/{sample}.sorted.bam"
+            params:
+                rg = "@RG\\tID:{sample}\\tLB:{sample}\\tPL:ILLUMINA\\tPU:{sample}\\tSM:{sample}"
+            shell:
+                """(bwa mem  -R '{params.rg}' -t 1 -M {REF} {input} |\
+                samtools view -Shu - |\
+                samtools sort -T {wildcards.sample}.tmp -O bam - &gt; {output}) 2&gt; {log}
+                """
+    </code></pre>
     Na het opstellen van de regels wordt aangegeven wat de
     gewenste outputfiles zijn. In de AMC-pipeline zijn dit sowieso per patient een
     BAM, een vcf en excel en per serie een PDF en excel. Snakemake
@@ -29,7 +47,22 @@
     files die nodig zijn als input voor de gevonden regel(s). Indien deze files nog niet
     bestaan zoekt snakemake een regel met (een van deze) files als output. Dit gaat
     zo door totdat snakemake een regel vindt waarvoor de inputfiles aanwezig zijn
-    en vanaf die regel gaat de workflow van start.
+    en vanaf die regel gaat de workflow van start.<br>
+    <br>
+    Voor elke diagnostische test worden SNV en kleine InDels gecalld, de andere analyses
+    zijn optioneel.
+    <ul>
+            <li style="margin-left: 0;">
+                <a href="{{ url_for('std_pipe') }}">SNV en kleine InDel detectie</a>
+            </li>
+            <li style="margin-left: 0;">
+                <a href="{{ url_for('cnv_pipe') }}">Copy number variant detectie</a>
+            </li>
+            <li style="margin-left: 0;">
+                    <a href="{{ url_for('mosaic_pipe') }}">Mozaiëk detectie</a>
+            </li>
+    </ul>
+        
 </p>
 
 <figure>
