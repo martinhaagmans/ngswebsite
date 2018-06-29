@@ -49,21 +49,25 @@
     zo door totdat snakemake een regel vindt waarvoor de inputfiles aanwezig zijn
     en vanaf die regel gaat de workflow van start.<br>
     <br>
-    Voor elke diagnostische test worden SNV en kleine InDels gecalld, de andere analyses
-    zijn optioneel.
+    Voor elke diagnostische test worden SNV en kleine InDels gecalld en een aantal 
+    kwaliteitscontroles uitgevierd. De overige analyses zijn optioneel.<br>
+    <br>
     <ul>
-            <li style="margin-left: 0;">
-                <a href="{{ url_for('std_pipe') }}">SNV en kleine InDel detectie</a>
-            </li>
-            <li style="margin-left: 0;">
-                <a href="{{ url_for('cnv_pipe') }}">Copy number variant detectie</a>
-            </li>
-            <li style="margin-left: 0;">
-                    <a href="{{ url_for('mosaic_pipe') }}">Mozaiëk detectie</a>
-            </li>
+        <li>
+            <a href="{{ url_for('qc_pipe') }}">Kwaliteitscontroles</a>
+        </li>
+        <li>
+            <a href="{{ url_for('std_pipe') }}">SNV en kleine InDel detectie</a>
+        </li>
+        <li>
+            <a href="{{ url_for('cnv_pipe') }}">Copy number variant detectie</a>
+        </li>
+        <li>
+                <a href="{{ url_for('mosaic_pipe') }}">Mozaiëk detectie</a>
+        </li>
     </ul>
-        
 </p>
+
 
 <figure>
     <img src='/static/amcpipeline.svg' width=100% height=100%>

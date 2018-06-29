@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Kwaliteitscontrole</h1>
+<p>De PDF bevat plots met ATCG-gehalte van de reads, de lengte van de library 
+    (met standaarddeviatie) en het variantpercentage van de gevonden SNP’s. 
+    De Excel file bevat naast informatie over het aantal reads en dergelijke 
+    ook de te sangeren fragmenten van alle patienten in de serie. In de Excel 
+    file worden ook ontbrekende of afwijkende SNPcheck’s benoemd.
+</p>
+
+<hr>
+<h2>Sample vervuiling</h2>
+<p>Om vervuilde samples op te sporen wordt van alle coderende SNV's het veriantperentage
+    geplot. Als een sample vervuild is dan wijken deze af van de gebruikelijke 50% en 100%.
+</p>
+
+<figure>
+    <img src='/static/vervuiling.png' width=100% height=100%>
+    <figcaption>
+        Een visueel voorbeeld van een vervuild (links) 
+        en een niet vervuild (rechts) sample.
+    </figcaption>
+</figure>
+<hr>
+
+<h2>Sample verwisseling</h2>
+<p>Om verwisselde samples op te sporen worden 12 SNP's gegenotypeerd met een TaqMan 
+    in een onafhankelijk experiment. Deze calls worden vergeleken met NGS-data en het 
+    resultaat wordt in een excel file geprint.
+</p>
+<figure>
+    <img src='/static/verwisseling.png' width=100% height=100%>
+    <figcaption>
+        Een visueel voorbeeld van een verwisseld (links) 
+        en een niet verwisseld (rechts) sample.
+    </figcaption>
+</figure>
+
+<hr>
+<h2>Niet met NGS te beoordelen target</h2>
+
+{% endblock content %}

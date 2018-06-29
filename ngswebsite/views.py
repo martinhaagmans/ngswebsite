@@ -12,6 +12,9 @@ from flask import render_template, flash, redirect, url_for, request, session
 
 import sys, os
 
+ngslib = os.path.join('D:\\', 'GitHubRepos', 'ngsscriptlibrary')	
+sys.path.append(ngslib)
+
 import config as cfg
 from ngsscriptlibrary import TargetDatabase
 from ngsscriptlibrary import TargetAnnotation
@@ -151,6 +154,10 @@ def cnv_pipe():
 @app.route('/uitleg/pipeline/mosa')
 def mosaic_pipe():
     return render_template('explanation_pipeline_mosa.html')
+
+@app.route('/uitleg/pipeline/qc')
+def qc_pipe():
+    return render_template('explanation_pipeline_qc.html')
 
 
 @app.route('/nieuw/')
