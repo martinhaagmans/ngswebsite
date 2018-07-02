@@ -351,9 +351,11 @@ template {
   }
   .badge {
     border: 1px solid #000;
+    margin: 1em;
   }
   .table {
     border-collapse: collapse !important;
+   
   }
   .table td,
   .table th {

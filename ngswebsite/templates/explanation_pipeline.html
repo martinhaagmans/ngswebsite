@@ -8,22 +8,22 @@
 </a>
 <br>
 <br>
-<div class="github-card" data-github="zaag/ngspipeline" data-width="400" data-height="" data-theme="default"></div>
+<div class="github-card" data-github="martinhaagmans/ngspipeline" data-width="400" data-height="" data-theme="default"></div>
 <script src="//cdn.jsdelivr.net/github-cards/latest/widget.js"></script>
 
 <p>De AMC-pipeline is een <a href="http://snakemake.readthedocs.io/en/stable/">snakemake</a>
     workflow.  Snakemake is een workflow management systeem dat gebruik maakt van
     door de gebruiker beschreven regels. Deze regels definieren hoe van bepaalde
-    input files (bijvoorbeeld fastq's) output files te maken (bam, vcf etc.).<br>
+    inputfiles (bijvoorbeeld fastq's) outputfiles te maken (bam, vcf etc.).<br>
     <br>
     Een regel heeft input, output en een methode om output van input te maken. In
     de hieronder weergegeven regel is die methode een shell commando waarin o.a.
     BWA wordt gebruikt. In plaats van voor elk sample de exacte filenamen van de
-    in- en output files op te geven wordt er gebruik gemaakt van wildcards.
+    in- en outputfiles op te geven wordt er gebruik gemaakt van wildcards.
     In dit voorbeeld is de gebruikte wildcard {sample} zodat snakemake voor elk
     sample met de R1 en R2 fastq een gesorteerde BAM maakt. Deze dient als input
     voor de volgende regel: het markeren van de duplicate reads. De output kan als
-    temp-file worden aangemerkt en dat betekent dat snakemake het bestand verwijdert
+    tempfile worden aangemerkt en dat betekent dat snakemake het bestand verwijdert
     wanneer het niet meer nodig is in de pipeline.
     <pre><code class="snakemake">
         rule mapreads:
