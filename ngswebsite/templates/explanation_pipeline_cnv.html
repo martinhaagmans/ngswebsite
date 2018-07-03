@@ -76,10 +76,10 @@
 <p>Omdat normale fluctuatie in coverage van een target van invloed is op de 
   gevoeligheid van de CNV-detectie wordt de standaarddeviatie van de gemiddelde 
   genormaliseerde coverage bepaald. Targets waarbij de standaarddeviatie groter 
-  is dan 0,15 worden als onbetrouwbaar beoordeeld. Targets met een gemiddelde 
-  genormaliseerde coverage van kleiner dan 0,2 zijn niet te beoordelen omdat 
-  de verschillen tussen positieve en negatieve samples te klein zijn om betrouwbaar
-  te kunnen callen.
+  is dan de treshold (0,2 in het voobeeld) worden als onbetrouwbaar beoordeeld. 
+  Targets met een gemiddelde genormaliseerde coverage van kleiner dan de treshold 
+  zijn niet te beoordelen omdat de verschillen tussen positieve en negatieve 
+  samples te klein zijn om betrouwbaar te kunnen callen.
   <figure>
       <img src='/static/StDevCutOff.png' width=100% height=100%>
       <figcaption>

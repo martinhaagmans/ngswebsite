@@ -3,15 +3,20 @@
 
 <h1>Pipeline</h1>
 <hr>
-<a href="https://snakemake.readthedocs.io/en/latest/">
-    <img src="https://img.shields.io/badge/snakemake-≥3.5.2-brightgreen.svg?style=flat-square" alt="Snakemake" />
-</a>
-<br>
-<br>
-<div class="github-card" data-github="martinhaagmans/ngspipeline" data-width="400" data-height="" data-theme="default"></div>
-<script src="//cdn.jsdelivr.net/github-cards/latest/widget.js"></script>
 
-<p>De AMC-pipeline is een <a href="http://snakemake.readthedocs.io/en/stable/">snakemake</a>
+<div class="row">
+    <div class=column>
+        <div class="github-card" data-github="martinhaagmans/ngspipeline" data-width="400" data-height="" data-theme="default"></div>
+    </div>
+    <div class=column>
+        <div class="github-card" data-github="martinhaagmans/ngstargets" data-width="400" data-height="" data-theme="default"></div>
+    </div>
+    <script src="//cdn.jsdelivr.net/github-cards/latest/widget.js"></script>
+</div>
+
+<p>De AMC-pipeline is een <a href="https://snakemake.readthedocs.io/en/latest/">
+    <img src="https://img.shields.io/badge/snakemake-≥3.5.2-brightgreen.svg?style=flat-square" alt="Snakemake" />
+    </a>
     workflow.  Snakemake is een workflow management systeem dat gebruik maakt van
     door de gebruiker beschreven regels. Deze regels definieren hoe van bepaalde
     inputfiles (bijvoorbeeld fastq's) outputfiles te maken (bam, vcf etc.).<br>
@@ -42,15 +47,16 @@
     </code></pre>
     Na het opstellen van de regels wordt aangegeven wat de
     gewenste outputfiles zijn. In de AMC-pipeline zijn dit sowieso per patient een
-    BAM, een vcf en excel en per serie een PDF en excel. Snakemake
-    bekijkt welke regels deze files als output beschrijven en zoekt dan naar de
+    BAM-file, een VCF-file en een excelfile en per serie een PDF-file en excelfile. 
+    Snakemake bekijkt welke regels deze files als output beschrijven en zoekt dan naar de
     files die nodig zijn als input voor de gevonden regel(s). Indien deze files nog niet
     bestaan zoekt snakemake een regel met (een van deze) files als output. Dit gaat
     zo door totdat snakemake een regel vindt waarvoor de inputfiles aanwezig zijn
     en vanaf die regel gaat de workflow van start.<br>
     <br>
-    Voor elke diagnostische test worden SNV en kleine InDels gecalld en een aantal 
-    kwaliteitscontroles uitgevierd. De overige analyses zijn optioneel.<br>
+    Voor elke diagnostische test worden single nucleotide variants (SNVs) en kleine 
+    InDels gecalld en een aantal kwaliteitscontroles uitgevoerd. De overige analyses 
+    zijn optioneel.<br>
     <br>
     <ul>
         <li>
