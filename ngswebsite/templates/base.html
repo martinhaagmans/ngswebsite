@@ -11,6 +11,8 @@
 </head>
 
 <body width=100%>
+    <img src='/static/AUMC_logo.png' width=100% height=100%>
+    <hr>
     <div name=menu>
         <a href="{{ url_for('intro') }}"> Intro </a>
         <a href="{{ url_for('pipeline_explained') }}">Pipeline</a>
@@ -24,7 +26,7 @@
         {% endif %}
     </div>
 
-    <hr style="border: 1px solid #808080;">
+    <hr>
 
     {% with messages = get_flashed_messages(with_categories=true) %}
 
@@ -47,9 +49,17 @@
     {% block content %}{% endblock %}
     
     <div name=footer style="text-align: right;">
-        <hr style="border: 1px solid #808080;">
+        <hr>
         Martin Haagmans - 2018
+        <hr>
     </div>
+<style>
+hr {
+    border: 1px solid black;
+}
+
+</style>
+
 
 </body>
 </html>
