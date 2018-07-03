@@ -20,9 +20,9 @@
         <a href="{{ url_for('show_all_tests') }}"> Aanbod </a>
         <a id=samplesheet href="{{ url_for('upload_labexcel') }}"> Samplesheet </a>
         {% if session['logged_in'] %}
-            <a id=connoisseur href="{{ url_for('new_menu') }}"> &#x2714; Connoiseur </a>
+            <a id=connoisseur href="{{ url_for('new_menu') }}"> &#x2714; Connaiseur </a>
         {% else %}
-            <a  id=connoisseur href="{{ url_for('new_menu') }}"> Connoiseur </a>
+            <a  id=connoisseur href="{{ url_for('new_menu') }}"> Connaiseur </a>
         {% endif %}
     </div>
 
