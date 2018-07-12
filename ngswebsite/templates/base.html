@@ -22,9 +22,9 @@
         <a href="{{ url_for('show_all_tests') }}"> Aanbod </a>
         <a id=samplesheet href="{{ url_for('upload_labexcel') }}"> Samplesheet </a>
         {% if session['logged_in'] %}
-            <a id=connoisseur href="{{ url_for('new_menu') }}"> &#x2714; Connaiseur </a>
+            <a id=connoisseur href="{{ url_for('new_menu') }}"> &#x2714; Connaisseur </a>
         {% else %}
-            <a  id=connoisseur href="{{ url_for('new_menu') }}"> Connaiseur </a>
+            <a  id=connoisseur href="{{ url_for('new_menu') }}"> Connaisseur </a>
         {% endif %}
     </div>
 
@@ -53,7 +53,7 @@
 <div name=footer style="text-align: right;">
     <hr style="border: 1px solid black;">
         <a href=mailto:ngs-connaisseur.dna.kg@listserver.amc.uva.nl>
-            Mail voor vragen en opmerkingen de NGS-connaiseur</a>
+            Mail voor vragen en opmerkingen de NGS-connaisseur</a>
              | © Copyright 2018 - Martin Haagmans
     <hr style="border: 1px solid black;">
     </div>
