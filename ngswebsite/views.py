@@ -611,7 +611,7 @@ def upload_labexcel():
                             duplicates = True
                         else:
                             sample_names.append(dnr)
-                        if cnvarchive.lower() != 'robot':
+                        if cnvarchive.lower() != 'robot' and cnvarchive.lower() != 'hand':
                             f_cnv.write('{}\t{}\t{}\n'.format(serie, dnr, cnvarchive))
 
             analist = request.form['analist']
