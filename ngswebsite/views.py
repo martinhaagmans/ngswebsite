@@ -1,8 +1,9 @@
 import os
 import re
 import json
-import hashlib
 import uuid
+import hashlib
+import logging
 import subprocess
 from functools import wraps
 from collections import OrderedDict
@@ -16,12 +17,15 @@ ngslib = os.path.join('D:\\', 'GitHubRepos', 'ngsscriptlibrary')
 sys.path.append(ngslib)
 
 import config as cfg
+
 from ngsscriptlibrary import TargetDatabase
 from ngsscriptlibrary import TargetAnnotation
 from ngsscriptlibrary import SampleSheet
-from ngsscriptlibrary import get_picard_header, boolean_to_number
+from ngsscriptlibrary import get_picard_header
+from ngsscriptlibrary import boolean_to_number
 
 app = Flask(__name__)
+
 app.secret_key = 'supergeheim222'
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config['UPLOAD_FOLDER'] = 'uploads'
@@ -32,6 +36,15 @@ DB = cfg.DB
 MYSQLUSER = cfg.MYSQLUSER
 check_user = cfg.USER
 check_passwd = cfg.PASSWORD
+
+log = 'samplesheets.log'
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+fh = logging.handlers.RotatingFileHandler(log, maxBytes=10*1024*1024, backupCount=5)
+fh.setLevel(logging.INFO)
+fh.setFormatter(formatter)
+logger.addHandler(fh)
 
 
 def hash_password(password):
@@ -455,22 +468,16 @@ def new_pakket():
                                            '{}_generegions.bed'.format(vcapture))
             pakketbed = os.path.join(targetrepo,
                                      '{}v{}_target.bed'.format(pakket, versie))
-            # annotated_pakketbed = os.path.join(targetrepo,
-            #                                    '{}v{}_target.annotated'.format(pakket,
-            #                                                                        versie))
-
             pakket_generegs = os.path.join(targetrepo,
                                            '{}v{}_generegions.bed'.format(pakket,
                                                                           versie))
             TA = TargetAnnotation(annoted_bed)
             size = 0
-            # with open(pakketbed, 'w') as f, open(annotated_pakketbed, 'w') as fa:
+
             with open(pakketbed, 'w') as f:
                 for line in TA.bed:
                     chromosome, start, end, gen = line
                     if gen in genen:
-                        # fa.write('{}\t{}\t{}\t{}\n'.format(chromosome, start,
-                        #                                    end, gen))
                         f.write('{}\t{}\t{}\t{}\n'.format(chromosome, start,
                                                           end, gen))
                         size += int(end) - int(start)
@@ -587,14 +594,16 @@ def upload_labexcel():
         serie = request.form['serie']
         nullijst_todo = request.form['samples']
         if nullijst_todo:
+            logger.info(f'Start maken samplesheet voor MS{serie}')
             uploads = os.path.join(app.root_path, app.config['UPLOAD_FOLDER'])
             with open(os.path.join(uploads, 'samplesheet.tmp'), 'w') as f, open(os.path.join(uploads, 'MS{}_sample_info.txt'.format(serie)), 'w') as f_cnv:
                 for line in nullijst_todo.split('\n'):
                     if line:
+                        logger.info(json.dumps(line))
                         line = line.replace(' ', '-')
                         try:
                             dnr, bc, test, cnvarchive = line.split()
-                        except ValueError as e:
+                        except ValueError:
                             flash('Onvoldoende kolommen als input.', 'error')
                             return render_template('uploadlabexcel.html')
                         if not test.endswith('.NGS'):
@@ -620,9 +629,9 @@ def upload_labexcel():
                             serie,
                             os.path.join(uploads, 'MS{}.csv'.format(serie)))
             S.write_files(analist=analist)
-
-            subprocess.call(["cp", os.path.join(uploads, 'MS{}_sample_info.txt'.format(serie)),
-                              "/data/dnadiag/databases/materiaalsoort"])
+            logger.info(f'Einde maken samplesheet voor MS{serie} op verzoek {analist}')
+            # subprocess.call(["cp", os.path.join(uploads, 'MS{}_sample_info.txt'.format(serie)),
+            #                   "/data/dnadiag/databases/materiaalsoort"])
             if duplicates:
                 flash("""Dubbele D-nummers zijn maar 1x in de samplesheet opgenomen.
                 Overleg met de NGS-connaisseur om een correcte samplesheet te maken.
