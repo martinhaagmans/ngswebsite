@@ -536,9 +536,9 @@ def new_panel():
                  """.format(panel, versie,  json.dumps(genen))
         T.change(sql)
         vpakket = T.get_pakket_for_panel(panel)
-        pakket, versiepakket = vpakket.split('v')
+        pakket, _versiepakket = vpakket.split('v')
         vcapture = T.get_capture_for_pakket(pakket)
-        capture, versiecapture = vcapture.split('v')
+        capture, _versiecapture = vcapture.split('v')
         annoted_bed = os.path.join(TARGETS, 'captures',
                                    '{}_target.annotated'.format(vcapture))
 
@@ -630,8 +630,8 @@ def upload_labexcel():
                             os.path.join(uploads, 'MS{}.csv'.format(serie)))
             S.write_files(analist=analist)
             logger.info(f'Einde maken samplesheet voor MS{serie} op verzoek {analist}')
-            # subprocess.call(["cp", os.path.join(uploads, 'MS{}_sample_info.txt'.format(serie)),
-            #                   "/data/dnadiag/databases/materiaalsoort"])
+            subprocess.call(["cp", os.path.join(uploads, 'MS{}_sample_info.txt'.format(serie)),
+                              "/data/dnadiag/databases/materiaalsoort"])
             if duplicates:
                 flash("""Dubbele D-nummers zijn maar 1x in de samplesheet opgenomen.
                 Overleg met de NGS-connaisseur om een correcte samplesheet te maken.
