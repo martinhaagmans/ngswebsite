@@ -3,7 +3,6 @@ import re
 import json
 import uuid
 import hashlib
-import logging
 import subprocess
 from functools import wraps
 from collections import OrderedDict
@@ -36,16 +35,6 @@ DB = cfg.DB
 MYSQLUSER = cfg.MYSQLUSER
 check_user = cfg.USER
 check_passwd = cfg.PASSWORD
-
-basedir = os.path.dirname(os.path.realpath(__file__))
-log = os.path.join(basedir, 'samplesheets.log')
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-fh = logging.handlers.RotatingFileHandler(log, maxBytes=10*1024*1024, backupCount=5)
-fh.setLevel(logging.INFO)
-fh.setFormatter(formatter)
-logger.addHandler(fh)
 
 
 def hash_password(password):
@@ -595,12 +584,10 @@ def upload_labexcel():
         serie = request.form['serie']
         nullijst_todo = request.form['samples']
         if nullijst_todo:
-            logger.info('Start maken samplesheet voor MS{}'.format(serie))
             uploads = os.path.join(app.root_path, app.config['UPLOAD_FOLDER'])
             with open(os.path.join(uploads, 'samplesheet.tmp'), 'w') as f, open(os.path.join(uploads, 'MS{}_sample_info.txt'.format(serie)), 'w') as f_cnv:
                 for line in nullijst_todo.split('\n'):
                     if line:
-                        logger.info(json.dumps(line))
                         line = line.replace(' ', '-')
                         try:
                             dnr, bc, test, cnvarchive = line.split()
@@ -630,7 +617,6 @@ def upload_labexcel():
                             serie,
                             os.path.join(uploads, 'MS{}.csv'.format(serie)))
             S.write_files(analist=analist)
-            logger.info('Einde maken samplesheet voor MS{} op verzoek {}'.format(serie, analist))
             subprocess.call(["cp", os.path.join(uploads, 'MS{}_sample_info.txt'.format(serie)),
                               "/data/dnadiag/databases/materiaalsoort"])
             if duplicates:
