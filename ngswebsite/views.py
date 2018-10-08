@@ -594,7 +594,7 @@ def upload_labexcel():
         serie = request.form['serie']
         nullijst_todo = request.form['samples']
         if nullijst_todo:
-            logger.info(f'Start maken samplesheet voor MS{serie}')
+            logger.info('Start maken samplesheet voor MS{}'.format(serie))
             uploads = os.path.join(app.root_path, app.config['UPLOAD_FOLDER'])
             with open(os.path.join(uploads, 'samplesheet.tmp'), 'w') as f, open(os.path.join(uploads, 'MS{}_sample_info.txt'.format(serie)), 'w') as f_cnv:
                 for line in nullijst_todo.split('\n'):
@@ -629,7 +629,7 @@ def upload_labexcel():
                             serie,
                             os.path.join(uploads, 'MS{}.csv'.format(serie)))
             S.write_files(analist=analist)
-            logger.info(f'Einde maken samplesheet voor MS{serie} op verzoek {analist}')
+            logger.info('Einde maken samplesheet voor MS{} op verzoek {}'.format(serie, analist))
             subprocess.call(["cp", os.path.join(uploads, 'MS{}_sample_info.txt'.format(serie)),
                               "/data/dnadiag/databases/materiaalsoort"])
             if duplicates:
