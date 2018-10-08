@@ -37,7 +37,8 @@ MYSQLUSER = cfg.MYSQLUSER
 check_user = cfg.USER
 check_passwd = cfg.PASSWORD
 
-log = 'samplesheets.log'
+basedir = os.path.dirname(os.path.realpath(__file__))
+log = os.path.join(basedir, 'samplesheets.log')
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
