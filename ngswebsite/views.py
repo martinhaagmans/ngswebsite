@@ -621,9 +621,9 @@ def upload_labexcel():
                             duplicates = True
                         else:
                             sample_names.append(dnr)
-                        robot = cnvarchive.lower() != 'robot'
-                        hand = cnvarchive.lower() != 'hand'
-                        flexstar = cnvarchive.lower() != 'flexstar'
+                        robot = cnvarchive.lower() == 'robot'
+                        hand = cnvarchive.lower() == 'hand'
+                        flexstar = cnvarchive.lower() == 'flexstar'
                         if not robot and not hand and not flexstar:
                             f_cnv.write('{}\t{}\t{}\n'.format(serie, dnr, cnvarchive))
 
