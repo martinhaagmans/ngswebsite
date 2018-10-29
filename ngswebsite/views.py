@@ -589,9 +589,6 @@ def upload_labexcel():
             flash('Geen serienummer opgegeven', 'error')
             return render_template('uploadlabexcel.html')
 
-        duplicates = False
-        sample_names = list()
-
         serie = request.form['serie']
         nullijst_todo = request.form['samples']
         if nullijst_todo:
@@ -617,10 +614,7 @@ def upload_labexcel():
                             return render_template('uploadlabexcel.html')
 
                         f.write('{}\t{}\t{}\n'.format(dnr, test, bc))
-                        if dnr in sample_names:
-                            duplicates = True
-                        else:
-                            sample_names.append(dnr)
+
                         robot = cnvarchive.lower() == 'robot'
                         hand = cnvarchive.lower() == 'hand'
                         flexstar = cnvarchive.lower() == 'flexstar'
@@ -636,10 +630,7 @@ def upload_labexcel():
             logger.info('Einde maken samplesheet voor MS{} op verzoek {}'.format(serie, analist))
             subprocess.call(["cp", os.path.join(uploads, 'MS{}_sample_info.txt'.format(serie)),
                               "/data/dnadiag/databases/materiaalsoort"])
-            if duplicates:
-                flash("""Dubbele D-nummers zijn maar 1x in de samplesheet opgenomen.
-                Overleg met de NGS-connaisseur om een correcte samplesheet te maken.
-                """, 'warning')
+
             return redirect(url_for('uploaded_file',
                                     filename='MS{}.csv'.format(serie)))
 
