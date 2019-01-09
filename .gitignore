@@ -102,3 +102,4 @@ ENV/
 
 config.py
 ngswebsite/uploads/*
+.vscode/settings.json
