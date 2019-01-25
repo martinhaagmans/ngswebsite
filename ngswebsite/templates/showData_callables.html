@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block content %}
+<script>
+    $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+    
+    $(document).ready(function() {
+        $('#myTable').DataTable({
+            dom: '<Bf<t>lip>',
+            ajax: { "url": $SCRIPT_ROOT + '/_callables'},
+            columns: [
+                { data: 'sample', title: 'Sample' },
+                { data: 'serie', title: 'Serie' },
+                { data: 'target', title: 'Target' },
+                { data: 'perc_callable', title: '% callable' },
+                { data: 'poormapping', title: 'Poor mapping' },
+                { data: 'lowcoverage', title: '1-29x' },
+                { data: 'nocoverage', title: '0x' },
+                { data: 'callable', title: 'Callable' },
+                { data: 'nr_sangers', title: 'Sangers' },
+            ],
+            order: [1, 'desc'],
+            pageLength: 25,
+            lengthMenu: [ 
+                            [25, 50, 100, -1], 
+                            [25, 50, 100, "All"] 
+                        ],
+            buttons: ['copy', 'csv', 'excel', 'print'],
+        })
+    })
+</script>
+
+<h1> {{title}} </h1>
+
+<p>
+    Een locus is callable als deze wordt gedekt door 30 of meer reads met een 
+    mapping (mk) en base kwaliteit (bk) van minstens 20. Een locus is poor mapping als 
+    deze voldoet aan de eisen om callable te zijn, maar voor 60% wordt gedekt 
+    door reads met een mq van minder dan 10. 
+    <br><br>
+    Ter verduidelijking: met 29 reads mq > 20 en 100 reads mq < 10 wordt de locus 
+    wegens onvoldoende coverage als niet callable gekwalificeerd. Bij 30 reads 
+    mq > 20 en 100 reads een mq < 10 wordt de locus wegens poormapping als niet 
+    callable gekwalificeerd.
+</p>
+
+
+<table id="myTable" class="display" width="100%"></table>
+
+{% endblock %}
+
+

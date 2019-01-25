@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block content %}
+<script>
+    $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+
+    function getTableData(table) {
+        const dataArray = [],
+            unknownArray = [],
+            negativeArray = [],
+            rsidArray = [],
+            locusArray = [];
+        
+        // loop table rows
+        table.rows({ search: "applied" }).every(function() {
+            const data = this.data();
+
+            locusArray.push(data[1]);
+            rsidArray.push(data[2]);
+            unknownArray.push(data[3]);
+            negativeArray.push(data[4]);
+            
+        });
+        
+        // store all data in dataArray
+        dataArray.push(locusArray, rsidArray, unknownArray,negativeArray);
+        
+        return dataArray;
+    }
+ 
+    $(document).ready(function() {
+        let table = $('#myTable').DataTable({
+            dom: '<Bf<t>lip>',
+            paging: false,
+            bFilter: false,
+            order: [0, 'asc'],
+            buttons: ['copy', 'csv', 'excel', 'print']
+        });
+        
+        let data = getTableData(table);
+        let ctx = document.getElementById("myChart");
+        let myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: data[1],
+                datasets: [ 
+                    {   label: 'Unknown', 
+                        data: data[2],
+                        backgroundColor: "#D3D3D3",
+                        },
+                    {   label: 'Negative',
+                        data: data[3],
+                        backgroundColor: "#A9A9A9",
+                        }
+                    ]  
+            },
+            options: {
+                legend: { position: 'right' },                     
+            }
+            
+        });    
+
+    })
+</script>
+
+<h1> {{title}} </h1>
+
+<p>
+    Aantal samples: {{nr_samples}} waarvan {{nr_samples_notaqman}} 
+    zonder TaqMan data. De volgende series zijn verwerkt: 
+    {% for serie in series %}
+        {{serie}}
+        {{ ", " if not loop.last else "." }}
+    {% endfor %}
+</p>
+
+<canvas id="myChart"></canvas>
+<br><br>
+<table  id="myTable" class="display" width="100%">
+    <thead>
+        <tr>
+            <th> SNP </th>
+            <th> Locus </th>
+            <th> rsID </th>
+            <th> Unknown </th>
+            <th> Negative </th>
+        </tr>
+    </thead>
+    {% for locus in loci %}
+    <tr>
+        <td>{{ gpos2snp[locus] }}</td>
+        <td>{{ locus }}</td>
+        <td>{{ snpcheckd[gpos2snp[locus]]['rsid'] }}</td>
+        <td>{{ taqman_unknown_counts[locus] }}</td>
+        <td>{{ taqman_negative_counts[locus] }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

@@ -1,7 +1,8 @@
 {% extends "base.html" %}
 {% block content %}
 <h1>Kwaliteitscontrole</h1>
-<p>Per serie produceert de pipeline een PDF en een excelfile. De PDF bevat 
+<p>
+    Per serie produceert de pipeline een PDF en een excelfile. De PDF bevat 
     plots met het ATCG-gehalte van de reads, de grootte van de library 
     (met standaarddeviatie) en het variantpercentage van de gevonden SNP’s. 
     De excelfile bevat naast informatie over het aantal reads, duplicates,
@@ -15,23 +16,25 @@
     het experiment en de data.
 </p>
 
-<hr>
+
 <h2>Sample verwisseling</h2>
-<p>Om verwisselde samples op te sporen worden 12 SNP's gegenotypeerd met een TaqMan 
+<p>
+    Om verwisselde samples op te sporen worden 12 SNP's gegenotypeerd met een TaqMan 
     in een onafhankelijk experiment. Deze calls worden vergeleken met NGS-data en het 
     resultaat wordt in een excelfile geprint.
 </p>
 <figure>
-    <img src='/static/verwisseling.png' width=100% height=100%>
+    <img src='/static/img/verwisseling.png'>
     <figcaption>
         Een visueel voorbeeld van een niet verwisseld (links) 
         en een verwisseld (rechts) sample.
     </figcaption>
 </figure>
 
-<hr>
+
 <h2>Niet met NGS te beoordelen targets</h2>
-<p>Om een target te kunnen beoordelen moeten er voldoende reads liggen die
+<p>
+    Om een target te kunnen beoordelen moeten er voldoende reads liggen die
     aan de gestelde kwalitetiseisen voldoen. Onvoldoende informatieve reads 
     is een reden om een gebied als niet te beoordelen te markeren evenals 
     een te veel aan niet-informatieve reads. Indien er meerdere basen/gebieden
@@ -45,23 +48,24 @@
     het patiëntrapport als in het serierapport. 
 </p>
 <figure>
-        <img src='/static/noncallable.png' width=100% height=100%>
-        <figcaption>
-            Een visueel voorbeeld de output voor niet te beoordelen
-            targets van een sample met (links) en een sample zonder
-            (rechts) niet met NGS te beoordelen targets.
-        </figcaption>
-    </figure>
+    <img src='/static/img/noncallable.png'>
+    <figcaption>
+        Een visueel voorbeeld de output voor niet te beoordelen
+        targets van een sample met (links) en een sample zonder
+        (rechts) niet met NGS te beoordelen targets.
+    </figcaption>
+</figure>
 
-<hr>
+
 <h2>Basepercentages library</h2>
-<p>Humaan genomisch DNA heeft een bepaalde verhouding AT/CG en een capture
+<p>
+    Humaan genomisch DNA heeft een bepaalde verhouding AT/CG en een capture
     kan deze verhouding veranderen, maar moet tussen samples die op dezelfde 
     capture zijn geweest wel consistent zijn. Om grote afwijkingen op te sporen
     wordt voor elk sample in een serie het percentage per base geplot. 
 </p>
 <figure>
-    <img src='/static/basepercentages.png' width=100% height=100%>
+    <img src='/static/img/basepercentages.png'>
     <figcaption>
         Een visueel voorbeeld van een serie met 4 afwijkende 
         libraries: 15D5915:SOv2, 18D0150:CMv17, 18D0759:SOv2, 
@@ -71,16 +75,16 @@
     </figcaption>
 </figure>
 
-<hr>
 <h2>Grootte library</h2>
-<p>Als er onvoldoende input-DNA is om met de robot een library te maken kan ervoor
+<p>
+    Als er onvoldoende input-DNA is om met de robot een library te maken kan ervoor
     worden gekozen handmatig een library te maken. Deze handmatige libraries zijn 
     kleiner en dit kan zeker bij CNV's ervoor zorgen dat de data afwijkt. Om deze 
     samples te kunnen herkennen wordt de gemiddelde insertsize (aantal bp 
     tussen twee adapters) met standaarddeviatie geplot.
 </p>
 <figure>
-    <img src='/static/insertsizes.png' width=100% height=100%>
+    <img src='/static/img/insertsizes.png'>
     <figcaption>
         Een visueel voorbeeld van een serie met 4 handmatige 
         libraries: 15D5915:SOv2, 18D0150:CMv17, 18D0759:SOv2, 
@@ -89,13 +93,13 @@
     </figcaption>
 </figure>
 
-<hr>
 <h2>Sample vervuiling</h2>
-<p>Om vervuilde samples op te sporen wordt van alle coderende SNV's het variantperentage
+<p>
+    Om vervuilde samples op te sporen wordt van alle coderende SNV's het variantperentage
     geplot. Als een sample vervuild is dan wijken deze af van de gebruikelijke 50% en 100%.
 </p>
 <figure>
-    <img src='/static/vervuiling.png' width=100% height=100%>
+    <img src='/static/img/vervuiling.png'>
     <figcaption>
         Een visueel voorbeeld van een vervuild (links) 
         en een niet vervuild (rechts) sample.

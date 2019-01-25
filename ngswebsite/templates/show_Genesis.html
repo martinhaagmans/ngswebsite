@@ -1,0 +1,136 @@
+<!-- extend from base layout -->
+{% extends "base.html" %}
+{% block content %}
+<h1> {{ todo.aandoening }} </h1><br>
+<table  id="myTable" class="display" maxwidth="40%">
+    <tr>
+        <th colspan=2>Pipeline targets en analyses</th>
+    </tr>
+    <tr>
+        <td>Genpakket: </td>
+        <td>{{todo.pakket}}</td>
+    </tr>
+    <tr>
+        <td>Type A panel: </td>
+        <td>{{todo.panel}}</td>
+    </tr>
+    <tr>
+        <td>CNV screening:</td>
+        <td>{{'Ja' if todo.cnvscreening else 'Nee'}}</td>
+    </tr>
+    <tr>
+        <td>CNV diagnostiek: </td>
+        <td>{{'Ja' if todo.cnvdiagnostiek else 'Nee'}}</td>
+    </tr>
+    <tr>
+        <td>Mozaiek diagnostiek: </td>
+        <td>{{'Ja' if todo.mozaiekdiagnostiek else 'Nee'}}</td>
+    </tr>
+</table>
+
+{% if todo.pakket %}
+    
+    <h2>{{todo.pakket}} genen</h2>
+    <p>
+        A-kwaliteit in groen.
+        <form action="" method=post enctype=multipart/form-data>
+              <input type="submit" name="genes" value="Download genen">
+        </form>
+        
+        {% if todo.panel %}
+            {% for grootte, genen in info.pakketten[todo.pakket]  %}
+                {%  for gen in genen %}
+                <strong class="greentext">
+                    {{ gen if gen in info.panels[todo.panel][0][1]}}
+                </strong>
+                <strong>
+                    {{ gen if gen not in info.panels[todo.panel][0][1]}}
+                </strong>
+                {% endfor %}
+            {% endfor %}
+        {% elif not todo.panel %}
+            {% for grootte, genen in info.pakketten[todo.pakket] %}
+            <strong class="greentext">
+                {% for gen in genen %}
+                    {{ gen }}
+                {% endfor %}
+            </strong>
+            {% endfor %}
+        {% endif %}
+    </p>
+{% endif %}
+
+<h2>Captures</h2>
+<table  id="myTable" class="display" width=100%>
+    <tr>
+        <th>Versie</th>
+        <th>OID</th>
+        <th>verdund</th>
+        <th>grootte</th>
+        <th></th>
+    </tr>
+    {% for capture in info.captures  %}
+        {% for oid, verdund, grootte in info.captures[capture]  %}
+            <tr>
+                <td>{{capture}}</td>
+                <td>{{oid}}</td>
+                <td>{{'Ja' if verdund else 'Nee' }}</td>
+                <td>{{'{:,}'.format(grootte)}}</td>
+                <td>
+                    <form action="" method=post enctype=multipart/form-data>
+                      <input type="submit" name="{{capture}}:captures" value="Download targets">
+                  </form>
+                </td>
+            </tr>
+        {% endfor %}
+    {% endfor %}
+</table>
+
+<h2>Pakketten en panels</h2>
+<table  id="myTable" class="display" width="100%">
+    <tr>
+        <th>Versie </th>
+        <th>Type</th>
+        <th>grootte</th>
+        <th># genen</th>
+        <th></th>
+    </tr>
+    {% for pakket in info.pakketten  %}
+        {% for grootte, genen in info.pakketten[pakket]  %}
+            <tr>
+                <td>{{pakket}}</td>
+                <td> Pakket </td>
+                <td>{{'{:,}'.format(grootte) if grootte is not none else ''}}</td>
+                <td>{{genen|length}}</td>
+                <td>
+                    <form action="" method=post enctype=multipart/form-data>
+                      <input type="submit" name="{{pakket}}:pakketten" value="Download targets">
+                  </form>
+                </td>
+            </tr>
+        {% endfor %}
+    {% endfor %}
+
+
+    {% if todo.panel %}
+        {% for panel in info.panels  %}
+            {% for grootte, genen in info.panels[panel]  %}
+                <tr>
+                    <td>{{panel}}</td>
+                    <td> Panel </td>
+
+                    <td>{{'{:,}'.format(grootte) if grootte is not none else ''}}</td>
+                    <td>{{genen|length}}</td>
+                    <td >
+                        <form action="" method=post enctype=multipart/form-data>
+                        <input type="submit" name="{{panel}}:panels" value="Download targets">
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        {% endfor %}
+    {% endif %}
+</table>
+
+
+{% endblock %}

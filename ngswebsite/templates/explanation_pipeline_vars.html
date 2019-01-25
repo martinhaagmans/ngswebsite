@@ -2,90 +2,89 @@
 {% extends "base.html" %}
 {% block content %}
 
-<h1>PIPELINE</h1>
+<h1>Pipeline</h1>
+<p>
+    De AMC diagnostische pipeline voor de analyse van sequence capture data
+    alignt reads tegen het referentiegenoom, callt de varianten en verzamelt
+    informatie over de kwaliteit van de data. De varianten worden op kwaliteit
+    gefilterd en in een VCF geraporteerd zodat ze in Cartagenia verder
+    geanalyseerd kunnen worden. De verzamelde informatie wordt per patient in
+    een excelfile gerapporteerd.
 
-<hr>
-<p>De AMC diagnostische pipeline voor de analyse van sequence capture data
-  alignt reads tegen het referentiegenoom, callt de varianten en verzamelt
-  informatie over de kwaliteit van de data. De varianten worden op kwaliteit
-  gefilterd en in een VCF geraporteerd zodat ze in Cartagenia verder
-  geanalyseerd kunnen worden. De verzamelde informatie wordt per patient in
-  een excelfile gerapporteerd.<br>
-  <br>
-  Als alle patiënten uit een serie de pipeline succesvol hebben
-  doorlopen dan worden er nog een aantal scripts gerund om informatie te
-  verzamelen en te presenteren.
+    Als alle patiënten uit een serie de pipeline succesvol hebben
+    doorlopen dan worden er nog een aantal scripts gerund om informatie te
+    verzamelen en te presenteren.
 </p>
 
-<hr>
+
 <h2>Voorbereiding</h2>
-<p>De pipeline begint met per sample verzamelen van targetfiles voor de verschillende
+<p>
+    De pipeline begint met per sample verzamelen van targetfiles voor de verschillende
     onderdelen in de pipeline en het maken van een todo lijst van analyses. Welke
     targetfiles bij welke stappen horen staat 
     <a href="{{ url_for('database_explained') }}">hier</a> uitgelgegd. 
 </p>
 
-<hr>
+
 <h2>Read alignment</h2>
-<p>De reads worden vergeleken met de referentie en de aligner (BWA-MEM) kiest
-  de best passende locatie in het genoom. Als de read op 
-  meerdere locaties even goed past dan wordt er willekeurig een van deze 
-  locaties gekozen en de read gemarkeerd als niet informatief (MAPQ0).
+<p>
+    De reads worden vergeleken met de referentie en de aligner (BWA-MEM) kiest
+    de best passende locatie in het genoom. Als de read op 
+    meerdere locaties even goed past dan wordt er willekeurig een van deze 
+    locaties gekozen en de read gemarkeerd als niet informatief (MAPQ0).
 </p>
 
-<hr>
+
 <h2>Markeren van duplicaten</h2>
-<p>Reads die dezelfde start en eindlocatie hebben worden als duplicaat
-  gemarkeerd. Dit zijn door PCR gedupliceerde moleculen en deze bevatten
-  dezelfde informatie, zodat er maar 1 telt als coverage.
+<p>
+    Reads die dezelfde start en eindlocatie hebben worden als duplicaat
+    gemarkeerd. Dit zijn door PCR gedupliceerde moleculen en deze bevatten
+    dezelfde informatie, zodat er maar 1 telt als coverage.
 </p>
 
-<hr>
+
 <h2>Base score recalibratie</h2>
-<p>De MiSeq geeft elke base een kwaliteitsscore. Om deze scores onderling
-  beter te kunnen vergelijken worden deze gerecalibreerd met GATK. Dit heeft
-  als bijkomend voordeel dat het spectrum van scores breder wordt, waardoor
-  er gevoeliger gefilterd kan worden.
+<p>
+    De MiSeq geeft elke base een kwaliteitsscore. Om deze scores onderling
+    beter te kunnen vergelijken worden deze gerecalibreerd met GATK. Dit heeft
+    als bijkomend voordeel dat het spectrum van scores breder wordt, waardoor
+er gevoeliger gefilterd kan worden.
 </p>
 
-<hr>
+
 <h2>Varianten callen en filteren</h2>
-<p>De varianten worden gecalld met de Haplotypecaller van GATK. Deze doet in
-  gebieden met een afwijking tov de referentie een lokale de-novo reassembly
-  van de reads en verdeelt de reads over verschillende haplotypes. Uit de twee
-  haplotypes met het meeste bewijs worden de varianten gecalld.
+<p>
+    De varianten worden gecalld met de Haplotypecaller van GATK. Deze doet in
+    gebieden met een afwijking tov de referentie een lokale de-novo reassembly
+    van de reads en verdeelt de reads over verschillende haplotypes. Uit de twee
+    haplotypes met het meeste bewijs worden de varianten gecalld.
 </p>
 
 <table>
-    <colgroup>
-        <col width="20%" />
-        <col width="7%" />
-        <col width="74%" />
-    </colgroup>
     <thead valign="bottom">
-        <tr class="row-odd">
-            <th class="head">FilterName</th>
-            <th class="head">Waarde</th>
-            <th class="head">Betekenis</th>
+        <tr>
+            <th>FilterName</th>
+            <th>Waarde</th>
+            <th>Betekenis</th>
         </tr>
     </thead>
-    <tbody valign="top">
-        <tr class="row-even">
+    <tbody>
+        <tr>
             <td>LowCoverage</td>
             <td>&lt; 30</td>
             <td>Minder dan 30x verticale coverage</td>
         </tr>
-        <tr class="row-odd">
+        <tr>
             <td>LowQual</td>
             <td>&lt; 50</td>
             <td>Kwaliteit te laag</td>
         </tr>
-        <tr class="row-odd">
+        <tr>
             <td>SOR</td>
             <td>&gt; 10</td>
             <td>Strandverdeling variant significant anders dan referentie</td>
         </tr>
-        <tr class="row-even">
+        <tr>
             <td>QD</td>
             <td>&lt; 4</td>
             <td>Kwaliteit gerelateerd aan coverage te laag</td>

@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block content %}
+
+<script>
+    $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};    
+   
+    $(document).ready(function() {
+        $('#myTable').DataTable({
+            dom: '<Bf<t>lip>',
+            ajax: { "url": $SCRIPT_ROOT + '/_picardmetrics'},
+            columns: [
+                { data: 'sample', title: 'Sample' },
+                { data: 'serie', title: 'Serie' },
+                { data: 'target', title: 'Target' },
+                { data: 'total_reads', title: 'Reads' },
+                { data: 'unique_reads', title: ' % Uniek' },
+                { data: 'ontarget', title: '% Ontarget' },
+                { data: 'mean', title: 'Coverage' },
+                { data: 'insert_mean', title: 'Mean insert' },
+                { data: 'insert_std', title: 'StDev insert' },
+                { data: 'at_dropout', title: 'AT dropout' },
+                { data: 'gc_dropout', title: 'GC dropout' },
+            ],
+            order: [1, 'desc'],
+            pageLength: 25,
+            lengthMenu: [ 
+                            [25, 50, 100, -1], 
+                            [25, 50, 100, "All"] 
+                        ],
+            buttons: ['copy', 'csv', 'excel', 'print'],
+        })
+    })
+</script>
+
+<h1> {{title}} </h1>
+
+<p>
+   Meer informatie over de verschillende hybrid selection metrics is 
+   <a href="https://broadinstitute.github.io/picard/picard-metric-definitions.html#HsMetrics"> 
+   hier </a> te vinden. 
+</p>
+
+<table id="myTable" class="display" width="100%"></table>
+{% endblock %}
+
+
