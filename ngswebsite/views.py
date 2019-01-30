@@ -15,24 +15,21 @@ from flask import jsonify
 from flask import request
 from flask import make_response
 
-
-ngslib = os.path.join('E:\\', 'GitHubRepos', 'ngsscriptlibrary')	
-sys.path.append(ngslib)
-
-from ngsscriptlibrary import TargetDatabase
-from ngsscriptlibrary import SampleSheet
-
 app = Flask(__name__)
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config['UPLOAD_FOLDER'] = 'uploads'
 
-HOME = Path('E:/GitHubRepos/')
+HOME = '/data/dnadiag'
+NGSLIBLOC = os.path.join(HOME, 'ngsscriptlibrary')
+sys.path.insert(0, NGSLIBLOC)
 
-DB_TARGETS= Path(HOME / 'ngstargets')
-DB_GENESIS = Path(DB_TARGETS / 'varia' / 'captures.sqlite')
-DB_METRICS = Path('ngswebsite/data/metrics.sqlite')
-DB_SAMPLESHEET = Path('ngswebsite/data/samplesheets.sqlite')
+DB_TARGETS= os.path.join(HOME, 'ngstargets')
+DB_GENESIS = os.path.join(DB_TARGETS, 'varia', 'captures.sqlite')
+DB_METRICS = os.path.join('ngswebsite', 'data', 'metrics.sqlite')
+DB_SAMPLESHEET = ('ngswebsite', 'data', 'samplesheets.sqlite')
 
+from ngsscriptlibrary import TargetDatabase
+from ngsscriptlibrary import SampleSheet
 
 basedir = os.path.dirname(os.path.realpath(__file__))
 log = os.path.join(basedir, 'samplesheets.log')
@@ -153,8 +150,7 @@ def download_target(targetname, targetsoort):
 
 @app.route('/snpcheck')
 def snpcheck():
-    print(DB_METRICS.resolve())
-    conn = sqlite3.connect(str(DB_METRICS.resolve()))
+    conn = sqlite3.connect(DB_METRICS)
     c = conn.cursor()
     c.execute('SELECT * from snpcheck')
     
@@ -233,7 +229,7 @@ def picardmetrics():
 
 @app.route('/_picardmetrics')
 def _picardmetrics():
-    conn = sqlite3.connect(str(DB_METRICS))
+    conn = sqlite3.connect(DB_METRICS)
     c = conn.cursor()
     c.execute('''SELECT h.SAMPLE, h.SERIE, h.BAIT_SET, h.TOTAL_READS,
                  h.PCT_PF_UQ_READS, h.PCT_SELECTED_BASES, 
@@ -275,7 +271,7 @@ def callables():
 
 @app.route('/_callables')
 def _callables():
-    conn = sqlite3.connect(str(DB_METRICS))
+    conn = sqlite3.connect(DB_METRICS)
     c = conn.cursor()
     c.execute('''SELECT c.SAMPLE, c.SERIE, c.TARGET, 
                  c.CALLABLE, c.NO_COVERAGE, c.LOW_COVERAGE, 
@@ -322,7 +318,7 @@ def _callables():
 
 @app.route('/diagnostiek/')
 def genesis():
-    conn = sqlite3.connect(str(DB_SAMPLESHEET))
+    conn = sqlite3.connect(DB_SAMPLESHEET)
     c = conn.cursor()
     c.execute('''SELECT SAMPLE, SERIE, genesis
                  FROM todo''')
@@ -452,7 +448,7 @@ def create_samplesheet():
 @app.route('/_genesiscodes/')
 @app.route('/create-samplesheet/_genesiscodes/')
 def _get_genesiscodes():
-    conn = sqlite3.connect(str(DB_GENESIS))
+    conn = sqlite3.connect(DB_GENESIS)
     c = conn.cursor()
     c.execute('''SELECT genesis FROM genesis''')
     genesis_codes = [val for tup in c.fetchall() for val in tup]
