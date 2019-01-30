@@ -26,7 +26,7 @@ sys.path.insert(0, NGSLIBLOC)
 DB_TARGETS= os.path.join(HOME, 'ngstargets')
 DB_GENESIS = os.path.join(DB_TARGETS, 'varia', 'captures.sqlite')
 DB_METRICS = os.path.join('ngswebsite', 'data', 'metrics.sqlite')
-DB_SAMPLESHEET = ('ngswebsite', 'data', 'samplesheets.sqlite')
+DB_SAMPLESHEET = os.path.join('ngswebsite', 'data', 'samplesheets.sqlite')
 
 from ngsscriptlibrary import TargetDatabase
 from ngsscriptlibrary import SampleSheet
