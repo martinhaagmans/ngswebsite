@@ -405,6 +405,7 @@ def show_genesis(genesis):
                             title=todo_list['aandoening'])
 
 
+@app.route('/createsamplesheet/', methods=['GET', 'POST'])
 @app.route('/create-samplesheet/', methods=['GET', 'POST'])
 def create_samplesheet():
     if request.method == 'POST':
@@ -435,8 +436,8 @@ def create_samplesheet():
         S.write_files(analist=analist)
         logger.info('Einde maken samplesheet voor MS{} op verzoek {}'.format(serie, analist))
 
-        # subprocess.call(["cp", os.path.join(uploads, 'MS{}_sample_info.txt'.format(serie)),
-        #                   "/data/dnadiag/databases/materiaalsoort"])
+        subprocess.call(["cp", os.path.join(uploads, 'MS{}_sample_info.txt'.format(serie)),
+                          "/data/dnadiag/databases/materiaalsoort"])
         return redirect(url_for('uploaded_file',
                                  filename='MS{}.csv'.format(serie)))
 
