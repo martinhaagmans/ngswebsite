@@ -3,6 +3,7 @@ import sys
 import json
 import logging
 import sqlite3
+import subprocess
 
 from pathlib import Path
 from logging import handlers
