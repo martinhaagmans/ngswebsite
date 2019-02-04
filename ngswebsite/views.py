@@ -1,80 +1,116 @@
 import os
-import re
+import sys
 import json
-import uuid
-import hashlib
 import logging
+import sqlite3
 import subprocess
-from functools import wraps
-from collections import OrderedDict
 
-from flask import Flask, make_response
-from flask import render_template, flash, redirect, url_for, request, session
+from pathlib import Path
+from logging import handlers
 
-import sys, os
-
-ngslib = os.path.join('D:\\', 'GitHubRepos', 'ngsscriptlibrary')	
-sys.path.append(ngslib)
-
-import config as cfg
-
-from ngsscriptlibrary import TargetDatabase
-from ngsscriptlibrary import TargetAnnotation
-from ngsscriptlibrary import SampleSheet
-from ngsscriptlibrary import get_picard_header
-from ngsscriptlibrary import boolean_to_number
+from flask import Flask
+from flask import render_template
+from flask import redirect
+from flask import url_for
+from flask import jsonify
+from flask import request
+from flask import make_response
 
 app = Flask(__name__)
-
-app.secret_key = 'supergeheim222'
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config['UPLOAD_FOLDER'] = 'uploads'
 
-HOME = cfg.HOME
-TARGETS = cfg.TARGETS
-DB = cfg.DB
-MYSQLUSER = cfg.MYSQLUSER
-check_user = cfg.USER
-check_passwd = cfg.PASSWORD
+HOME = '/data/dnadiag'
+NGSLIBLOC = os.path.join(HOME, 'ngsscriptlibrary')
+sys.path.insert(0, NGSLIBLOC)
+
+DB_TARGETS= os.path.join(HOME, 'ngstargets')
+DB_GENESIS = os.path.join(DB_TARGETS, 'varia', 'captures.sqlite')
+DB_METRICS = os.path.join('ngswebsite', 'data', 'metrics.sqlite')
+DB_SAMPLESHEET = os.path.join('ngswebsite', 'data', 'samplesheets.sqlite')
+
+from ngsscriptlibrary import TargetDatabase
+from ngsscriptlibrary import SampleSheet
 
 basedir = os.path.dirname(os.path.realpath(__file__))
 log = os.path.join(basedir, 'samplesheets.log')
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-fh = logging.handlers.RotatingFileHandler(log, maxBytes=10*1024*1024, backupCount=5)
+fh = handlers.RotatingFileHandler(log, maxBytes=10*1024*1024, backupCount=5)
 fh.setLevel(logging.INFO)
 fh.setFormatter(formatter)
 logger.addHandler(fh)
 
+def get_snpcheck_dict():
+    d = {1: {'rsid' : 'rs3729547', 'locus' : 'chr1:201334382', 'SNP': 'G/A'},
+         2: {'rsid' : 'rs12920', 'locus' : 'chr2:220285666', 'SNP': 'G/C'},
+         3: {'rsid' : 'rs4685076', 'locus' : 'chr3:14174427', 'SNP': 'A/T'},
+         4: {'rsid' : 'rs1805126', 'locus' : 'chr3:38592406', 'SNP': 'A/G'},
+         5: {'rsid' : 'rs2250736', 'locus' : 'chr3:53700550', 'SNP': 'T/C'},
+         6: {'rsid' : 'rs1801193', 'locus' : 'chr5:155771579', 'SNP': 'T/C'},
+         7: {'rsid' : 'rs2744380', 'locus' : 'chr6:7585967', 'SNP': 'G/C'},
+         8: {'rsid' : 'rs1063243', 'locus' : 'chr7:91726927', 'SNP': 'A/C'},
+         9: {'rsid' : 'rs4485000', 'locus' : 'chr10:18789724', 'SNP': 'T/G'},
+         10: {'rsid' : 'rs767809', 'locus' : 'chr10:75865065', 'SNP': 'G/A'},
+         11: {'rsid' : 'rs3759236', 'locus' : 'chr12:22068849', 'SNP': 'G/T'},
+         12: {'rsid' : 'rs1071646', 'locus' : 'chr15:63351840', 'SNP': 'C/A'}
+        }
+    return d
 
-def hash_password(password):
-    salt = uuid.uuid4().hex
-    return (hashlib.sha256(salt.encode()
-            + password.encode()).hexdigest()
-            + ':'
-            + salt)
+def get_gpos2snp_lookup():
+    d = {'chr1:201334382': 1,
+         'chr10:75865065': 10,
+         'chr12:22068849': 11,
+         'chr3:14174427': 3,
+         'chr5:155771579': 6,
+         'chr2:220285666': 2,
+         'chr3:38592406': 4,
+         'chr3:53700550': 5,
+         'chr6:7585967': 7,
+         'chr15:63351840': 12,
+         'chr10:18789724': 9,
+         'chr7:91726927': 8}
+    return d
 
+def check_serie_is_number(serie, max_serie=5000):
+    """Check if serie is valid and return boolean.
+    
+    Check if serie is a integer and if so if it is not
+    a made up number for research. First check if it can 
+    be converted to a integer and if so check if it has a 
+    smaller value than max_serie. Sometimes a serie
+    gets a follow letter (e.g. 400B, 400C) so perform the 
+    same checks minus the last character in serie.
+    """
+    is_number = True
+    try:
+        int(serie)
+    except ValueError:
+        is_number = False
+    else:
+        is_number = int(serie) < max_serie
+    try:
+        int(serie[:-1])
+    except ValueError:
+        is_number = False
+    else:
+        is_number = int(serie[:-1]) < max_serie        
+    return is_number
 
-def check_password(hashed_password, user_password):
-    password, salt = hashed_password.split(':')
-    return (password == hashlib.sha256(salt.encode()
-            + user_password.encode()).hexdigest())
+def count_values_in_list(list_to_count):
+    counts = list()
+    
+    for value in set(sorted(list_to_count)):
+        value_count = value, list_to_count.count(value)
+        counts.append(value_count)
 
+    return counts
 
-def logged_in(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if session.get('logged_in') is not None:
-            return f(*args, **kwargs)
-        else:
-            flash('Niet ingelogd.', 'error')
-            next_url = request.url
-            login_url = '{}?next={}'.format(url_for('do_connaiseur_login'),
-                                            next_url)
-            return redirect(login_url)
-    return decorated_function
-
+def generate(path):
+    with open(path) as f:
+        yield from f
+    os.remove(path)
 
 def download_genelist(todo_list, d, genesis):
     pakket = todo_list['pakket']
@@ -99,10 +135,9 @@ def download_genelist(todo_list, d, genesis):
     r.mimetype = 'text/csv'
     return r
 
-
 def download_target(targetname, targetsoort):
     out = list()
-    target = os.path.join(TARGETS, targetsoort,
+    target = os.path.join(DB_TARGETS, targetsoort,
                           '{}_target.bed'.format(targetname))
     with open(target, 'r') as f:
         for line in f:
@@ -114,100 +149,223 @@ def download_target(targetname, targetsoort):
     r.mimetype = 'text/csv'
     return r
 
+@app.route('/snpcheck')
+def snpcheck():
+    conn = sqlite3.connect(DB_METRICS)
+    c = conn.cursor()
+    c.execute('SELECT * from snpcheck')
+    
+    nr_samples = 0
 
-@app.route('/')
-def intro():
-    return render_template('index.html')
+    loci = list()
+    series = list()
+    taqman_nodata = list()
+    taqman_unknown = list()
+    taqman_negative = list()
+    taqman_unknown_counts = dict()
+    taqman_negative_counts = dict()
+    
 
+    for _ in c.fetchall():
+        sample, serie, data = _
 
-@app.route('/login/', methods=['GET', 'POST'])
-def do_connaiseur_login():
-    if request.method == 'POST':
-        user = request.form['username']
-        pwd = request.form['password']
-        if user == check_user and check_password(check_passwd, pwd):
-            session['logged_in'] = True
-            next_url = request.args.get('next')
-            return redirect(next_url)
+        if not check_serie_is_number(serie):
+            continue        
+
+        nr_samples += 1
+        
+        if not serie in series:
+            series.append(serie)
+
+        data = json.loads(data)
+        taqman_nodata_count = 0
+
+        for locus, call in data['COMP'].items():
+            if call.lower() == 'unknown':
+                taqman_unknown.append(locus)
+            elif call.lower() == 'negative':
+                taqman_negative.append(locus)
+            elif call.lower() == 'notaqman':
+                taqman_nodata_count += 1
+
+            if locus not in loci:
+                loci.append(locus)
+
+        if taqman_nodata_count == len(data['ALT'].keys()):
+            taqman_nodata.append(sample)
+
+    loci.sort()
+    series.sort()
+    taqman_nodata.sort()
+    taqman_unknown.sort()
+    taqman_negative.sort()
+
+    for locus in loci:
+        if locus in taqman_unknown:
+            taqman_unknown_counts[locus] = taqman_unknown.count(locus)
         else:
-            flash('Verkeerde gebruiker of wachtwoord.', 'error')
-            return render_template('login.html')
-    return render_template('login.html')
+            taqman_unknown_counts[locus] = 0
+
+        if locus in taqman_negative:
+            taqman_negative_counts[locus] = taqman_negative.count(locus)       
+        else:
+            taqman_negative_counts[locus] = 0
+        
+    return render_template('showData_snpcheck.html', title="TaqMan SNP check",
+                            loci=loci, 
+                            series=series,
+                            gpos2snp=get_gpos2snp_lookup(),
+                            snpcheckd=get_snpcheck_dict(),
+                            nr_samples=nr_samples,
+                            nr_samples_notaqman=len(taqman_nodata),                            
+                            taqman_unknown_counts=taqman_unknown_counts,
+                            taqman_negative_counts=taqman_negative_counts
+                            )
 
 
-@app.route('/uitleg/database/')
-def database_explained():
-    return render_template('explanation_database.html')
+@app.route('/picardmetrics')
+def picardmetrics():
+    return render_template('showData_picardmetrics.html', title='Picard metrics')
 
 
-@app.route('/uitleg/pipeline/')
-def pipeline_explained():
-    return render_template('explanation_pipeline.html')
+@app.route('/_picardmetrics')
+def _picardmetrics():
+    conn = sqlite3.connect(DB_METRICS)
+    c = conn.cursor()
+    c.execute('''SELECT h.SAMPLE, h.SERIE, h.BAIT_SET, h.TOTAL_READS,
+                 h.PCT_PF_UQ_READS, h.PCT_SELECTED_BASES, 
+                 h.MEAN_TARGET_COVERAGE, h.AT_DROPOUT, h.GC_DROPOUT,
+                 i.MEAN_INSERT_SIZE, i.STANDARD_DEVIATION 
+                 FROM hsmetrics h
+                 INNER JOIN insertsize i
+                 ON (h.SAMPLE = i.SAMPLE
+                 AND h.SERIE = i.SERIE)''')
+
+    data = list()
+
+    for _ in c.fetchall():
+        sample, serie, target, tr, uqr, ot, mean, at, gc, imean, std = _
+
+        if not check_serie_is_number(serie):
+            continue
+            
+        __ = dict()
+        __['sample'] = sample
+        __['serie'] = serie
+        __['target'] = target
+        __['total_reads'] = int(tr)
+        __['unique_reads'] = int(uqr*100)
+        __['ontarget'] = int(ot*100)
+        __['mean'] = int(mean)
+        __['at_dropout'] = round(float(at), 2)
+        __['gc_dropout'] = round(float(gc), 2)
+        __['insert_mean'] = round(float(imean), 0)
+        __['insert_std'] = round(float(std), 0)
+        data.append(__)
+    
+    return jsonify(data=data)
+
+@app.route('/callables')
+def callables():
+    return render_template('showData_callables.html', title='Callable loci')
 
 
-@app.route('/uitleg/naamgeving/')
-def nomenclature_explained():
-    return render_template('explanation_nomenclature.html')
+@app.route('/_callables')
+def _callables():
+    conn = sqlite3.connect(DB_METRICS)
+    c = conn.cursor()
+    c.execute('''SELECT c.SAMPLE, c.SERIE, c.TARGET, 
+                 c.CALLABLE, c.NO_COVERAGE, c.LOW_COVERAGE, 
+                 c.POOR_MAPPING_QUALITY, s.DATA
+                 FROM callable c
+                 INNER JOIN sangers s 
+                 ON (c.SAMPLE = s.SAMPLE
+                 AND c.SERIE = s.SERIE 
+                 AND c.TARGET = s.TARGET)
+                 ''')
 
+    data = list()
 
-@app.route('/uitleg/samplesheet/')
-def samplesheet_explained():
-    return render_template('explanation_samplesheet.html')
+    for _ in c.fetchall():
+        sample, serie, target, c, nc, lc, pm, sanger_data = _
 
+        if not check_serie_is_number(serie):
+            continue
 
-@app.route('/uitleg/pipeline/snv')
-def std_pipe():
-    return render_template('explanation_pipeline_vars.html')
+        total = int(c) + int(nc) + int(lc) + int(pm)
 
+        sanger_data = json.loads(sanger_data)
 
-@app.route('/uitleg/pipeline/cnv')
-def cnv_pipe():
-    return render_template('explanation_pipeline_cnv.html')
+        if 'Geen sangers' in sanger_data:
+            nr_sangers = 0
+        else:
+            nr_sangers = len(sanger_data)
 
-
-@app.route('/uitleg/pipeline/mosa')
-def mosaic_pipe():
-    return render_template('explanation_pipeline_mosa.html')
-
-@app.route('/uitleg/pipeline/qc')
-def qc_pipe():
-    return render_template('explanation_pipeline_qc.html')
-
-
-@app.route('/nieuw/')
-def new_menu():
-    return render_template('connoimenu.html')
+        __ = dict()
+        __['sample'] = sample
+        __['serie'] = serie
+        __['target'] = target
+        __['callable'] = int(c)
+        __['nocoverage'] = int(nc)
+        __['lowcoverage'] = int(lc)
+        __['poormapping'] = int(pm)
+        __['perc_callable'] = round((100 * (c / total)), 2)
+        __['nr_sangers'] = nr_sangers
+   
+        data.append(__)
+    
+    return jsonify(data=data)
 
 
 @app.route('/diagnostiek/')
-def show_all_tests():
-    T = TargetDatabase(DB)
-    tests = T.get_all_tests()
-    tests.sort()
-    tmp = dict()
-    capture_test = dict()
+def genesis():
+    conn = sqlite3.connect(DB_SAMPLESHEET)
+    c = conn.cursor()
+    c.execute('''SELECT SAMPLE, SERIE, genesis
+                 FROM todo''')
 
-    for test in tests:
-        tmp[test] = T.get_info_for_genesis(test)
-        cap = tmp[test]['capture']
-        capture_test[cap] = test
-    d = OrderedDict()
-    captures = list(capture_test.keys())
-    captures.sort()
-    for cap in captures:
-        for test in tests:
-            if tmp[test]['capture'] == cap:
-                d[test] = tmp[test]
-    return render_template('showalltests.html', tests=d)
+    T = TargetDatabase(DB_GENESIS)
+    all_genesis_codes = T.get_all_tests()
+    all_genesis_done = list()
+    all_series = list()
+
+    for _ in c.fetchall():
+
+        _sample, serie, genesis = _
+
+        if not check_serie_is_number(serie):
+            continue
+
+        all_genesis_done.append(genesis)
+
+        if serie not in all_series:
+            all_series.append(serie)
+
+    data = list()
+    
+    all_genesis_done.sort()
+
+    all_genesis_codes = sorted(all_genesis_codes)
+    
+    for g in all_genesis_codes:
+        d = T.get_info_for_genesis(g)
+        capture = d['capture']
+        pakket = d['pakket']
+        panel = d['panel']
+        aandoening = d['aandoening']
+        aantal = all_genesis_done.count(g)
+
+        data.append((g, aantal, capture, pakket, panel, aandoening))        
+        
+    return render_template('showData_allGenesis.html', 
+                            title='Verwerkte samples',
+                            data=data, 
+                            series=sorted(all_series))
 
 
 @app.route('/diagnostiek/<genesis>', methods=['GET', 'POST'])
-def show_testinfo(genesis):
-    T = TargetDatabase(DB)
-    tests = T.get_all_tests()
-    if genesis not in tests:
-        flash('{} niet gevonden'.format(genesis))
-        return redirect(url_for('show_all_tests'))
+def show_genesis(genesis):
+    T = TargetDatabase(DB_GENESIS)
 
     d = dict()
     d['captures'] = dict()
@@ -237,466 +395,116 @@ def show_testinfo(genesis):
 
     if request.method == 'POST':
         if 'genes' in request.form:
-            r = download_genelist(todo_list, d, genesis)
-            return r
+            return download_genelist(todo_list, d, genesis)
         else:
             data = request.form.to_dict()
             targetname, targetsoort = list(data.keys())[0].split(':')
-            r = download_target(targetname, targetsoort)
-            return r
-
-    return render_template('showtest.html', info=d, todo=todo_list)
-
-
-@app.route('/diagnostiek/nieuw/', methods=['GET', 'POST'])
-@logged_in
-def add_test():
-    T = TargetDatabase(DB)
-    captures = T.get_all_captures()
-    if request.method == 'POST':
-        capture = request.form['capture']
-        genesis = request.form['genesis']
-        aandoening = request.form['aandoening']
-        if request.form['pakket'] != '':
-            pakket = request.form['pakket']
-        elif request.form['pakket'] == '':
-            pakket = capture
-        if request.form['panel'] != '':
-            panel = request.form['panel']
-        elif request.form['panel'] == '':
-            panel = None
-
-        T.change("""INSERT INTO genesis (genesis, capture, pakket, panel,
-        cnvscreening, cnvdiagnostiek, mozaiekdiagnostiek)
-        VALUES ('{}', '{}', '{}', '{}', 1, 0, 0)
-        """.format(genesis, capture, pakket, panel))
-
-        T.change("""INSERT INTO aandoeningen VALUES ('{}', '{}')
-                 """.format(genesis, aandoening))
-        return redirect(url_for('show_testinfo', genesis=genesis))
-
-    return render_template('addtest.html', captures=captures)
-
-
-@app.route('/captures/<cap>')
-def show_tests_for_cap(cap):
-    T = TargetDatabase(DB)
-    info = T.get_all_info_for_vcapture(cap)
-    genesis = T.get_all_genesiscodes_for_vcapture(cap)
-    oid = list()
-    for tup in info:
-        o, verdund, size = tup
-        oid.append(o)
-    return render_template('showcap.html', oid=oid, genesis=genesis,
-                           verdund=verdund, size=size, cap=cap)
-
-
-@app.route('/captures/link/', methods=['GET', 'POST'])
-@logged_in
-def link_capture():
-    T = TargetDatabase(DB)
-    captures = T.get_all_captures()
-    gcodes = T.get_all_tests()
-    if request.method == 'POST':
-        capture = request.form['capture']
-        gcodes = request.form.getlist('test')
-        for gc in gcodes:
-            sql = """UPDATE genesis
-            SET capture='{}'
-            WHERE genesis='{}'
-            """.format(capture, gc)
-            T.change(sql)
-        return redirect(url_for('show_all_tests'))
-    return render_template('linkcapture.html', captures=captures, tests=gcodes)
-
-
-@app.route('/captures/nieuw/', methods=['GET', 'POST'])
-@logged_in
-def new_capture():
-    if request.method == 'POST':
-        T = TargetDatabase(DB)
-        cap = request.form['capture'].lower()
-        oid = request.form['oid']
-        vcap = re.search(r'v\d+$', cap)
-        if vcap is not None:
-            re.sub(r'v\d+$', '', cap)
-        if 'verdund' in request.form:
-            verdund = request.form['verdund']
-        elif 'verdund' not in request.form:
-            verdund = False
-        cap = cap.upper()
-        verdund = boolean_to_number(verdund)
-        allcaptures = T.get_all_captures()
-        if cap not in allcaptures:
-            versie = 1
-        elif cap in allcaptures:
-            versies = T.get_all_versions_for_capture(cap)
-            versies = [_.split('v')[1] for _ in versies]
-            versies.sort()
-            versie = int(versies[-1]) + 1
-
-        T.change("""INSERT INTO captures (capture, versie, OID, verdund, grootte)
-                 VALUES ('{}', {}, {}, {}, 0)
-                 """.format(cap, versie, oid, verdund))
-        flash('{} toegevoegd aan database'.format(request.form['capture']))
-        return redirect(url_for('new_target', cap='{}v{}'.format(cap, versie)))
-
-    return render_template('addcapture.html')
-
-
-@app.route('/captures/nieuw/target/<cap>', methods=['GET', 'POST'])
-@logged_in
-def new_target(cap):
-    if request.method == 'POST':
-        capture, versie = cap.split('v')
-        targetrepo = os.path.join(TARGETS, 'captures')
-        if not os.path.isdir(targetrepo):
-            flash('{} bestaat niet'.format(targetrepo), 'error')
-            return redirect(url_for('intro'))
-        genelist = request.form['genen'].split()
-        targetfile = request.files['targetfile']
-        name = '{}_target.bed'.format(cap)
-        targetfile.save(os.path.join(targetrepo, name))
-        targetfile = os.path.join(targetrepo, name)
-        T = TargetAnnotation(bedfile=targetfile, genes=genelist, host='localhost',
-                             user=MYSQLUSER, db='annotation')
-        notfound, notrequested = T.report_genecomp()
-        annotated_bed = T.annotate_bed_and_filter_genes()
-        annotated_bed_file = os.path.join(targetrepo,
-                                          name.replace('.bed', '.annotated'))
-        capsize = 0
-        with open(annotated_bed_file, 'w') as f:
-            for line in annotated_bed:
-                chromosome, start, end, gene = line
-                f.write('{}\t{}\t{}\t{}\n'.format(chromosome, start,
-                                                  end, gene))
-                size = int(end) - int(start)
-                capsize += size
-
-        generegion_file = os.path.join(targetrepo,
-                                       '{}_generegions.bed'.format(cap))
-        with open(generegion_file, 'w') as f:
-            for gene in genelist:
-                for region in T.get_region(gene):
-                    chromosome, start, end = region
-                    f.write('{}\t{}\t{}\t{}\n'.format(chromosome, start,
-                                                      end, gene))
-
-        picardheader = get_picard_header()
-        picard_file = os.path.join(targetrepo,
-                                   '{}_target.interval_list'.format(cap))
-        with open(picard_file, 'w') as f:
-            for line in picardheader:
-                f.write(line)
-            for line in annotated_bed:
-                chromosome, start, end, gene = line
-                f.write('{}\t{}\t{}\t+\t{}\n'.format(chromosome,
-                                                     start, end, cap))
-        sql = '''UPDATE captures
-        SET grootte={}, genen='{}'
-        WHERE (capture='{}' AND versie={})
-        '''.format(capsize, json.dumps(genelist), capture, versie)
-        TargetDatabase(DB).change(sql)
-        return render_template('newcapreport.html', notfound=notfound,
-                               notrequested=notrequested, cap=cap)
-
-    return render_template('addtargets.html', cap=cap)
-
-
-@app.route('/pakketten/nieuw/', methods=['GET', 'POST'])
-@logged_in
-def new_pakket():
-    if request.method == 'POST':
-        if request.form['naam'] == '':
-            flash('Geen pakket opgegeven', 'error')
-            return redirect(url_for('new_pakket'))
-        if request.form['genen'] == '':
-            flash('Geen genen opgegeven', 'error')
-            return redirect(url_for('new_pakket'))
-        pakket = request.form['naam'].lower()
-        genen = request.form['genen'].split()
-
-        vpakket = re.search(r'v\d+$', pakket)
-        if vpakket is not None:
-            re.sub(r'v\d+$', '', pakket)
-        pakket = pakket.upper()
-        T = TargetDatabase(DB)
-        allpakketten = T.get_all_pakketten()
-        if pakket not in allpakketten:
-            versie = 1
-        elif pakket in allpakketten:
-            versies = T.get_all_versions_for_pakket(pakket)
-            versies = [_.split('v')[1] for _ in versies]
-            versies.sort()
-            versie = int(versies[-1]) + 1
-
-        vcapture = T.get_capture_for_pakket(pakket)
-        capture, capversie = vcapture.split('v')
-        capgenen = T.get_genes_for_vcapture(vcapture)
-        notfound = list()
-        for g in genen:
-            if g not in capgenen:
-                notfound.append(g)
-
-        if len(notfound) > 0:
-            flash('{} niet in capture target'.format(', '.join(notfound)),
-                  'error')
-            return redirect(url_for('new_pakket'))
-
-        sql = """INSERT INTO pakketten (pakket, versie, genen)
-                 VALUES ('{}', {}, '{}')
-                 """.format(pakket, versie,  json.dumps(genen))
-        T.change(sql)
-
-        if capture == pakket:
-            sql = """UPDATE pakketten
-            SET grootte=(SELECT grootte
-                         FROM captures
-                         WHERE (capture='{}' AND versie={}))
-            WHERE (pakket='{}' and versie={})
-            """.format(capture, int(capversie), pakket, versie)
-            T.change(sql)
-        else:
-            targetrepo = os.path.join(TARGETS, 'pakketten')
-            if not os.path.isdir(targetrepo):
-                flash('{} bestaat niet'.format(targetrepo), 'error')
-                return redirect(url_for('intro'))
-
-            annoted_bed = os.path.join(TARGETS, 'captures',
-                                       '{}_target.annotated'.format(vcapture)
-                                       )
-            cap_generegions = os.path.join(TARGETS, 'captures',
-                                           '{}_generegions.bed'.format(vcapture))
-            pakketbed = os.path.join(targetrepo,
-                                     '{}v{}_target.bed'.format(pakket, versie))
-            pakket_generegs = os.path.join(targetrepo,
-                                           '{}v{}_generegions.bed'.format(pakket,
-                                                                          versie))
-            TA = TargetAnnotation(annoted_bed)
-            size = 0
-
-            with open(pakketbed, 'w') as f:
-                for line in TA.bed:
-                    chromosome, start, end, gen = line
-                    if gen in genen:
-                        f.write('{}\t{}\t{}\t{}\n'.format(chromosome, start,
-                                                          end, gen))
-                        size += int(end) - int(start)
-                for gen in genen:
-                    if ':' in gen and '-' in gen:
-                        chromosome, startend = chromosome.split(':')
-                        start, end = startend.split('-')
-                        f.write('{}\t{}\t{}\t{}\n'.format(chromosome, start,
-                                                          end, 'EXTRA'))
-                        size += int(end) - int(start)
-
-            with open(cap_generegions) as f, open(pakket_generegs, 'w') as fout:
-                for line in f:
-                    chromosome, start, end, gen = line.split()
-                    if gen in genen:
-                        fout.write('{}\t{}\t{}\t{}\n'.format(chromosome, start,
-                                                             end, gen))
-            sql = """UPDATE pakketten
-            SET grootte={}
-            WHERE (pakket='{}' AND versie={})
-            """.format(size, pakket, int(versie))
-            T.change(sql)
-        return redirect(url_for('show_all_tests'))
-    return render_template('addpakket.html')
-
-
-@app.route('/panels/nieuw/', methods=['GET', 'POST'])
-@logged_in
-def new_panel():
-    if request.method == 'POST':
-        if request.form['naam'] == '':
-            flash('Geen panel opgegeven')
-            return redirect(url_for('new_panel'))
-        if request.form['genen'] == '':
-            flash('Geen genen opgegeven')
-            return redirect(url_for('new_panel'))
-        panel = request.form['naam'].lower()
-        genen = request.form['genen'].split()
-
-        vpanel = re.search(r'v\d+$', panel)
-        if vpanel is not None:
-            re.sub(r'v\d+$', '', panel)
-            re.sub(r'typea$', '', panel)
-        panel = panel.upper()
-        T = TargetDatabase(DB)
-        allpanels = T.get_all_panels()
-        if panel not in allpanels:
-            versie = 1
-        elif panel in allpanels:
-            versies = T.get_all_versions_for_panel(panel)
-            versies = [_.split('v')[1] for _ in versies]
-            versies.sort()
-            versie = int(versies[-1]) + 1
-        sql = """INSERT INTO panels (panel, versie, genen)
-                 VALUES ('{}', {}, '{}')
-                 """.format(panel, versie,  json.dumps(genen))
-        T.change(sql)
-        vpakket = T.get_pakket_for_panel(panel)
-        pakket, _versiepakket = vpakket.split('v')
-        vcapture = T.get_capture_for_pakket(pakket)
-        capture, _versiecapture = vcapture.split('v')
-        annoted_bed = os.path.join(TARGETS, 'captures',
-                                   '{}_target.annotated'.format(vcapture))
-
-        if capture == pakket:
-            targetrepo = os.path.join(TARGETS, 'captures')
-        elif capture != pakket:
-            targetrepo = os.path.join(TARGETS, 'pakketten')
-        if not os.path.isdir(targetrepo):
-            raise OSError('{} does not exist.'.format(targetrepo))
-        corepanels = os.path.join(TARGETS, 'panels')
-
-        panelbed = os.path.join(corepanels,
-                                '{}typeAv{}.bed'.format(panel,
-                                                        versie))
-        TA = TargetAnnotation(annoted_bed)
-        size = 0
-        with open(panelbed, 'w') as f:
-            for line in TA.bed:
-                chromosome, start, end, gen = line
-                if gen in genen:
-                    f.write('{}\t{}\t{}\t{}\n'.format(chromosome, start,
-                                                      end, gen))
-                    size += int(end) - int(start)
-            for gen in genen:
-                if ':' in gen and '-' in gen:
-                    chromosome, startend = chromosome.split(':')
-                    start, end = startend.split('-')
-                    f.write('{}\t{}\t{}\t{}\n'.format(chromosome, start,
-                                                      end, 'EXTRA'))
-                    size += int(end) - int(start)
-        sql = """UPDATE panels
-        SET grootte={}
-        WHERE (panel='{}' AND versie={})
-        """.format(size, panel, int(versie))
-        T.change(sql)
-        return redirect(url_for('show_all_tests'))
-    return render_template('addpanel.html')
+            return download_target(targetname, targetsoort)
+            
+    return render_template('show_Genesis.html', 
+                            info=d, todo=todo_list,
+                            title=todo_list['aandoening'])
 
 
 @app.route('/createsamplesheet/', methods=['GET', 'POST'])
-def upload_labexcel():
+@app.route('/create-samplesheet/', methods=['GET', 'POST'])
+def create_samplesheet():
     if request.method == 'POST':
-        if request.form['samples'] == '':
-            flash('Geen input opgegeven', 'error')
-            return render_template('uploadlabexcel.html')
-        if request.form['serie'] == '':
-            flash('Geen serienummer opgegeven', 'error')
-            return render_template('uploadlabexcel.html')
-
         serie = request.form['serie']
+        analist = request.form['analist']
+        analist = analist.replace(' ', '_')
         nullijst_todo = request.form['samples']
-        if nullijst_todo:
-            logger.info('Start maken samplesheet voor MS{}'.format(serie))
-            uploads = os.path.join(app.root_path, app.config['UPLOAD_FOLDER'])
-            with open(os.path.join(uploads, 'samplesheet.tmp'), 'w') as f, open(os.path.join(uploads, 'MS{}_sample_info.txt'.format(serie)), 'w') as f_cnv:
-                for line in nullijst_todo.split('\n'):
-                    if line:
-                        logger.info(json.dumps(line))
-                        line = line.replace(' ', '-')
-                        try:
-                            dnr, bc, test, cnvarchive = line.split()
-                        except ValueError:
-                            flash('Onvoldoende kolommen als input.', 'error')
-                            return render_template('uploadlabexcel.html')
-                        if not test.endswith('.NGS'):
-                            flash('{} is geen geldige genesiscode'.format(test),
-                                  'error')
-                            return render_template('uploadlabexcel.html')
-                        if not dnr.isalnum():
-                            flash('{} is geen geldig sampleID'.format(dnr),
-                                  'error')
-                            return render_template('uploadlabexcel.html')
-
-                        f.write('{}\t{}\t{}\n'.format(dnr, test, bc))
-
-                        robot = cnvarchive.lower() == 'robot'
-                        hand = cnvarchive.lower() == 'hand'
-                        flexstar = cnvarchive.lower() == 'flexstar'
-                        if not robot and not hand and not flexstar:
-                            f_cnv.write('{}\t{}\t{}\n'.format(serie, dnr, cnvarchive))
-
-            analist = request.form['analist']
-            analist = analist.replace(' ', '_')
-            S = SampleSheet(os.path.join(uploads, 'samplesheet.tmp'),
-                            serie,
-                            os.path.join(uploads, 'MS{}.csv'.format(serie)))
-            S.write_files(analist=analist)
-            logger.info('Einde maken samplesheet voor MS{} op verzoek {}'.format(serie, analist))
-            subprocess.call(["cp", os.path.join(uploads, 'MS{}_sample_info.txt'.format(serie)),
-                              "/data/dnadiag/databases/materiaalsoort"])
-
-            return redirect(url_for('uploaded_file',
-                                    filename='MS{}.csv'.format(serie)))
-
-    return render_template('uploadlabexcel.html')
-
-
-@app.route('/faciliteit/', methods=['GET', 'POST'])
-def linda_samplesheet():
-    if request.method == 'POST':
-        if request.form['samples'] == '':
-            flash('Geen input opgegeven', 'error')
-            return render_template('faciliteit.html')
-        if request.form['readlength'] == '':
-            flash('Geen read lengte opgegeven', 'error')
-            return render_template('faciliteit.html')
-        if request.form['serie'] == '':
-            serie = 'Nvt'
-        else:
-            serie = request.form['serie']
-
-        readlength = request.form['readlength']
-
-        todo = request.form['samples']
-
+        logger.info('Start maken samplesheet voor MS{} op verzoek {}'.format(serie, analist))
         uploads = os.path.join(app.root_path, app.config['UPLOAD_FOLDER'])
-        with open(os.path.join(uploads, 'samplesheet.tmp'), 'w') as f:
-            for line in todo.split('\n'):
+        with open(os.path.join(uploads, 'samplesheet.tmp'), 'w') as f, open(os.path.join(uploads, 'MS{}_sample_info.txt'.format(serie)), 'w') as f_cnv:
+            for line in nullijst_todo.split('\n'):
                 if line:
-                    dnr, bc = line.split()
-                    f.write('{}\t{}\t{}\n'.format(dnr, serie, bc))
+                    logger.info(json.dumps(line))
+                    line = line.replace(' ', '-')
+                    dnr, bc, test, cnvarchive = line.split()
+                    f.write('{}\t{}\t{}\n'.format(dnr, test, bc))
+
+                    robot = cnvarchive.lower() == 'robot'
+                    hand = cnvarchive.lower() == 'hand'
+                    flexstar = cnvarchive.lower() == 'flexstar'
+
+                    if not robot and not hand and not flexstar:
+                        f_cnv.write('{}\t{}\t{}\n'.format(serie, dnr, cnvarchive))
 
         S = SampleSheet(os.path.join(uploads, 'samplesheet.tmp'),
                         serie,
-                        os.path.join(uploads, 'SampleSheetFaciliteit.csv'),
-                        faciliteit=True)
-        S.write_files(readlength=int(readlength))
+                        os.path.join(uploads, 'MS{}.csv'.format(serie)))
+        S.write_files(analist=analist)
+        logger.info('Einde maken samplesheet voor MS{} op verzoek {}'.format(serie, analist))
+
+        subprocess.call(["cp", os.path.join(uploads, 'MS{}_sample_info.txt'.format(serie)),
+                          "/data/dnadiag/databases/materiaalsoort"])
         return redirect(url_for('uploaded_file',
-                                filename='SampleSheetFaciliteit.csv'))
-
-    return render_template('faciliteit.html')
+                                 filename='MS{}.csv'.format(serie)))
 
 
-@app.route('/createsamplesheet/created/<filename>')
-def uploaded_file(filename):
-    return render_template('download.html', filename=filename)
+    return render_template('create_samplesheet.html', 
+                            title="Maak een samplesheet")
 
+
+@app.route('/_genesiscodes/')
+@app.route('/create-samplesheet/_genesiscodes/')
+def _get_genesiscodes():
+    conn = sqlite3.connect(DB_GENESIS)
+    c = conn.cursor()
+    c.execute('''SELECT genesis FROM genesis''')
+    genesis_codes = [val for tup in c.fetchall() for val in tup]
+    return jsonify(data=genesis_codes)
 
 @app.route('/createsamplesheet/<path:filename>')
 def download(filename):
-    path = os.path.join(os.path.join(app.root_path,
-                                     app.config['UPLOAD_FOLDER'],
-                                     filename))
-
-    def generate():
-        with open(path) as f:
-            yield from f
-        os.remove(path)
-    r = app.response_class(generate(), mimetype='text/csv')
+    file_path = os.path.join(os.path.join(app.root_path,
+                                          app.config['UPLOAD_FOLDER'],
+                                          filename))
+    r = app.response_class(generate(file_path), mimetype='text/csv')
     r.headers.set('Content-Disposition', 'attachment', filename=filename)
     return r
 
+@app.route('/create-samplesheet/created/<filename>')
+def uploaded_file(filename):
+    return render_template('download.html', filename=filename)
 
-@app.route('/aantallen/')
-def aantallen():
-    return render_template('aantallen.html')
+@app.route('/')
+def intro():
+    return render_template('explanation_general.html')
 
+@app.route('/uitleg/database/')
+def database_explained():
+    return render_template('explanation_database.html')
 
-if __name__ == '__main__':
-    app.run(debug=True)
+@app.route('/uitleg/pipeline/')
+def pipeline_explained():
+    return render_template('explanation_pipeline.html')
+
+@app.route('/uitleg/naamgeving/')
+def nomenclature_explained():
+    return render_template('explanation_nomenclature.html')
+
+@app.route('/uitleg/samplesheet/')
+def samplesheet_explained():
+    return render_template('explanation_samplesheet.html')
+
+@app.route('/uitleg/pipeline/snv')
+def std_pipe():
+    return render_template('explanation_pipeline_vars.html')
+
+@app.route('/uitleg/pipeline/cnv')
+def cnv_pipe():
+    return render_template('explanation_pipeline_cnv.html')
+
+@app.route('/uitleg/pipeline/mosa')
+def mosaic_pipe():
+    return render_template('explanation_pipeline_mosa.html')
+
+@app.route('/uitleg/pipeline/qc')
+def qc_pipe():
+    return render_template('explanation_pipeline_qc.html')
+
+@app.route('/howto/pipeline')
+def howto_pipe():
+    return render_template('howto_pipeline.html', title='Pipeline runnen')    

@@ -2,8 +2,7 @@
 {% extends "base.html" %}
 {% block content %}
 <h1> {{ todo.aandoening }} </h1><br>
-<hr>
-<table with=60%>
+<table  id="myTable" class="display" maxwidth="40%">
     <tr>
         <th colspan=2>Pipeline targets en analyses</th>
     </tr>
@@ -28,55 +27,47 @@
         <td>{{'Ja' if todo.mozaiekdiagnostiek else 'Nee'}}</td>
     </tr>
 </table>
-<br>
+
 {% if todo.pakket %}
-    <hr>
+    
     <h2>{{todo.pakket}} genen</h2>
     <p>
         A-kwaliteit in groen.
         <form action="" method=post enctype=multipart/form-data>
-              <input type="submit" name="genes" value="Download">
+              <input type="submit" name="genes" value="Download genen">
         </form>
-        <br>
+        
         {% if todo.panel %}
             {% for grootte, genen in info.pakketten[todo.pakket]  %}
                 {%  for gen in genen %}
-                    <font color=green>
-                        {{ gen if gen in info.panels[todo.panel][0][1]}}
-                    </font>
+                <strong class="greentext">
+                    {{ gen if gen in info.panels[todo.panel][0][1]}}
+                </strong>
+                <strong>
                     {{ gen if gen not in info.panels[todo.panel][0][1]}}
-
+                </strong>
                 {% endfor %}
             {% endfor %}
-        </p>
-    {% elif not todo.panel %}
+        {% elif not todo.panel %}
             {% for grootte, genen in info.pakketten[todo.pakket] %}
+            <strong class="greentext">
                 {% for gen in genen %}
-                    <font color=green>
-                        {{ gen }}
-                    </font>
+                    {{ gen }}
                 {% endfor %}
+            </strong>
             {% endfor %}
-        </p>
-    {% endif %}
+        {% endif %}
+    </p>
 {% endif %}
 
-<hr>
 <h2>Captures</h2>
-<table width=60%>
-    <col width=15%>
-    <col width=10%>
-    <col width=10%>
-    <col width=10%>
-    <col width=10%>
-    <col width=10%>
-
+<table  id="myTable" class="display" width=100%>
     <tr>
         <th>Versie</th>
         <th>OID</th>
         <th>verdund</th>
         <th>grootte</th>
-        <th style="text-align:center">BED</th>
+        <th></th>
     </tr>
     {% for capture in info.captures  %}
         {% for oid, verdund, grootte in info.captures[capture]  %}
@@ -85,9 +76,9 @@
                 <td>{{oid}}</td>
                 <td>{{'Ja' if verdund else 'Nee' }}</td>
                 <td>{{'{:,}'.format(grootte)}}</td>
-                <td style="text-align:center">
+                <td>
                     <form action="" method=post enctype=multipart/form-data>
-                      <input type="submit" name="{{capture}}:captures" value="Download">
+                      <input type="submit" name="{{capture}}:captures" value="Download targets">
                   </form>
                 </td>
             </tr>
@@ -95,64 +86,51 @@
     {% endfor %}
 </table>
 
-<hr>
-<h2>Pakketten</h2>
-<table width=60%>
-    <col width=15%>
-    <col width=15%>
-    <col width=15%>
-    <col width=10%>
+<h2>Pakketten en panels</h2>
+<table  id="myTable" class="display" width="100%">
     <tr>
-        <th>Versie</th>
+        <th>Versie </th>
+        <th>Type</th>
         <th>grootte</th>
         <th># genen</th>
-        <th style="text-align:center">BED</th>
+        <th></th>
     </tr>
     {% for pakket in info.pakketten  %}
         {% for grootte, genen in info.pakketten[pakket]  %}
             <tr>
                 <td>{{pakket}}</td>
+                <td> Pakket </td>
                 <td>{{'{:,}'.format(grootte) if grootte is not none else ''}}</td>
                 <td>{{genen|length}}</td>
-                <td style="text-align:center">
+                <td>
                     <form action="" method=post enctype=multipart/form-data>
-                      <input type="submit" name="{{pakket}}:pakketten" value="Download">
+                      <input type="submit" name="{{pakket}}:pakketten" value="Download targets">
                   </form>
                 </td>
             </tr>
         {% endfor %}
     {% endfor %}
+
+
+    {% if todo.panel %}
+        {% for panel in info.panels  %}
+            {% for grootte, genen in info.panels[panel]  %}
+                <tr>
+                    <td>{{panel}}</td>
+                    <td> Panel </td>
+
+                    <td>{{'{:,}'.format(grootte) if grootte is not none else ''}}</td>
+                    <td>{{genen|length}}</td>
+                    <td >
+                        <form action="" method=post enctype=multipart/form-data>
+                        <input type="submit" name="{{panel}}:panels" value="Download targets">
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        {% endfor %}
+    {% endif %}
 </table>
 
-{% if todo.panel %}
-    <hr>
-    <h2>Panels</h2>
-<table width=60%>
-    <col width=15%>
-    <col width=15%>
-    <col width=15%>
-    <col width=10%>
-        <tr>
-        <th>Versie</th>
-        <th>grootte</th>
-        <th># genen</th>
-        <th style="text-align:center">BED</th>
-    </tr>
-    {% for panel in info.panels  %}
-        {% for grootte, genen in info.panels[panel]  %}
-            <tr>
-                <td>{{panel}}</td>
-                <td>{{'{:,}'.format(grootte) if grootte is not none else ''}}</td>
-                <td>{{genen|length}}</td>
-                <td style="text-align:center">
-                    <form action="" method=post enctype=multipart/form-data>
-                      <input type="submit" name="{{panel}}:panels" value="Download">
-                    </form>
-                </td>
-            </tr>
-        {% endfor %}
-    {% endfor %}
-    </table>
-{% endif %}
 
 {% endblock %}

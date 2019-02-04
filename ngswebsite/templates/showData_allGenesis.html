@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block content %}
+<script>
+    $(document).ready(function() {
+        let table = $('#myTable').DataTable({
+            dom: '<Bf<t>lip>',
+            paging: false,
+            bFilter: false,            
+            order: [0, 'asc'],
+            buttons: ['copy', 'csv', 'excel', 'print'],
+            })
+    });  
+</script>
+
+<h1> {{title}} </h1>
+<p>
+    De volgende {{series|length}} series zijn verwerkt: 
+    {% for serie in series %}
+        {{serie}}
+        {{ ", " if not loop.last else "." }}
+    {% endfor %}
+</p>
+
+<table id="myTable" class="display" width="100%">
+    <thead>
+        <tr>
+            <th> Genesis </th>
+            <th> Aantal </th>
+            <th> Capture </th>
+            <th> Pakket </th>
+            <th> Panel </th>
+            <th> Aandoening </th>
+        </tr>
+    </thead>
+    {% for genesis, count, capture, pakket, panel, aandoening in data %}
+    <tr>
+        <td><a href="{{ url_for('show_genesis', genesis=genesis) }}">{{genesis}}</a></td>
+        <td>{{ count }}</td>
+        <td>{{ capture }}</td>
+        <td>{{ pakket }}</td>
+        <td>{{ panel if panel is not none else '' }}</td>
+        <td>{{ aandoening if aandoening is not none else '' }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

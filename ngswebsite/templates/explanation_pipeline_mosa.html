@@ -2,7 +2,7 @@
 {% block content %}
 
 <h1>Mozaïekdetectie</h1>
-<hr>
+
 <p>Deze module bestaat uit een aantal scripts die de output van 
     de reguliere pipeline verwerken om <em>niet</em> door de 
     reguliere diagnostische pipeline gevonden afwijkingen van 
@@ -14,36 +14,29 @@
     10-15% dus in de praktijk zal deze module mozaïeken van van 1% 
     tot 10-15% rapporteren. 
 </p>
-<hr>
+
 <h2>Deleties en SNP’s</h2>
-<p> De pipeline produceert een Depth of Coverage en file. Deze file 
+<p> 
+    De pipeline produceert een Depth of Coverage en file. Deze file 
     bevat het aantal reads per base(A/C/T/G/N) of deletie (D) voor 
-    elke genomische positie in het target. Bijvoorbeeld:</p>
+    elke genomische positie in het target. Bijvoorbeeld:
 
-
-    <div class="table">
-        <table border="1" class="docutils">
-            <colgroup>
-                <col width="19%">
-                <col width="18%">
-                <col width="63%">
-            </colgroup>
-            <thead valign="bottom">
-                <tr class="row-odd">
-                    <th class="head">Locus</th>
-                    <th class="head">Coverage</th>
-                    <th class="head">Coverage uitgesplitst per base (of deletie)</th>
-                </tr>
-            </thead>
-            <tbody valign="top">
-                <tr class="row-even">
-                    <td>chr1:11167536</td>
-                    <td>3243</td>
-                    <td>A:0 C:600 G:0 T:2643 N:0 D:0</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+    <table id="docexample" class="display">
+        <thead>
+            <tr>
+                <th>Locus</th>
+                <th>Coverage</th>
+                <th>Coverage uitgesplitst per base (of deletie)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>chr1:11167536</td>
+                <td>3243</td>
+                <td>A:0 C:600 G:0 T:2643 N:0 D:0</td>
+            </tr>
+        </tbody>
+    </table>
 
     geeft aan dat op chr1 positie 11167536 in totaal 3243x gezien is. 
     Dat hiervan 600x een C gezien is en 2643x een T. Voor elke positie 
@@ -55,41 +48,30 @@
     informatie in een database gezet. Voor het voorbeeld zou de volgende 
     informatie in de database gezet worden:
 
-    <div class="table">
-        <table border="1" class="docutils">
-            <colgroup>
-                <col width="14%">
-                <col width="20%">
-                <col width="18%">
-                <col width="14%">
-                <col width="14%">
-                <col width="8%">
-                <col width="12%">
-            </colgroup>
-            <thead valign="bottom">
-                <tr class="row-odd">
-                    <th class="head">Sample</th>
-                    <th class="head">Chromosome</th>
-                    <th class="head">Positie</th>
-                    <th class="head">Ref</th>
-                    <th class="head">Alt</th>
-                    <th class="head">DP</th>
-                    <th class="head">Type</th>
-                </tr>
-            </thead>
-            <tbody valign="top">
-                <tr class="row-even">
-                    <td>00D0000</td>
-                    <td>chr1</td>
-                    <td>11167536</td>
-                    <td>18,5%</td>
-                    <td>81,5%</td>
-                    <td>3243</td>
-                    <td>snp</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+    <table id="mosa-example" class="display">
+        <thead>
+            <tr>
+                <th>Sample</th>
+                <th>Chromosome</th>
+                <th>Positie</th>
+                <th>Ref</th>
+                <th>Alt</th>
+                <th>DP</th>
+                <th>Type</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>00D0000</td>
+                <td>chr1</td>
+                <td>11167536</td>
+                <td>18,5%</td>
+                <td>81,5%</td>
+                <td>3243</td>
+                <td>snp</td>
+            </tr>
+        </tbody>
+    </table>
 
     Indien het geen snp maar een insertie of deletie was geweest dan 
     had in de kolom Type respectievelijk <em>del</em> of <em>ins</em> 
@@ -98,9 +80,9 @@
 </p>
 
 
-<hr>
 <h2>Inserties</h2>
-<p>De DoC-tabel bevat geen informatie over inserties. Deze informatie 
+<p>
+    De DoC-tabel bevat geen informatie over inserties. Deze informatie 
     wordt door een ander script verzameld en aan dezelfde database 
     toegevoegd. In de BAM wordt de manier waarop een read aligned is 
     weergegeven in een CIGAR. Een CIGAR van 151M betekent bijvoorbeeld 
@@ -120,166 +102,148 @@
     met dezelfde 1bp insertie G, telkens op een andere plek in de 
     read met dus een andere CIGAR en start positie. Als extra controle 
     zijn de reads voor deze amplicons samengevoegd tot 1 sample (ALL).
+
+    <strong>Let op:</strong> De Integrative Genomics Viewer (IGV) laat 
+    <strong>alle</strong> reads en basen zien dus de coverage kan hoger 
+    lijken dan in de output van het script en daardoor kan het percentage 
+    inserties (InsPerc) ook enigszins afwijken.
 </p>
 
-<div class="letop">
-    <p><strong>Let op:</strong> De Integrative Genomics Viewer (IGV) laat <strong>alle</strong> 
-        reads en basen zien dus de coverage kan hoger lijken dan in de output van het script 
-        en daardoor kan het percentage inserties (InsPerc) ook enigszins afwijken.
-    </p>
-</div>
-<p>Onderstaande tabel bevat alle relevante informatie gehaald uit IGV.</p>
+<p> Onderstaande tabel bevat alle relevante informatie gehaald uit IGV. </p>
 
-<div class="table">
-    <table border="1" class="docutils">
-        <colgroup>
-            <col width="10%">
-            <col width="7%">
-            <col width="12%">
-            <col width="16%">
-            <col width="15%">
-            <col width="25%">
-            <col width="13%">
-        </colgroup>
-        <thead valign="bottom">
-            <tr class="row-odd">
-                <th class="head">Sample</th>
-                <th class="head">#Ins</th>
-                <th class="head">Coverage</th>
-                <th class="head">InsPerc</th>
-                <th class="head">CIGAR</th>
-                <th class="head">Alignment start</th>
-                <th class="head">Insertie</th>
-            </tr>
-        </thead>
-        <tbody valign="top">
-            <tr class="row-even">
-                <td>AMP1</td>
-                <td>795</td>
-                <td>1729</td>
-                <td>0.45980</td>
-                <td>8M1I117M</td>
-                <td>chr11:47357547</td>
-                <td>47357555</td>
-            </tr>
-            <tr class="row-odd">
-                <td>AMP2</td>
-                <td>1766</td>
-                <td>3417</td>
-                <td>0.51683</td>
-                <td>51M1I74M</td>
-                <td>chr11:47357504</td>
-                <td>47357555</td>
-            </tr>
-            <tr class="row-even">
-                <td>AMP3</td>
-                <td>838</td>
-                <td>1683</td>
-                <td>0.49792</td>
-                <td>105M1I20M</td>
-                <td>chr11:47357450</td>
-                <td>47357555</td>
-            </tr>
-            <tr class="row-odd">
-                <td>ALL</td>
-                <td>3630</td>
-                <td>8231</td>
-                <td>0.44102</td>
-                <td>Alle drie</td>
-                <td>Alle drie</td>
-                <td>47357555</td>
-            </tr>
-        </tbody>
-    </table>
-</div>
+<table id="mosa-variant" class="display">
+    <thead>
+        <tr>
+            <th>Sample</th>
+            <th>#Ins</th>
+            <th>Coverage</th>
+            <th>InsPerc</th>
+            <th>CIGAR</th>
+            <th>Alignment start</th>
+            <th>Insertie</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>AMP1</td>
+            <td>795</td>
+            <td>1729</td>
+            <td>0.45980</td>
+            <td>8M1I117M</td>
+            <td>chr11:47357547</td>
+            <td>47357555</td>
+        </tr>
+        <tr>
+            <td>AMP2</td>
+            <td>1766</td>
+            <td>3417</td>
+            <td>0.51683</td>
+            <td>51M1I74M</td>
+            <td>chr11:47357504</td>
+            <td>47357555</td>
+        </tr>
+        <tr>
+            <td>AMP3</td>
+            <td>838</td>
+            <td>1683</td>
+            <td>0.49792</td>
+            <td>105M1I20M</td>
+            <td>chr11:47357450</td>
+            <td>47357555</td>
+        </tr>
+        <tr>
+            <td>ALL</td>
+            <td>3630</td>
+            <td>8231</td>
+            <td>0.44102</td>
+            <td>Alle drie</td>
+            <td>Alle drie</td>
+            <td>47357555</td>
+        </tr>
+    </tbody>
+</table>
 
-<p>Onderstaande tabel beval de output van het script, 
+<p>
+    Onderstaande tabel beval de output van het script, 
     te zien is dat de coverage in IGV inderdaad iets hoger 
     uitvalt. Dit is zoals gezegd te verklaren vanuit het 
     gegeven dat het script alleen reads en basen van hoge 
     kwaliteit meeneemt en IGV alles laat zien.
 </p>
 
-<div class="table">
-    <table border="1" class="docutils">
-        <colgroup>
-            <col width="20%">
-            <col width="34%">
-            <col width="5%">
-            <col width="20%">
-            <col width="22%">
-        </colgroup>
-        <thead valign="bottom">
-            <tr class="row-odd">
-                    <th class="head">Amplicon</th>
-                <th class="head">locus</th>
-                <th class="head">bp</th>
-                <th class="head">InsPerc</th>
-                <th class="head">Coverage</th>
-            </tr>
-        </thead>
-        <tbody valign="top">
-            <tr class="row-even">
-                <td>AMP1</td>
-                <td>chr11:47357555</td>
-                <td>1</td>
-                <td>0.46592</td>
-                <td>1687</td>
-            </tr>
-            <tr class="row-odd">
-                <td>AMP2</td>
-                <td>chr11:47357555</td>
-                <td>1</td>
-                <td>0.52067</td>
-                <td>3363</td>
-            </tr>
-            <tr class="row-even">
-                <td>AMP3</td>
-                <td>chr11:47357555</td>
-                <td>1</td>
-                <td>0.51290</td>
-                <td>1628</td>
-            </tr>
-            <tr class="row-odd">
-                <td>ALL</td>
-                <td>chr11:47357555</td>
-                <td>1</td>
-                <td>0.50552</td>
-                <td>7062</td>
-            </tr>
-        </tbody>
-    </table>
-</div>
-<br>
+
+<table id="mosa-ins-igv" class="display">
+    <thead>
+        <tr>
+                <th>Amplicon</th>
+            <th>locus</th>
+            <th>bp</th>
+            <th>InsPerc</th>
+            <th>Coverage</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>AMP1</td>
+            <td>chr11:47357555</td>
+            <td>1</td>
+            <td>0.46592</td>
+            <td>1687</td>
+        </tr>
+        <tr>
+            <td>AMP2</td>
+            <td>chr11:47357555</td>
+            <td>1</td>
+            <td>0.52067</td>
+            <td>3363</td>
+        </tr>
+        <tr>
+            <td>AMP3</td>
+            <td>chr11:47357555</td>
+            <td>1</td>
+            <td>0.51290</td>
+            <td>1628</td>
+        </tr>
+        <tr>
+            <td>ALL</td>
+            <td>chr11:47357555</td>
+            <td>1</td>
+            <td>0.50552</td>
+            <td>7062</td>
+        </tr>
+    </tbody>
+</table>
+
 <figure>
-    <img src='/static/IGV_InsG.png' width=100% height=100%>
+    <img src='/static/img/IGV_InsG.png'>
     <figcaption >
         IGV-schreenshot laat eerst de drie amplicons los zien en 
         vervolgens het samengevoegde sample.
     </figcaption>
 </figure>
-<hr>
+
+
 <h2>QC</h2>
-<p>Een script verzamelt de posites met minder dan 500x informatieve 
+<p>
+    Een script verzamelt de posites met minder dan 500x informatieve 
     coverage uit de DoC tabel. Indien opeenvolgende posities onvodoende 
     gecoverd zijn worden deze gecombineerd tot een interval.
 </p>
 <figure>
-    <img src='/static/intervals.png' width=70% height=70%>
-    <figcaption >
-        Opeenvolgende posities worden samengevoegd tot een interval.
-    </figcaption>
+    <img src='/static/img/intervals.png' width=70% height=70%>
+    <figcaption > Opeenvolgende posities worden samengevoegd tot een interval. </figcaption>
 </figure>
 
-<p>Het staflid beoordeelt of deze posities met een te ontwikkelen amplicons worden 
+<p>
+    Het staflid beoordeelt of deze posities met een te ontwikkelen amplicons worden 
     beoordeeld, of dat de aanwezige data voldoende informatie bevat om de positie 
     te beoordelen. Eventueel ontwikkelde amplicons worden na sequencen op dezelfde
     manier als reads van een capture alignt tegen het referentiegenoom.
     Omdat een amplicon per definitie een duplicaat is worden de duplicaten niet 
     gemarkeerd of verwijderd. Na alignment wordt een DoC tabel gemaakt voor alle 
     aangevraagde basen in het amplicon en dan kan mozaiëkdetectie op dezelfde 
-    manier plaatsvinden als voor capturedata.<br>
-    <br>
+    manier plaatsvinden als voor capturedata.
+
     Om deze methode te testen is er (in duplo) een titratie van 2 patiënten (A en B) 
     gedaan, waarbij patiënt A wildtype is voor de positie waar patiënt B mozaiëk is 
     en vice versa. De mozaiëk is in elke patiënt doorverdund tot onder 1%. Onderstaande 
@@ -288,80 +252,73 @@
     de uitkomst van de analyse.
 </p>
 
-<div class="table">
-    <table border="1" class="docutils">
-        <colgroup>
-            <col width="13%">
-            <col width="18%">
-            <col width="26%">
-            <col width="18%">
-            <col width="26%">
-        </colgroup>
-        <thead valign="bottom">
-            <tr class="row-odd">
-                <th class="head">TMP</th>
-                <th class="head">PatA</th>
-                <th class="head">PatA-duplo</th>
-                <th class="head">PatB</th>
-                <th class="head">PatB-duplo</th>
-            </tr>
-        </thead>
-        <tbody valign="top">
-            <tr class="row-even">
-                <td>20.0%</td>
-                <td>Nvt</td>
-                <td>Nvt</td>
-                <td>21.40%</td>
-                <td>20.60%</td>
-            </tr>
-            <tr class="row-odd">
-                <td>10.0%</td>
-                <td>9.50%</td>
-                <td>15.90%</td>
-                <td>12.90%</td>
-                <td>10.20%</td>
-            </tr>
-            <tr class="row-even">
-                <td>5.00%</td>
-                <td>5.30%</td>
-                <td>6.00%</td>
-                <td>5.50%</td>
-                <td>5.00%</td>
-            </tr>
-            <tr class="row-odd">
-                <td>2.50%</td>
-                <td>2.70%</td>
-                <td>4.20%</td>
-                <td>3.30%</td>
-                <td>2.50%</td>
-            </tr>
-            <tr class="row-even">
-                <td>1.30%</td>
-                <td>1.60%</td>
-                <td>1.70%</td>
-                <td>1.60%</td>
-                <td>1.30%</td>
-            </tr>
-            <tr class="row-odd">
-                <td>0.60%</td>
-                <td>1.10%</td>
-                <td>1.00%</td>
-                <td>0.60%</td>
-                <td>0.80%</td>
-            </tr>
-            <tr class="row-even">
-                <td>0.30%</td>
-                <td>0.40%</td>
-                <td>0.50%</td>
-                <td>Nvt</td>
-                <td>Nvt</td>
-            </tr>
-        </tbody>
-    </table>
-</div>
-<hr>
+<table id="mosa-ins-script" class="display">
+    <thead>
+        <tr>
+            <th>TMP</th>
+            <th>PatA</th>
+            <th>PatA-duplo</th>
+            <th>PatB</th>
+            <th>PatB-duplo</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>20.0%</td>
+            <td>Nvt</td>
+            <td>Nvt</td>
+            <td>21.40%</td>
+            <td>20.60%</td>
+        </tr>
+        <tr>
+            <td>10.0%</td>
+            <td>9.50%</td>
+            <td>15.90%</td>
+            <td>12.90%</td>
+            <td>10.20%</td>
+        </tr>
+        <tr>
+            <td>5.00%</td>
+            <td>5.30%</td>
+            <td>6.00%</td>
+            <td>5.50%</td>
+            <td>5.00%</td>
+        </tr>
+        <tr>
+            <td>2.50%</td>
+            <td>2.70%</td>
+            <td>4.20%</td>
+            <td>3.30%</td>
+            <td>2.50%</td>
+        </tr>
+        <tr>
+            <td>1.30%</td>
+            <td>1.60%</td>
+            <td>1.70%</td>
+            <td>1.60%</td>
+            <td>1.30%</td>
+        </tr>
+        <tr>
+            <td>0.60%</td>
+            <td>1.10%</td>
+            <td>1.00%</td>
+            <td>0.60%</td>
+            <td>0.80%</td>
+        </tr>
+        <tr>
+            <td>0.30%</td>
+            <td>0.40%</td>
+            <td>0.50%</td>
+            <td>Nvt</td>
+            <td>Nvt</td>
+        </tr>
+    </tbody>
+</table>
+
+
 <h2>Rapportage</h2>
-<p>Uit de mozaïekdetectie-module worden de in stap 3 gecreëerde 
+<p>
+    Uit de mozaïekdetectie-module worden de in stap 3 gecreëerde 
     intervallen gerapporteerd en uiteraard de gevonden mozaïeken. 
     Om deze mozaïeken te rapporteren worden eerst voor de patiënt 
     alle posities die meer dan 1% afwijking van de referentie en 
@@ -373,22 +330,22 @@
     referentie geplot samen met die van de patiënt. 
 </p>
 <figure>
-    <img src='/static/mosa_boxplot.png' width=100% height=100%>
+    <img src='/static/img/mosa_boxplot.png'>
     <figcaption >
         Output mozaiëk module: De diamant is het sample, kleur staat voor de base, 
         insertie of deletie en de boxplot zijn alle voorgaande samples die de 
         pipeline heeft verwerkt.
     </figcaption>
 </figure>
-
-<p>Deze figuur wordt in de excelfile geprint die ook de output van 
+<p>
+    Deze figuur wordt in de excelfile geprint die ook de output van 
     de reguliere pipeline bevat. De in het plaatje getoonde posities
     worden ook in ene tabel weergegeven met een percentage voor alle
     alternatieven. Daarnaast wordt er voor een aantal uit de literatuur
     bekende varianten altijd het percentage geprint.
 </p>
 <figure>
-    <img src='/static/mosa_exceloutput.png' width=100% height=100%>
+    <img src='/static/img/mosa_exceloutput.png'>
     <figcaption >
         Output mozaiëk module: Links alle calls met voor elke niet 
         referentie base of InDel een percentage. Daarnaast voor elke
@@ -396,19 +353,20 @@
         alleen die baseverandering), ook als de variant in de VCF voorkomt. 
     </figcaption>
 </figure>
-<p>Om het beoordelen van posities met minder van 500x coverage te vereenvoudigen
+<p>
+    Om het beoordelen van posities met minder van 500x coverage te vereenvoudigen
     wordt voor deze posities eenzelfde tabel geprint als voor de calls. Het staflid
     kan indien er 499 reads met allemaal een referentiecall zijn besluiten dat voor 
     deze positie geen amplicon ontwikkeld hoeft te worden.
-    </p>
-    <figure>
-        <img src='/static/mosa_lowcov.png' width=65% height=65%>
-        <figcaption>
-            Genomische posities met onvoldoende coverage. Indien alle reads voor een
-            genomische positie referentie zijn, staat er een 1 voor de referentiebase en
-            een punt voor de andere basen. Indien er reads met een afwijking van de referentie
-            zijn, staat voor elke alternatieve base (en InDel) een percentage en 
-            voor de referentie een punt.
-        </figcaption>
-    </figure>
+</p>
+<figure>
+    <img src='/static/img/mosa_lowcov.png'>
+    <figcaption>
+        Genomische posities met onvoldoende coverage. Indien alle reads voor een
+        genomische positie referentie zijn, staat er een 1 voor de referentiebase en
+        een punt voor de andere basen. Indien er reads met een afwijking van de referentie
+        zijn, staat voor elke alternatieve base (en InDel) een percentage en 
+        voor de referentie een punt.
+    </figcaption>
+</figure>
 {% endblock content %}

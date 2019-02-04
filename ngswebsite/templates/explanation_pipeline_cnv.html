@@ -3,44 +3,46 @@
 {% block content %}            
             
 <h1>Copy Number Variant detectie</h1>
-<hr>
-<p>Deze module bestaat uit een aantal scripts die de output van de reguliere 
-    pipeline verwerken om CNV’s te detecteren. Hierbij wordt gebruik gemaakt 
-    van de de evenredige coverageverdeling van genpakketten met een hoge 
-    gemiddelde coverage, wat betekent dat samples van verschillende experimenten 
-    dezelfde verdeling van reads over targets hebben. De reguliere pipeline 
-    rapporteert per patiënt de coverage per target en deze file wordt gebruikt 
-    als input voor de module.
+<p>
+  Deze module bestaat uit een aantal scripts die de output van de reguliere 
+  pipeline verwerken om CNV’s te detecteren. Hierbij wordt gebruik gemaakt 
+  van de de evenredige coverageverdeling van genpakketten met een hoge 
+  gemiddelde coverage, wat betekent dat samples van verschillende experimenten 
+  dezelfde verdeling van reads over targets hebben. De reguliere pipeline 
+  rapporteert per patiënt de coverage per target en deze file wordt gebruikt 
+  als input voor de module.
 </p>
-<hr>
-<h2>Calling</h2>
 
-<p>Zoals gezegd is de coverageverdeling over de targets zowel vergelijkbaar 
-    tussen verschillende patiënten binnen een experiment als ook tussen 
-    (patiënten uit) verschillende experimenten. Aangezien niet elk experiment 
-    even veel reads oplevert is de absolute coverage per target te verschillend 
-    om op een zinvolle manier te vergelijken. Hiertoe wordt de coverage genormaliseerd 
-    door voor elke patiënt de gemiddelde coverage over alle targets (GCP) uit te 
-    rekenen. Hiermee wordt per target de coverage (CT) genormaliseerd door te delen 
-    door het gemiddelde over alle targets (GCP). Dit levert voor elke patiënt de 
-    genormaliseerde coverage per target (GCT) op.<br>
-    <br>
-    Als dit voor alle beschikbare patiënten gedaan is kan er een gemiddelde GCT (GGCT) 
-    met daarbij horende standaarddeviatie (GGStDev) worden berekend en hiermee wordt 
-    voor elk target in elke patiënt een Z-score uitgerekend.<br>
-    <br>
+
+<h2>Calling</h2>
+<p>
+  Zoals gezegd is de coverageverdeling over de targets zowel vergelijkbaar 
+  tussen verschillende patiënten binnen een experiment als ook tussen 
+  (patiënten uit) verschillende experimenten. Aangezien niet elk experiment 
+  even veel reads oplevert is de absolute coverage per target te verschillend 
+  om op een zinvolle manier te vergelijken. Hiertoe wordt de coverage genormaliseerd 
+  door voor elke patiënt de gemiddelde coverage over alle targets (GCP) uit te 
+  rekenen. Hiermee wordt per target de coverage (CT) genormaliseerd door te delen 
+  door het gemiddelde over alle targets (GCP). Dit levert voor elke patiënt de 
+  genormaliseerde coverage per target (GCT) op.<br>
+  <br>
+  Als dit voor alle beschikbare patiënten gedaan is kan er een gemiddelde GCT (GGCT) 
+  met daarbij horende standaarddeviatie (GGStDev) worden berekend en hiermee wordt 
+  voor elk target in elke patiënt een Z-score uitgerekend.<br>
+  <br>
 </p>
 
 <figure>
-  <img src='/static/LDLR.png' width=100% height=100%>
-  <figcaption>
-      De GCT (boven) en de daaruit voortkomende Z-scores (beneden)
-      van 1 gen voor 113 patiënten verdeeld over 5 captures. 
-      De horizontale lijnen zijn de Z-score tresholds.
-  </figcaption>
+  <img src='/static/img/LDLR.png'>
+    <figcaption>
+        De GCT (boven) en de daaruit voortkomende Z-scores (beneden)
+        van 1 gen voor 113 patiënten verdeeld over 5 captures. 
+        De horizontale lijnen zijn de Z-score tresholds.
+    </figcaption>
 </figure>
 
-<p>Voor het bepalen van de Z-scores wordt er telkens 1 sample van de 
+<p>
+  Voor het bepalen van de Z-scores wordt er telkens 1 sample van de 
   nieuwe serie vergeleken met het archief en andere samples uit 
   dezelfde serie. Om extreem afwijkende samples te herkennen wordt 
   er per sample eenzelfde plot gemaakt als bij stap 2 voor de gehele serie. 
@@ -52,8 +54,9 @@
 <hr>
 
 <h2>QC</h2>
-<h4>Patiënten</h4>
-<p>Voor elke patient in een serie wordt de coverage per target 
+<h3>Patiënten</h3>
+<p>
+  Voor elke patient in een serie wordt de coverage per target 
   genormaliseerd en deze genormaliseerde coverage wordt per target 
   gemiddeld voor de hele serie. Deze wordt vergeleken met de gemiddelde 
   genormaliseerde coverage per target van het archief door ze tegen 
@@ -61,7 +64,7 @@
 </p>
 
 <figure>
-  <img src='/static/qccompare.png' width=100% height=100%>
+  <img src='/static/img/qccompare.png'>
   <figcaption>
     Links is een serie (Test) te zien waarin de gemiddelde genormaliseerde 
     coverage vergelijkbaar is als die uit het archief, waardoor een vergelijking 
@@ -71,77 +74,61 @@
   </figcaption>
 </figure>
 
-<h4>Targets</h4>
+<h3>Targets</h3>
 
-<p>Omdat normale fluctuatie in coverage van een target van invloed is op de 
+<p>
+  Omdat normale fluctuatie in coverage van een target van invloed is op de 
   gevoeligheid van de CNV-detectie wordt de standaarddeviatie van de gemiddelde 
   genormaliseerde coverage bepaald. Targets waarbij de standaarddeviatie groter 
   is dan de treshold (0,2 in het voobeeld) worden als onbetrouwbaar beoordeeld. 
   Targets met een gemiddelde genormaliseerde coverage van kleiner dan de treshold 
   zijn niet te beoordelen omdat de verschillen tussen positieve en negatieve 
   samples te klein zijn om betrouwbaar te kunnen callen.
-  <figure>
-      <img src='/static/StDevCutOff.png' width=100% height=100%>
-      <figcaption>
-          Een positieve controle (rood) zien met een duplicatie van een heel gen. 
-          De zwarte punten zijn de samples in het archief. De targets 
-          waarvan de Z-score niet hoog genoeg is om te resulteren in een call hebben een
-          hogere standaarddeviatie waardoor deze te gebruiken is als maat voor de 
-          betrouwbaarheid van de CNV-detectie voor dat betreffende target.
-      </figcaption>
-    </figure>
-  </p>
+</p>
+<figure>
+    <img src='/static/img/StDevCutOff.png'>
+    <figcaption>
+        Een positieve controle (rood) zien met een duplicatie van een heel gen. 
+        De zwarte punten zijn de samples in het archief. De targets 
+        waarvan de Z-score niet hoog genoeg is om te resulteren in een call hebben een
+        hogere standaarddeviatie waardoor deze te gebruiken is als maat voor de 
+        betrouwbaarheid van de CNV-detectie voor dat betreffende target.
+    </figcaption>
+</figure>
+
 
 <hr>
 <h2>Rapportage</h2>
-<p>Targets met een geobserveerde Z-score groter dan 3 of kleiner dan -3 worden gerapporteerd. 
+<p>
+  Targets met een geobserveerde Z-score groter dan 3 of kleiner dan -3 worden gerapporteerd. 
   Voor deze targets wordt een plot gemaakt van alle targets in hetzelfde gen als het afwijkende target. 
   De plot bevat zowel de Z-scores van het archief als ook de Z-scores van de huidige patiënt.<br>
   <br>
   Onbetrouwbare targets worden gerapporteerd en in plots van patiënten met een afwijkende sample
   opwerking wordt dit aangegeven met de term <i>non-archive</i> achter het sampleID.
-  <div class="row">
-
-    <div class="column">
-        <figure>
-          <img src='/static/report_calls.png' width=100% height=100%>
-            <figcaption >
-              CNV calls: Regio is de genomische regio, Z-score staat hierboven uitgelegd,
-              gen is het gen met de CNV, freq is het aantal patiënten in het archief met
-              een afwijkende Z-score voor datzelfde targets en het totaal aantal patiënten 
-              in het archief. Mean en std zijn het gemiddelde en daarbij horende 
-              standaarddeviate van het betreffende target in het archief. Als in beide OK
-              staat is het target door de QC gekomen als er een getal staat voldoet het 
-              target niet aan de kwaliteitseisen.
-            </figcaption>
-        </figure>
-    </div>
-
-    <div class="column">
-        <figure>
-          <img src='/static/report_excluded.png' width=100% height=100%>
-            <figcaption >
-                Niet te beoordelen gebieden: Regio is de genomische regio die niet is te beoordelen. 
-                Mean is de gemiddelde genormaliseerde coverage van dat target, Std is de daarbij horende
-                standaarddeviatie. Een getal in deze kolom betekent dat de treshold niet gehaald is en 
-                dat dit de reden is voor het excluderen van de regio.
-              </figcaption>
-          </figure>
-    </div>
-  </div>
 </p>
+  
+  <figure>
+    <img src='/static/img/report_calls.png'>
+    <figcaption >
+      CNV calls: Regio is de genomische regio, Z-score staat hierboven uitgelegd,
+      gen is het gen met de CNV, freq is het aantal patiënten in het archief met
+      een afwijkende Z-score voor datzelfde targets en het totaal aantal patiënten 
+      in het archief. Mean en std zijn het gemiddelde en daarbij horende 
+      standaarddeviate van het betreffende target in het archief. Als in beide OK
+      staat is het target door de QC gekomen als er een getal staat voldoet het 
+      target niet aan de kwaliteitseisen.
+    </figcaption>
+  </figure>
 
+  <figure>
+    <img src='/static/img/report_excluded.png'>
+    <figcaption >
+        Niet te beoordelen gebieden: Regio is de genomische regio die niet is te beoordelen. 
+        Mean is de gemiddelde genormaliseerde coverage van dat target, Std is de daarbij horende
+        standaarddeviatie. Een getal in deze kolom betekent dat de treshold niet gehaald is en 
+        dat dit de reden is voor het excluderen van de regio.
+    </figcaption>
+  </figure>
 
-<style>
-.column {
-  float: left;
-  width: 50%;
-}
-/* Clear floats after the columns */
-.row:after {
-  content: "";
-  display: table;
-  clear: both;
-}
-</style>
 {% endblock content %}

@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+{% block content %}
+<script>
+
+$SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+
+function alphanumeric(checkValue)  { 
+  let alphanum = /^([0-9]|[a-z])+([0-9a-z]+)$/i;
+  if(! checkValue.match(alphanum))  {
+    return false;
+  }
+  else {
+    return true;
+  }
+
+}
+
+function checkForm (){
+  let serie = document.samplesheet.serie.value;
+  let analist = document.samplesheet.analist.value;
+  let samples = document.samplesheet.samples.value.split('\n');
+  let barcodes = [];
+  let error_msg = 'Computer says no!\n\n';
+
+  if (serie === "") {
+    alert(error_msg + "Vul serie in.")
+    return false
+  }
+
+  if (analist  === "") {
+    alert(error_msg + "Vul analist in.")
+    return false
+  }
+
+  if (! Number.isInteger(+serie)) {
+    alert (error_msg + "Serie is geen getal. Opgegeven waarde: " + serie)
+    return false
+
+  }
+
+  if (samples == "" || samples.length == 0 || samples == null){
+    alert (error_msg + "Geen samples opgegeven.")
+    return false
+  }
+  
+  for(var i = 0;i < samples.length;i++){
+    if (samples[i] == '') {
+      continue
+    }
+    else {
+      let sample = samples[i].split(/\t/)
+
+      if (sample.length != 4) {
+        alert(error_msg + "Geen 4 kolommen in " + sample)
+        return false
+      }
+      else {
+        let sampleID = sample[0];
+        let barcode = sample[1];
+        let genesis = sample[2];
+        let materiaal = sample[3];
+
+        if (barcodes.indexOf(barcode) > -1){
+          alert(error_msg + "Barcode " + barcode + " vaker dan 1x gebruikt.")
+        }
+        else{
+          barcodes.push(barcode);
+        }
+        
+        if (! alphanumeric(sampleID)) {
+          alert(error_msg + sampleID + " is geen geldig D-nummer.")
+        }
+      }
+    }
+  }
+  return true
+}
+</script>
+
+<h1> {{title}} </h1>
+
+<p>
+  Voor het maken van een samplesheet moeten het serienummer en 
+  de naam van de analist worden ingevoerd.
+  Verder zijn per sample de volgende gegevens nodig:
+</p>
+<ul>
+  <li>SampleID (meestal een D-nummer)
+  <li>Barcode AMC-nummer
+  <li>Genesis code aanvraag
+  <li>Materiaalsoort voor CNV-analyse
+</ul>
+<p>
+  Dit wordt gecombineerd tot een samplesheet waarmee de MiSeq en de analyse-pipeline voor 
+  de betreffende serie gestart kunnen worden. Een uitgebreidere uitleg is 
+  <a href="{{ url_for('samplesheet_explained') }}">hier</a> te vinden. Meer info over 
+  Robert is <a href="https://www.youtube.com/watch?v=FRFFMcD6KP8"> hier</a> te vinden.
+</p>
+
+<div class="container">
+  <form name="samplesheet" 
+        method="post" 
+        onsubmit="return checkForm()"
+        enctype="multipart/form-data">
+    <div class="row">
+      <div class="col-25">
+        <label for="fname">Serie</label>
+      </div>
+      <div class="col-75">
+        <input type="text" id="fname" name="serie" placeholder="Serienummer..">
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-25">
+        <label for="lname">Analist</label>
+      </div>
+      <div class="col-75">
+        <input type="text" id="lname" name="analist" value="Robert">
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-25">
+        <label for="subject">Samples</label>
+      </div>
+      <div class="col-75">
+        <textarea id="subject" 
+                  name="samples" 
+                  placeholder="SampleID Barcode Genesis Materiaal" 
+                  style="height:300px"></textarea>
+      </div>
+    </div>
+    <div class="row">
+      <input type="submit" value="Maak samplesheet">
+    </div>
+  </form>
+</div>
+
+
+
+
+{% endblock content %}

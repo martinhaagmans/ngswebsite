@@ -1,10 +1,11 @@
 {% extends "base.html" %}
 {% block content %}
 
-<h1>NOMENCLATUUR</h1>
-<hr>
+<h1>Nomenclatuur</h1>
+
 <h2>Capture</h2>
-<p>Een capture is een verzameling probes die gekocht worden bij de
+<p>
+    Een capture is een verzameling probes die gekocht worden bij de
     fabrikant, bijvoorbeeld Nimblegen. Doorgaans targetten deze probes de
     coderende gebieden van de genen van interesse, maar intronen of
     andere gebieden ook het target zijn. In het AMC worden
@@ -27,7 +28,8 @@
 <br>
 
 <h2>Genpakket</h2>
-<p>Een genpakket is een verzameling genen behorend bij een bepaalde
+<p>
+    Een genpakket is een verzameling genen behorend bij een bepaalde
     (groep) aandoeningen. Tenzij uitdrukkelijk anders gespecificeerd worden
     van alle genen binnen een pakket de coderende exonen inclusief een flank
     van 20bp intron aan zowel de 5’ als aan de 3’ van het exon volledig
@@ -40,7 +42,8 @@
 <br>
 
 <h2>TypeA-panel</h2>
-<p>Binnen een genpakket kan een panel onderscheiden worden. Dit kan
+<p>
+    Binnen een genpakket kan een panel onderscheiden worden. Dit kan
     bijvoorbeeld een verzameling belangrijke exonen of bekende mutaties
     zijn. Indien een genpakket een TypeA-panel bevat worden alleen de
     gebieden in dit panel volledig geanalyseerd en dus eventueel met sanger
@@ -52,27 +55,23 @@
 <br>
 
 <h2>TL;DR</h2>
-<table>
-    <colgroup>
-        <col width="26%">
-        <col width="74%">
-    </colgroup>
-    <thead valign="bottom">
-        <tr class="row-odd">
-            <th class="head">Naam</th>
-            <th class="head">Korte beschrijving</th>
+<table id="nomenclature" class="display">
+    <thead>
+        <tr>
+            <th>Naam</th>
+            <th>Korte beschrijving</th>
         </tr>
     </thead>
-    <tbody valign="top">
-        <tr class="row-even">
+    <tbody>
+        <tr>
             <td>Capture</td>
             <td>Verzameling probes.</td>
         </tr>
-        <tr class="row-odd">
+        <tr>
             <td>Genpakkett</td>
             <td>Verzameling genen op een capture.</td>
         </tr>
-        <tr class="row-even">
+        <tr>
             <td>TypeA-panel</td>
             <td>Verzameling gebieden binnen een genpakket.</td>
         </tr>

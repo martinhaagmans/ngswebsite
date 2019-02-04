@@ -1,9 +1,14 @@
 {% extends "base.html" %}
 {% block content %}
-
+<script>
+$(document).ready(function() {
+  fancyTables()
+})
+</script>
 <h1>Database</h1>
-<hr>
-<p>De database bestaat uit aantal tabellen die de informatie bevatten 
+
+<p>
+  De database bestaat uit aantal tabellen die de informatie bevatten 
   die nodig is om de pipeline correct te runnen voor een specifieke 
   genesiscode. Welke genesiscode voor welk sample gerund moet worden 
   staat in de samplesheet die ook gebruikt wordt om de MiSeq aan te 
@@ -17,18 +22,15 @@
   de database raadplegen om te bepalen of deze gerund moeten worden.
 </p>
 
-<hr>
-
 <h2>Genesis</h2>
-<p>Koppeling tussen genesiscode en capture, pakket, panel en wel of 
+
+<p>
+  Koppeling tussen genesiscode en capture, pakket, panel en wel of 
   niet runnen van CNV of mozaiek analyses in de pipeline.
 </p>
-<table>
+
+<table id="genesis" class="display">
   <thead>
-      <col width="80">
-      <col width="90">
-      <col width="80">
-      <col width="80">
       <th>genesis</th>
       <th>capture</th>
       <th>pakket</th>
@@ -85,21 +87,19 @@
     </tr>
   </tbody>
 </table>
-<hr>
+
 <h2>Captures</h2>
-<p>Hierin staan alle captures met versienummer met daaraan gekoppeld een OID, 
-  een en de genen op de capture. Ook de grootte van de capture is hier te vinden 
-  en deze kan worden gebruikt om de verhoudingen tussen verschillende captures 
-  te bepalen als deze samen gesequenced worden.
+
+<p>
+  Hierin staan alle captures inclusief versienummer met daaraan gekoppeld een OID, 
+  en de genen op de capture met het betreffende versienummer. Ook de grootte van de 
+  capture is hier te vinden en deze kan worden gebruikt om de verhoudingen tussen 
+  verschillende captures te bepalen als deze samen gesequenced worden.
 </p>
 
-<table style="text-align:right">
+<table id="captures" class="display">
+  <thead>
     <tr>
-      <col width="80">
-      <col width="60">
-      <col width="60">
-      <col width="80">
-      <col width="80">
       <th>capture</th>
       <th>versie</th>
       <th>oid</th>
@@ -151,13 +151,16 @@
     </tr>
   </tbody>
 </table>
-<hr>
 
 <h2>Pakketten</h2>
-<p>Hierin staan alle pakketten met versienummer met daaraan gekoppeld 
-  de genen in het pakket en de grootte van het pakket.
+
+<p>
+    Hierin staan alle pakketten inclusief versienummer met daaraan 
+    gekoppeld de genen in het pakket en de grootte van het pakket
+    met het genoemde versienummer.
 </p>
-<table style="text-align:right">
+
+<table id="pakketten" class="display">
   <thead>
       <th>pakket</th>
       <th>versie</th>
@@ -198,13 +201,16 @@
     </tr>
   </tbody>
 </table>
-<hr>
 
 <h2>Panels</h2>
-<p>Hierin staan alle panels met versienummer met daaraan 
-  gekoppeld de genen in het panel en de grootte van het panel.
+
+<p>
+  Hierin staan alle panels inclusief versienummer met daaraan 
+  gekoppeld de genen in het panel en de grootte van het panel
+  met het genoemde versienummer.
 </p>
-<table style="text-align:right">
+
+<table id="panels" class="display">
   <thead>
       <th>panel</th>
       <th>versie</th>
@@ -245,11 +251,14 @@
     </tr>
   </tbody>
 </table>
-<hr>
 
 <h2>Aandoeningen</h2>
-<p>Koppeling tussen genesiscode en aandoening.</p>
-<table style="text-align:right">
+
+<p>
+  Koppeling tussen genesiscode en aandoening.
+</p>
+
+<table id="aandoeningen" class="display">
   <thead>
       <th>genesis</th>
       <th>aandoening</th>
@@ -278,12 +287,5 @@
     </tr>
   </tbody>
 </table>
-<style>
-table tr {
-    text-align: right;
-}
-table th {
-    text-align: center;
-}
-</style>
+
 {% endblock content %}

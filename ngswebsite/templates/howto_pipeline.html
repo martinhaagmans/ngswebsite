@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block content %}
+<h1> {{title}} </h1>
+<p>
+    NGSPIPE is een wrapper waarmee de diagnostiekpipeline in zijn geheel of 
+    per onderdeel aangestuurd kan worden. Voor reguliere diagnostiek is het 
+    zo dat na het opgeven van het serienummer de runinformatie en reads per 
+    patiënt gedownload worden uit BaseSpace <b>(Stap 1)</b>. 
+    Beide worden gearchiveerd, waarna de reads op de server geanalyseerd worden 
+    <b>(Stap 2)</b>. Na de analyse worden relevante files in de seriemap op het 
+    netwerk (G:\) geplaatst <b>(Stap 3)</b>.
+</p>
+
+<p>
+    In deze handleiding staan op verschillende plekken tekst in een grijze balk 
+    zoals hieronder. Deze tekst kan in zijn geheel in een terminal geplakt worden 
+    om de pipeline aan te sturen, uiteraard met vervanging van relevante variabelen 
+    (o.a. het serienummer).
+    <div style="width:240px;overflow:auto;margin-left:2em;">
+        <pre><code>NGSPIPE --help</code></pre>
+    </div>
+</p>
+<div class="row">
+    <div class=column>
+
+        <h2> Standaard diagnostiek run</h2>
+
+        <p>
+            Een standaard diagnostiek run is een genummerde miseq serie en de enige informatie 
+            die de pipeline nodig heeft om te kunnen runnen is het nummer van deze serie.
+            Losse stappen kunnen ook gecombineerd worden door de opties (in willekeurige volgorde) 
+            samen in te voeren.
+        </p>
+
+        <h3>Volledige pipeline</h3>
+
+        <div style="width:240px;overflow:auto;margin-left:2em;">
+            <pre><code>NGSPIPE -s 450</code></pre>
+        </div>
+
+
+        <h3> Alleen stap 1</h3>
+        <div style="width:240px;overflow:auto;margin-left:2em;">
+            <pre><code>NGSPIPE -s 450 --download</code></pre>
+        </div>
+
+
+        <h3> Alleen stap 2</h3>
+        <div style="width:240px;overflow:auto;margin-left:2em;">
+            <pre><code>NGSPIPE -s 450 --pipeline</code></pre>
+        </div>
+
+        <h3> Alleen stap 3</h3>
+        <div style="width:240px;overflow:auto;margin-left:2em;">
+            <pre><code>NGSPIPE -s 450 --cleanup</code></pre>
+        </div>
+    </div>
+
+    <div class=column>
+
+        <h2> Afwijkende diagnostiek run </h2>
+
+        <p >
+            Door rehyben verandert de folderstructuur in BaseSpace, de optie --hester
+            zorgt ervoor dat op de juiste plek gezocht wordt.
+            <div style="width:240px;overflow:auto;margin-left:2em;">
+                <pre><code>NGSPIPE -s 450 --hester</code></pre>
+            </div>
+        </p>
+        <p>
+            Tijdens het runnen zet de pipeline de (uitslag van de) 
+            SNPcheck, de te sangeren fragmenten en een aantal metrics
+            in verschillende databases. Indien de pipeline nogmaals gerund
+            wordt omdat twee samples of barcodes zijn verwisseld
+            moet de oude informatie uit de database verwijderd worden.
+            De optie --niek zorgt ervoor dat dit gebeurt voor 
+            het runnen van de pipeline. Indien er een requeue van de 
+            samplesheet in BaseSpace is uitgevoerd moet deze optie 
+            gecombineerd worden met onderstaande optie --demultiplex.
+            <div style="width:240px;overflow:auto;margin-left:2em;">
+                <pre><code>NGSPIPE -s 450 --niek</code></pre>
+            </div>
+        </p>        
+        <p>
+            Herhaald demultiplexen verandert de folderstructuur in BaseSpace, de optie 
+            --demultiplex zort ervoor dat op de juiste plek gezocht wordt. Het getal achter 
+            demultiplex is het aantal keer dat er een demultiplex van de 
+            samplesheet is gedaan. Standaard staan de reads in de map sampleID, 
+            indien de samplesheet eenmaal gerequeued wordt staan ze in sampleID(2), 
+            voor de tweede keer in sampleID(3) enz.
+            <div style="width:240px;overflow:auto;margin-left:2em;">
+                <pre><code>NGSPIPE -s 450 --demultiplex 2</code></pre>
+            </div>
+        </p>
+    </div>
+</div>
+   
+
+{% endblock content %}
