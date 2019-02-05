@@ -30,7 +30,7 @@
 
 {% if todo.pakket %}
     
-    <h2>{{todo.pakket}} genen</h2>
+    <h2 style="text-transform:none;">{{todo.pakket}} genen</h2>
     <p>
         A-kwaliteit in groen.
         <form action="" method=post enctype=multipart/form-data>
@@ -69,7 +69,7 @@
         <th>grootte</th>
         <th></th>
     </tr>
-    {% for capture in info.captures  %}
+    {% for capture in info.captures|sort  %}
         {% for oid, verdund, grootte in info.captures[capture]  %}
             <tr>
                 <td>{{capture}}</td>
@@ -95,7 +95,7 @@
         <th># genen</th>
         <th></th>
     </tr>
-    {% for pakket in info.pakketten  %}
+    {% for pakket in info.pakketten|sort  %}
         {% for grootte, genen in info.pakketten[pakket]  %}
             <tr>
                 <td>{{pakket}}</td>
@@ -113,7 +113,7 @@
 
 
     {% if todo.panel %}
-        {% for panel in info.panels  %}
+        {% for panel in info.panels|sort  %}
             {% for grootte, genen in info.panels[panel]  %}
                 <tr>
                     <td>{{panel}}</td>

@@ -102,5 +102,6 @@ venv.bak/
 
 # mypy
 .mypy_cache/
-ngsdatawebsite/uploads/*
-ngsdatawebsite/data/*
+ngswebsite/uploads/*
+ngswebsite/data/*
+
