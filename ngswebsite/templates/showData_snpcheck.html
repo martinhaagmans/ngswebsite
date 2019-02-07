@@ -65,12 +65,8 @@
 <h1> {{title}} </h1>
 
 <p>
-    Aantal samples: {{nr_samples}} waarvan {{nr_samples_notaqman}} 
-    zonder TaqMan data. De volgende series zijn verwerkt: 
-    {% for serie in series %}
-        {{serie}}
-        {{ ", " if not loop.last else "." }}
-    {% endfor %}
+    {{nr_samples}} samples, waarvan {{nr_samples_notaqman}} 
+    zonder TaqMan data, uit {{series}} series zijn verwerkt. 
 </p>
 
 <canvas id="myChart"></canvas>

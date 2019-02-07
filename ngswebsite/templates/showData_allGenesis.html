@@ -14,11 +14,7 @@
 
 <h1> {{title}} </h1>
 <p>
-    De volgende {{series|length}} series zijn verwerkt: 
-    {% for serie in series %}
-        {{serie}}
-        {{ ", " if not loop.last else "." }}
-    {% endfor %}
+    {{samples}} samples uit {{series}} series zijn verwerkt: 
 </p>
 
 <table id="myTable" class="display" width="100%">

@@ -21,6 +21,7 @@ app.config['SESSION_TYPE'] = 'filesystem'
 app.config['UPLOAD_FOLDER'] = 'uploads'
 
 HOME = '/data/dnadiag'
+
 NGSLIBLOC = os.path.join(HOME, 'ngsscriptlibrary')
 sys.path.insert(0, NGSLIBLOC)
 
@@ -169,8 +170,10 @@ def snpcheck():
     for _ in c.fetchall():
         sample, serie, data = _
 
-        if not check_serie_is_number(serie):
-            continue        
+        try:
+            int(serie)
+        except ValueError:
+            continue
 
         nr_samples += 1
         
@@ -213,7 +216,7 @@ def snpcheck():
         
     return render_template('showData_snpcheck.html', title="TaqMan SNP check",
                             loci=loci, 
-                            series=series,
+                            series=len(series),
                             gpos2snp=get_gpos2snp_lookup(),
                             snpcheckd=get_snpcheck_dict(),
                             nr_samples=nr_samples,
@@ -360,7 +363,8 @@ def genesis():
     return render_template('showData_allGenesis.html', 
                             title='Verwerkte samples',
                             data=data, 
-                            series=sorted(all_series))
+                            series=len(all_series),
+                            samples=len(all_genesis_done))
 
 
 @app.route('/diagnostiek/<genesis>', methods=['GET', 'POST'])
