@@ -415,6 +415,7 @@ def show_genesis(genesis):
 def create_samplesheet():
     if request.method == 'POST':
         serie = request.form['serie']
+        serie = serie.strip()
         analist = request.form['analist']
         analist = analist.replace(' ', '_')
         nullijst_todo = request.form['samples']

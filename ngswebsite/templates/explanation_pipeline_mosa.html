@@ -231,15 +231,9 @@
 <h2>QC</h2>
 <p>
     Een script verzamelt de posites met minder dan 500x informatieve 
-    coverage uit de DoC tabel. Indien opeenvolgende posities onvodoende 
-    gecoverd zijn worden deze gecombineerd tot een interval.
-</p>
-<figure>
-    <img src='/static/img/intervals.png' width=70% height=70%>
-    <figcaption > Opeenvolgende posities worden samengevoegd tot een interval. </figcaption>
-</figure>
+    coverage uit de DoC tabel. Hiervoor wordt voor elke base die afwijkt van
+    de referentie een percentage gegeven.
 
-<p>
     Het staflid beoordeelt of deze posities met een te ontwikkelen amplicon worden 
     beoordeeld, of dat de aanwezige data voldoende informatie bevat om de positie 
     te beoordelen. Eventueel ontwikkelde amplicons worden na sequencen op dezelfde
@@ -324,15 +318,14 @@
 <h2>Rapportage</h2>
 <p>
     Uit de mozaïekdetectie-module worden de in stap 3 gecreëerde 
-    intervallen gerapporteerd en uiteraard de gevonden mozaïeken. 
+    intervallen en de gevonden mozaïeken gerapporteerd. 
     Om deze mozaïeken te rapporteren worden eerst voor de patiënt 
     alle posities die meer dan 1% afwijking van de referentie en 
     meer dan 500x informatieve coverage hebben verzameld uit de 
     database. Van al deze verzamelde posities wordt voor alle andere 
     patiënten in de database de informatie verzameld. Vervolgens 
-    wordt gekeken of het type variant overeenkomt en als, en alleen 
-    dan, dit het geval is worden de percentages afwijkingen van de 
-    referentie geplot samen met die van de patiënt. 
+    wordt voor elk type variant de percentages afwijkingen uit de
+    referentiedatabase geplot samen met die van de patiënt. 
 </p>
 <figure>
     <img src='/static/img/mosa_boxplot.png'>
