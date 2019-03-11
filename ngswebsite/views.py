@@ -20,7 +20,7 @@ app = Flask(__name__)
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config['UPLOAD_FOLDER'] = 'uploads'
 
-HOME = '/data/dnadiag'
+HOME = 'E:\\GitHubRepos'
 
 NGSLIBLOC = os.path.join(HOME, 'ngsscriptlibrary')
 sys.path.insert(0, NGSLIBLOC)

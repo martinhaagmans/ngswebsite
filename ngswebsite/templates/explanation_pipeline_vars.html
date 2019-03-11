@@ -1,7 +1,11 @@
 <!-- extend from base layout -->
 {% extends "base.html" %}
 {% block content %}
-
+<script>
+    $(document).ready(function() {
+      fancyTables()
+    })
+</script>
 <h1>Pipeline</h1>
 <p>
     De AMC diagnostische pipeline voor de analyse van sequence capture data
@@ -60,8 +64,7 @@ er gevoeliger gefilterd kan worden.
     haplotypes met het meeste bewijs worden de varianten gecalld.
 </p>
 
-<table>
-    <thead valign="bottom">
+<table id="varfilters" class="display">
         <tr>
             <th>FilterName</th>
             <th>Waarde</th>
