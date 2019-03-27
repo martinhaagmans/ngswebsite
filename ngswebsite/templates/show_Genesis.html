@@ -1,6 +1,17 @@
 <!-- extend from base layout -->
 {% extends "base.html" %}
 {% block content %}
+<script>
+    $(document).ready(function() {
+        let table = $('#myTable').DataTable({
+            dom: '<Bf<t>lip>',
+            paging: false,
+            bFilter: false,            
+            order: [0, 'asc'],
+            buttons: ['copy', 'csv', 'excel', 'print'],
+            })
+    });  
+</script>
 <h1> {{ todo.aandoening }} </h1><br>
 <table  id="myTable" class="display" maxwidth="40%">
     <tr>

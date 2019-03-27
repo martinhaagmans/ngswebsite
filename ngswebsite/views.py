@@ -22,6 +22,11 @@ app = Flask(__name__)
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config['UPLOAD_FOLDER'] = 'uploads'
 
+HOME = '/data/dnadiag'
+
+NGSLIBLOC = os.path.join(HOME, 'ngsscriptlibrary')
+sys.path.insert(0, NGSLIBLOC)
+
 DB_TARGETS= os.path.join(HOME, 'ngstargets')
 DB_GENESIS = os.path.join(DB_TARGETS, 'varia', 'captures.sqlite')
 DB_METRICS = os.path.join(HOME, 'ngswebsite', 'ngswebsite', 'data', 'metrics.sqlite')
