@@ -16,14 +16,11 @@ from flask import jsonify
 from flask import request
 from flask import make_response
 
+AMPLICONS = ['GNAS201']
+
 app = Flask(__name__)
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config['UPLOAD_FOLDER'] = 'uploads'
-
-HOME = 'E:\\GitHubRepos'
-
-NGSLIBLOC = os.path.join(HOME, 'ngsscriptlibrary')
-sys.path.insert(0, NGSLIBLOC)
 
 DB_TARGETS= os.path.join(HOME, 'ngstargets')
 DB_GENESIS = os.path.join(DB_TARGETS, 'varia', 'captures.sqlite')
@@ -351,6 +348,8 @@ def genesis():
     all_genesis_codes = sorted(all_genesis_codes)
     
     for g in all_genesis_codes:
+        if g in AMPLICONS:
+            continue
         d = T.get_info_for_genesis(g)
         capture = d['capture']
         pakket = d['pakket']
