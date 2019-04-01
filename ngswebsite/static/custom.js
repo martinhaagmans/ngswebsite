@@ -15,6 +15,22 @@ function fancyTables() {
     }
 }
 
+function fancyTablesNoButtons() {
+    const tables = document.getElementsByTagName("table");
+
+    for (let i = 0; i < tables.length; i++) {
+        let table_id = tables[i].getAttribute("id")
+        let table = $("#" + table_id).DataTable({
+            dom: '<f<t>lip>',
+            paging: false,
+            searching: false,
+            info: false,
+            ordering: false,
+            });
+
+    }
+}
+
 function fetchJSON(url, callback) {
     let httpRequest = new XMLHttpRequest();
     httpRequest.onreadystatechange = function() {
