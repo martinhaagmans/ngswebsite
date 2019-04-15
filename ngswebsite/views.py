@@ -90,7 +90,7 @@ def check_serie_is_number(serie, max_serie=5000):
     try:
         int(serie)
     except ValueError:
-        is_number = Falsecd Docu    ngs
+        is_number = False
     else:
         is_number = int(serie) < max_serie
     try:
