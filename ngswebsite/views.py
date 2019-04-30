@@ -323,12 +323,12 @@ def _callables():
 
 
 @app.route('/riskcores')
-def riskscore():
+def riskscores():
     return render_template('showData_riskscore.html', title='Risk scores')
 
 
 @app.route('/_riskcores')
-def _riskscore():
+def _riskscores():
     conn = sqlite3.connect(DB_METRICS)
     c = conn.cursor()
     c.execute('''SELECT SAMPLE, SERIE, TARGET,  score
