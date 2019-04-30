@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+<script>
+    $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+    
+    $(document).ready(function() {
+        $('#myTable').DataTable({
+            dom: '<Bf<t>lip>',
+            ajax: { "url": $SCRIPT_ROOT + '/_riskscores'},
+            columns: [
+                { data: 'sample', title: 'Sample' },
+                { data: 'serie', title: 'Serie' },
+                { data: 'riskscore', title: 'Score' },
+            ],
+            order: [1, 'desc'],
+            pageLength: 25,
+            lengthMenu: [ 
+                            [25, 50, 100, -1], 
+                            [25, 50, 100, "All"] 
+                        ],
+            buttons: ['copy', 'csv', 'excel', 'print'],
+        })
+    })
+</script>
+
+<h1> {{title}} </h1>
+
+<table id="myTable" class="display" width="100%"></table>
+
+{% endblock %}
+
+

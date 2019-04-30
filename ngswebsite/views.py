@@ -22,7 +22,7 @@ app = Flask(__name__)
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config['UPLOAD_FOLDER'] = 'uploads'
 
-HOME = 'E:\\GitHubRepos'
+HOME = '/data/dnadiag/'
 
 NGSLIBLOC = os.path.join(HOME, 'ngsscriptlibrary')
 sys.path.insert(0, NGSLIBLOC)
@@ -317,6 +317,34 @@ def _callables():
         __['perc_callable'] = round((100 * (c / total)), 2)
         __['nr_sangers'] = nr_sangers
    
+        data.append(__)
+    
+    return jsonify(data=data)
+
+
+@app.route('/riskcores')
+def riskscore():
+    return render_template('showData_riskscore.html', title='Risk scores')
+
+
+@app.route('/_riskcores')
+def _riskscore():
+    conn = sqlite3.connect(DB_METRICS)
+    c = conn.cursor()
+    c.execute('''SELECT SAMPLE, SERIE, TARGET,  score
+                 FROM riskscore
+                 ''')
+
+    data = list()
+
+    for _ in c.fetchall():
+        sample, serie, target, score = _
+
+        __ = dict()
+        __['sample'] = sample
+        __['serie'] = serie
+        __['target'] = target
+        __['score'] = int(score)
         data.append(__)
     
     return jsonify(data=data)
