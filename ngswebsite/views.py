@@ -324,7 +324,7 @@ def _callables():
 
 @app.route('/riskcores')
 def riskscores():
-    return render_template('showData_riskscore.html', title='Risk scores')
+    return render_template('showData_riskscores.html', title='Risk scores')
 
 
 @app.route('/_riskcores')
