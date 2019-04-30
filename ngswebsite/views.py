@@ -322,12 +322,12 @@ def _callables():
     return jsonify(data=data)
 
 
-@app.route('/riskcores')
+@app.route('/riskscores')
 def riskscores():
     return render_template('showData_riskscores.html', title='Risk scores')
 
 
-@app.route('/_riskcores')
+@app.route('/_riskscores')
 def _riskscores():
     conn = sqlite3.connect(DB_METRICS)
     c = conn.cursor()
@@ -344,7 +344,7 @@ def _riskscores():
         __['sample'] = sample
         __['serie'] = serie
         __['target'] = target
-        __['score'] = int(score)
+        __['riskscore'] = score
         data.append(__)
     
     return jsonify(data=data)
