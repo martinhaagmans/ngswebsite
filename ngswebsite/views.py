@@ -9,12 +9,13 @@ from pathlib import Path
 from logging import handlers
 
 from flask import Flask
-from flask import render_template
+from flask import flash
 from flask import redirect
 from flask import url_for
 from flask import jsonify
 from flask import request
 from flask import make_response
+from flask import render_template
 
 AMPLICONS = ['GNAS201']
 
@@ -463,7 +464,7 @@ def create_samplesheet():
 
                     robot = cnvarchive.lower() == 'robot'
                     hand = cnvarchive.lower() == 'hand'
-                    flexstar = cnvarchive.lower() == 'flexstar'
+                    flexstar = cnvarchive.lower() == 'flexstar' or cnvarchive.lower() == 'flexstar+'
 
                     if not robot and not hand and not flexstar:
                         f_cnv.write('{}\t{}\t{}\n'.format(serie, dnr, cnvarchive))
