@@ -78,7 +78,7 @@ function checkForm (){
           alert(error_msg + sampleID + " is geen geldig D-nummer.")
           goodInfo = false
         }
-        if(sex.toLowerCase() != 'v' && sex.toLowerCase() != 'm') {
+        if(sex.toLowerCase() != 'v' && sex.toLowerCase() != 'm' && sex != 0) {
           alert(error_msg + sex + " is geen geldig geslacht.")
           goodInfo = false
 
