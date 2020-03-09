@@ -146,7 +146,7 @@ def download_target(targetname, targetsoort):
                           '{}_target.bed'.format(targetname))
     
     if targetsoort == 'pakketten' and not os.path.isfile(target):
-        target.replace('pakketten', 'captures')
+        target = target.replace('pakketten', 'captures')
 
     with open(target, 'r') as f:
         for line in f:
