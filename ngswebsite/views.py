@@ -141,8 +141,13 @@ def download_genelist(todo_list, d, genesis):
 
 def download_target(targetname, targetsoort):
     out = list()
+
     target = os.path.join(DB_TARGETS, targetsoort,
                           '{}_target.bed'.format(targetname))
+    
+    if targetsoort == 'pakketten' and not os.path.isfile(target):
+        target.replace('pakketten', 'captures')
+
     with open(target, 'r') as f:
         for line in f:
             out.append(line.strip())
