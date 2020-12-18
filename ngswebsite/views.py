@@ -141,8 +141,13 @@ def download_genelist(todo_list, d, genesis):
 
 def download_target(targetname, targetsoort):
     out = list()
+
     target = os.path.join(DB_TARGETS, targetsoort,
                           '{}_target.bed'.format(targetname))
+    
+    if targetsoort == 'pakketten' and not os.path.isfile(target):
+        target = target.replace('pakketten', 'captures')
+
     with open(target, 'r') as f:
         for line in f:
             out.append(line.strip())
@@ -454,13 +459,22 @@ def create_samplesheet():
         nullijst_todo = request.form['samples']
         logger.info('Start maken samplesheet voor MS{} op verzoek {}'.format(serie, analist))
         uploads = os.path.join(app.root_path, app.config['UPLOAD_FOLDER'])
-        with open(os.path.join(uploads, 'samplesheet.tmp'), 'w') as f, open(os.path.join(uploads, 'MS{}_sample_info.txt'.format(serie)), 'w') as f_cnv:
+
+        samplesheet_tmp = os.path.join(uploads, 'samplesheet.tmp')
+        sample_info_cnv = os.path.join(uploads, 'MS{}_sample_info.txt'.format(serie))
+        patient_info =  os.path.join(uploads, 'MS{}_patient_info.txt'.format(serie))
+
+        with open(samplesheet_tmp, 'w') as f, \
+             open(sample_info_cnv, 'w') as f_cnv, \
+             open(patient_info, 'w') as f_patient:
             for line in nullijst_todo.split('\n'):
                 if line:
                     logger.info(json.dumps(line))
                     line = line.replace(' ', '-')
-                    dnr, bc, test, cnvarchive = line.split()
+                    dnr, bc, test, cnvarchive, sex, ffnr, dob = line.split()
+                    dob = dob.replace('/', '-')
                     f.write('{}\t{}\t{}\n'.format(dnr, test, bc))
+                    f_patient.write('{}\t{}\t{}\t{}\n'.format(dnr, sex, ffnr, dob))
 
                     robot = cnvarchive.lower() == 'robot'
                     hand = cnvarchive.lower() == 'hand'
@@ -474,9 +488,9 @@ def create_samplesheet():
                         os.path.join(uploads, 'MS{}.csv'.format(serie)))
         S.write_files(analist=analist)
         logger.info('Einde maken samplesheet voor MS{} op verzoek {}'.format(serie, analist))
+        for fn in [sample_info_cnv, patient_info]:
+            subprocess.call(["cp", fn, "/data/dnadiag/databases/materiaalsoort"])
 
-        subprocess.call(["cp", os.path.join(uploads, 'MS{}_sample_info.txt'.format(serie)),
-                          "/data/dnadiag/databases/materiaalsoort"])
         return redirect(url_for('uploaded_file',
                                  filename='MS{}.csv'.format(serie)))
 

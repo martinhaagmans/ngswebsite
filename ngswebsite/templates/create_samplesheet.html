@@ -21,6 +21,7 @@ function checkForm (){
   let samples = document.samplesheet.samples.value.split('\n');
   let barcodes = [];
   let error_msg = 'Computer says no!\n\n';
+  let goodInfo = true
 
   if (serie === "") {
     alert(error_msg + "Vul serie in.")
@@ -42,7 +43,9 @@ function checkForm (){
     alert (error_msg + "Geen samples opgegeven.")
     return false
   }
+
   
+
   for(var i = 0;i < samples.length;i++){
     if (samples[i] == '') {
       continue
@@ -50,8 +53,8 @@ function checkForm (){
     else {
       let sample = samples[i].split(/\t/)
 
-      if (sample.length != 4) {
-        alert(error_msg + "Geen 4 kolommen in " + sample)
+      if (sample.length != 7) {
+        alert(error_msg + "Geen 7 kolommen in " + sample)
         return false
       }
       else {
@@ -59,9 +62,13 @@ function checkForm (){
         let barcode = sample[1];
         let genesis = sample[2];
         let materiaal = sample[3];
+        let sex = sample[4];
+        let ffnr = sample[5];
+        let dob = sample[6];
 
         if (barcodes.indexOf(barcode) > -1){
           alert(error_msg + "Barcode " + barcode + " vaker dan 1x gebruikt.")
+          goodInfo = false
         }
         else{
           barcodes.push(barcode);
@@ -69,11 +76,17 @@ function checkForm (){
         
         if (! alphanumeric(sampleID)) {
           alert(error_msg + sampleID + " is geen geldig D-nummer.")
+          goodInfo = false
         }
+        if(sex.toLowerCase() != 'v' && sex.toLowerCase() != 'm' && sex != 0) {
+          alert(error_msg + sex + " is geen geldig geslacht.")
+          goodInfo = false
+
+          }
       }
     }
   }
-  return true
+  return goodInfo
 }
 </script>
 
@@ -85,10 +98,14 @@ function checkForm (){
   Verder zijn per sample de volgende gegevens nodig:
 </p>
 <ul>
-  <li>SampleID (meestal een D-nummer)
-  <li>Barcode AMC-nummer
-  <li>Genesis code aanvraag
-  <li>Materiaalsoort voor CNV-analyse
+  <li>SampleID (meestal een D-nummer)</li>
+  <li>Barcode AMC-nummer</li>
+  <li>Genesis code aanvraag</li>
+  <li>Materiaalsoort voor CNV-analyse</li>
+  <li>Geslacht</li>
+  <li>FF-nummer</li>
+  <li>Geboortedatum</li>
+
 </ul>
 <p>
   Dit wordt gecombineerd tot een samplesheet waarmee de MiSeq en de analyse-pipeline voor 
@@ -107,7 +124,7 @@ function checkForm (){
         <label for="fname">Serie</label>
       </div>
       <div class="col-75">
-        <input type="text" id="fname" name="serie" placeholder="Serienummer..">
+        <input type="text" id="fname" name="serie" placeholder="Serienummer">
       </div>
     </div>
     <div class="row">
@@ -125,7 +142,7 @@ function checkForm (){
       <div class="col-75">
         <textarea id="subject" 
                   name="samples" 
-                  placeholder="SampleID Barcode Genesis Materiaal" 
+                  placeholder="SampleID Barcode Genesis Materiaal Geslacht FF-nummer Geboortedatum" 
                   style="height:300px"></textarea>
       </div>
     </div>
