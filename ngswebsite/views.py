@@ -382,7 +382,7 @@ def genesis():
     all_genesis_codes = sorted(all_genesis_codes)
     
     for g in all_genesis_codes:
-        if g in AMPLICONS:
+        if g in AMPLICONS or g.startswith('CTD'):
             continue
         d = T.get_info_for_genesis(g)
         capture = d['capture']
