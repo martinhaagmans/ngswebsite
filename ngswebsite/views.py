@@ -478,7 +478,7 @@ def create_samplesheet():
 
                     robot = cnvarchive.lower() == 'robot'
                     hand = cnvarchive.lower() == 'hand'
-                    flexstar = cnvarchive.lower() == 'flexstar' or cnvarchive.lower() == 'flexstar+'
+                    flexstar = cnvarchive.lower().startswith('flexstar')
 
                     if not robot and not hand and not flexstar:
                         f_cnv.write('{}\t{}\t{}\n'.format(serie, dnr, cnvarchive))
