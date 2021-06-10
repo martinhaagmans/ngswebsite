@@ -17,7 +17,7 @@ from flask import request
 from flask import make_response
 from flask import render_template
 
-AMPLICONS = ['GNAS201', 'GNAS.MAS']
+AMPLICONS = ['GNAS201', 'GNAS.MAS', 'GNAS-MAS']
 
 app = Flask(__name__)
 app.config['SESSION_TYPE'] = 'filesystem'
